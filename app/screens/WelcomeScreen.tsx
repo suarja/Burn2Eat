@@ -1,115 +1,139 @@
 import { FC } from "react"
-import { Image, ImageStyle, TextStyle, View, ViewStyle } from "react-native"
+import { ImageStyle, TextStyle, View, ViewStyle } from "react-native"
 
-import { Button } from "@/components/Button" // @demo remove-current-line
+import { Button } from "@/components/Button"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
-import { useAuth } from "@/context/AuthContext" // @demo remove-current-line
-import { isRTL } from "@/i18n"
-import type { AppStackScreenProps } from "@/navigators/AppNavigator" // @demo remove-current-line
+import type { AppStackScreenProps } from "@/navigators/AppNavigator"
 import type { ThemedStyle } from "@/theme/types"
 import { useAppTheme } from "@/theme/context"
 import { $styles } from "@/theme/styles"
-import { useHeader } from "@/utils/useHeader" // @demo remove-current-line
 import { useSafeAreaInsetsStyle } from "@/utils/useSafeAreaInsetsStyle"
 
-const welcomeLogo = require("@assets/images/logo.png")
-const welcomeFace = require("@assets/images/welcome-face.png")
+interface WelcomeScreenProps extends AppStackScreenProps<"Welcome"> {}
 
-interface WelcomeScreenProps extends AppStackScreenProps<"Welcome"> {} // @demo remove-current-line
-
-// @demo replace-next-line export const WelcomeScreen: FC = function WelcomeScreen(
 export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(
-  _props, // @demo remove-current-line
+  _props,
 ) {
-  const { themed, theme } = useAppTheme()
-  // @demo remove-block-start
+  const { themed } = useAppTheme()
   const { navigation } = _props
-  const { logout } = useAuth()
 
-  function goNext() {
-    navigation.navigate("Demo", { screen: "DemoShowroom", params: {} })
+  function handleStartOnboarding() {
+    navigation.navigate("ProfileSetup")
   }
 
-  useHeader(
-    {
-      rightTx: "common:logOut",
-      onRightPress: logout,
-    },
-    [logout],
-  )
-  // @demo remove-block-end
+  function handleGuestMode() {
+    // Navigate directly to Home with default profile
+    navigation.navigate("Home")
+  }
+
+  function handleCreateProfile() {
+    // Same as start onboarding - go to profile setup
+    navigation.navigate("ProfileSetup")
+  }
 
   const $bottomContainerInsets = useSafeAreaInsetsStyle(["bottom"])
 
   return (
     <Screen preset="fixed" contentContainerStyle={$styles.flex1}>
       <View style={themed($topContainer)}>
-        <Image style={themed($welcomeLogo)} source={welcomeLogo} resizeMode="contain" />
-        <Text
-          testID="welcome-heading"
-          style={themed($welcomeHeading)}
-          tx="welcomeScreen:readyForLaunch"
-          preset="heading"
-        />
-        <Text tx="welcomeScreen:exciting" preset="subheading" />
-        <Image
-          style={$welcomeFace}
-          source={welcomeFace}
-          resizeMode="contain"
-          tintColor={theme.colors.palette.neutral900}
-        />
+        {/* App Title & Logo */}
+        <Text 
+          testID="app-title"
+          preset="heading" 
+          style={themed($appTitle)}
+        >
+          🔥 Burn2Eat 🍔
+        </Text>
+        
+        <Text 
+          preset="subheading" 
+          style={themed($tagline)}
+        >
+          "Born to eat. Burn to eat."
+        </Text>
+
+        {/* Main CTA */}
+        <Button
+          testID="start-button" 
+          preset="filled"
+          style={themed($mainButton)}
+          onPress={handleStartOnboarding}
+        >
+          Commencer 🚀
+        </Button>
       </View>
 
       <View style={themed([$bottomContainer, $bottomContainerInsets])}>
-        <Text tx="welcomeScreen:postscript" size="md" />
-        {/* @demo remove-block-start */}
-        <Button
-          testID="next-screen-button"
-          preset="reversed"
-          tx="welcomeScreen:letsGo"
-          onPress={goNext}
-        />
-        {/* @demo remove-block-end */}
+        {/* Secondary Actions */}
+        <View style={themed($secondaryActions)}>
+          <Button
+            testID="guest-mode-button"
+            preset="default"
+            style={themed($secondaryButton)}
+            onPress={handleGuestMode}
+          >
+            Mode invité
+          </Button>
+          
+          <Button
+            testID="create-profile-button" 
+            preset="default"
+            style={themed($secondaryButton)}
+            onPress={handleCreateProfile}
+          >
+            Créer profil
+          </Button>
+        </View>
       </View>
     </Screen>
   )
 }
 
-const $topContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  flexShrink: 1,
-  flexGrow: 1,
-  flexBasis: "57%",
+const $topContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  flex: 1,
   justifyContent: "center",
+  alignItems: "center",
   paddingHorizontal: spacing.lg,
+  backgroundColor: colors.background,
 })
 
 const $bottomContainer: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
-  flexShrink: 1,
-  flexGrow: 0,
-  flexBasis: "43%",
+  paddingHorizontal: spacing.lg,
+  paddingVertical: spacing.xl,
   backgroundColor: colors.palette.neutral100,
   borderTopLeftRadius: 16,
   borderTopRightRadius: 16,
-  paddingHorizontal: spacing.lg,
-  justifyContent: "space-around",
 })
 
-const $welcomeLogo: ThemedStyle<ImageStyle> = ({ spacing }) => ({
-  height: 88,
-  width: "100%",
-  marginBottom: spacing.xxl,
+const $appTitle: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
+  fontSize: 32,
+  textAlign: "center",
+  marginBottom: spacing.lg,
+  color: colors.palette.primary500, // Orange énergique
 })
 
-const $welcomeFace: ImageStyle = {
-  height: 169,
-  width: 269,
-  position: "absolute",
-  bottom: -47,
-  right: -80,
-  transform: [{ scaleX: isRTL ? -1 : 1 }],
-}
+const $tagline: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
+  textAlign: "center",
+  marginBottom: spacing.xxxl,
+  color: colors.textDim,
+  fontStyle: "italic",
+})
 
-const $welcomeHeading: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.md,
+const $mainButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  marginBottom: spacing.xl,
+  backgroundColor: colors.palette.primary500, // Orange énergique
+  paddingVertical: spacing.md,
+  borderRadius: 12,
+})
+
+const $secondaryActions: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  flexDirection: "row",
+  justifyContent: "space-between",
+  gap: spacing.sm,
+})
+
+const $secondaryButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  flex: 1,
+  marginHorizontal: spacing.xs,
 })
