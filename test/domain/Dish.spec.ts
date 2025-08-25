@@ -1,5 +1,5 @@
-import {Dish} from "../../app/domain/nutrition/Dish"
-import { DishId } from "../../app/domain/nutrition/DishId";
+import {Dish} from "../../src/domain/nutrition/Dish"
+import { DishId } from "../../src/domain/nutrition/DishId";
 describe('[Dishspec] Test case', () => {
     beforeEach(() => {});
 

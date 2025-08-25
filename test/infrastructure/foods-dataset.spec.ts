@@ -6,7 +6,7 @@ import {
   validateFoodDataset,
   generateDatasetReport,
   DATASET_STATS
-} from '../../app/infrastructure/data';
+} from '../../src/infrastructure/data';
 
 describe('Foods Dataset', () => {
   describe('Dataset Structure', () => {

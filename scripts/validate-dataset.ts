@@ -10,7 +10,7 @@ import {
   validateImageUrls, 
   FOODS_DATASET,
   DATASET_STATS 
-} from '../app/infrastructure/data';
+} from '../src/infrastructure/data';
 
 async function main() {
   console.log('🍔 Burn2Eat Food Dataset Validation\n');

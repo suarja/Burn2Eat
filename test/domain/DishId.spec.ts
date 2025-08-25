@@ -1,4 +1,4 @@
-import {DishId} from '../../app/domain/nutrition/DishId'
+import {DishId} from '../../src/domain/nutrition/DishId'
 describe('[DishIdspec] Test case', () => {
     beforeEach(() => {});
     const dishIdStr = "DishId"
