@@ -4,6 +4,7 @@ import { EffortPolicy } from "./EffortPolicy";
 import { EffortRequest } from "./EffortRequest";
 import { EffortBreakdown } from "./EffortBreakdown";
 import { EffortItem } from "./EffortBreakdown";
+import { Kilocalories, Kilograms } from "../common/UnitTypes";
 
 /**
  * Domain service that orchestrates effort calculation for burning food calories
@@ -163,7 +164,7 @@ export class EffortCalculator {
     userWeight: number
   ): EffortItem {
     const activityMET = activity.getMET().toNumber();
-    const minutes = this.effortPolicy.minutesToBurn(calories, userWeight, activityMET);
+    const minutes = this.effortPolicy.minutesToBurn(calories as Kilocalories, userWeight as Kilograms, activityMET);
 
     return EffortItem.of(
       activity.getKey(),

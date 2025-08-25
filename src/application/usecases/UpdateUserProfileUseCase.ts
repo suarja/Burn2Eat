@@ -24,6 +24,7 @@ export class UpdateUserProfileUseCase {
 
       // Find the existing profile
       const existingProfile = await this.userRepository.findById(userId);
+
       if (!existingProfile) {
         return {
           success: false,
@@ -32,6 +33,7 @@ export class UpdateUserProfileUseCase {
         };
       }
 
+
       // Update the profile with new data
       const updatedProfile = existingProfile.withProfileData(
         input.sex,
@@ -39,6 +41,7 @@ export class UpdateUserProfileUseCase {
         input.height as Centimeters,
         input.preferredActivityKeys
       );
+
 
       // Save the updated profile
       const savedProfile = await this.userRepository.save(updatedProfile);

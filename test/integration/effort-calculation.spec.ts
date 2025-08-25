@@ -46,8 +46,6 @@ describe('Effort Calculation Integration', () => {
         // Apply MET formula: minutes = calories / (MET * 3.5 * weightKg / 200)
         const calculatedMinutes = Math.round(calories / (activityMET * 3.5 * weightKg / 200));
         
-        console.log(`${name}: ${calories} kcal ÷ (${activityMET} MET × 3.5 × ${weightKg}kg ÷ 200) = ${calculatedMinutes} min`);
-        
         // Allow for ±2 minutes tolerance due to rounding
         expect(calculatedMinutes).toBeGreaterThanOrEqual(expectedMinutes - 2);
         expect(calculatedMinutes).toBeLessThanOrEqual(expectedMinutes + 2);
@@ -98,7 +96,6 @@ describe('Effort Calculation Integration', () => {
         
         const minutes = Math.round(calories / (met * 3.5 * weightKg / 200));
         
-        console.log(`${burger.getName()} (${calories} kcal) + ${jogging.getLabel()} (${met} MET) = ${minutes} minutes`);
         
         expect(minutes).toBeGreaterThan(0);
         expect(minutes).toBeLessThan(120); // Should be reasonable (< 2 hours)
@@ -127,7 +124,6 @@ describe('Effort Calculation Integration', () => {
           expect(minutes).toBeGreaterThan(0);
           expect(minutes).toBeLessThan(300); // Reasonable upper bound
           
-          console.log(`${food.getName()} → ${activity.getLabel()}: ${minutes} min`);
         }
       }
     });
@@ -204,7 +200,6 @@ describe('Effort Calculation Integration', () => {
         // Allow for ±10% tolerance due to individual variations
         const tolerance = expectedCaloriesBurned * 0.1;
         
-        console.log(`${name}: Expected ${expectedCaloriesBurned} kcal, calculated ${calculatedCalories} kcal`);
         
         expect(calculatedCalories).toBeGreaterThanOrEqual(expectedCaloriesBurned - tolerance);
         expect(calculatedCalories).toBeLessThanOrEqual(expectedCaloriesBurned + tolerance);

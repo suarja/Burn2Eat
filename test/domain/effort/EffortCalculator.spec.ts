@@ -9,6 +9,7 @@ import { DishId } from "../../../src/domain/nutrition/DishId";
 import { NutritionalInfo } from "../../../src/domain/nutrition/NutritionalInfo";
 import { UserHealthInfo } from "../../../src/domain/physiology/UserHealthInfo";
 import { Sex } from "../../../src/domain/physiology/Sex";
+import { Centimeters, Kilocalories, Kilograms, Minutes } from "../../../src/domain/common/UnitTypes";
 
 // Mock ActivityCatalog for testing
 class MockActivityCatalog implements ActivityCatalog {
@@ -57,9 +58,9 @@ class MockActivityCatalog implements ActivityCatalog {
 class MockEffortPolicy implements EffortPolicy {
   constructor(private readonly minutesPerCalorie: number = 0.5) {}
 
-  minutesToBurn(calories: number, userWeightKg: number, activityMET: number): number {
+  minutesToBurn(calories: Kilocalories, userWeightKg: Kilograms, activityMET: number): Minutes {
     // Simple mock calculation for predictable testing
-    return Math.max(1, Math.round(calories * this.minutesPerCalorie / activityMET));
+    return Math.max(1, Math.round(calories * this.minutesPerCalorie / activityMET)) as Minutes;
   }
 }
 
@@ -82,9 +83,9 @@ describe('EffortCalculator', () => {
       const dish = Dish.create({
         dishId: DishId.from("apple"),
         name: "Apple",
-        nutrition: NutritionalInfo.perServing(95)
+        nutrition: NutritionalInfo.perServing(95 as Kilocalories)
       });
-      const user = UserHealthInfo.create("unspecified" as Sex, 70, 170, ["walking", "jogging"]);
+      const user = UserHealthInfo.create("unspecified" as Sex, 70 as Kilograms, 170 as Centimeters, ["walking", "jogging"]);
       const request = EffortRequest.of(dish, user);
 
       // Act
@@ -103,9 +104,9 @@ describe('EffortCalculator', () => {
       const dish = Dish.create({
         dishId: DishId.from("burger"),
         name: "Burger",
-        nutrition: NutritionalInfo.perServing(540)
+        nutrition: NutritionalInfo.perServing(540 as Kilocalories)
       });
-      const user = UserHealthInfo.create("unspecified" as Sex, 70, 170, ["jogging", "walking"]); // jogging first
+      const user = UserHealthInfo.create("unspecified" as Sex, 70 as Kilograms, 170 as Centimeters, ["jogging", "walking"]); // jogging first
       const request = EffortRequest.of(dish, user);
 
       // Act
@@ -120,9 +121,9 @@ describe('EffortCalculator', () => {
       const dish = Dish.create({
         dishId: DishId.from("pizza"),
         name: "Pizza",
-        nutrition: NutritionalInfo.perServing(300)
+        nutrition: NutritionalInfo.perServing(300 as Kilocalories)
       });
-      const user = UserHealthInfo.create("unspecified" as Sex, 70, 170, ["unavailable_activity"]);
+      const user = UserHealthInfo.create("unspecified" as Sex, 70 as Kilograms, 170 as Centimeters, ["unavailable_activity"]);
       const request = EffortRequest.of(dish, user);
 
       // Act
@@ -138,9 +139,9 @@ describe('EffortCalculator', () => {
       const dish = Dish.create({
         dishId: DishId.from("chocolate"),
         name: "Chocolate",
-        nutrition: NutritionalInfo.perServing(200)
+        nutrition: NutritionalInfo.perServing(200 as Kilocalories)
       });
-      const user = UserHealthInfo.create("unspecified" as Sex, 70, 170, ["walking"]);
+      const user = UserHealthInfo.create("unspecified" as Sex, 70 as Kilograms, 170 as Centimeters, ["walking"]);
       const request = EffortRequest.of(dish, user);
 
       // Act
@@ -162,9 +163,9 @@ describe('EffortCalculator', () => {
       const dish = Dish.create({
         dishId: DishId.from("cake"),
         name: "Cake",
-        nutrition: NutritionalInfo.perServing(400)
+        nutrition: NutritionalInfo.perServing(400 as Kilocalories)
       });
-      const user = UserHealthInfo.create("unspecified" as Sex, 70, 170, ["walking"]);
+      const user = UserHealthInfo.create("unspecified" as Sex, 70 as Kilograms, 170 as Centimeters, ["walking"]);
       const request = EffortRequest.of(dish, user);
 
       // Act
@@ -190,9 +191,9 @@ describe('EffortCalculator', () => {
       const dish = Dish.create({
         dishId: DishId.from("food"),
         name: "Food",
-        nutrition: NutritionalInfo.perServing(100)
+        nutrition: NutritionalInfo.perServing(100 as Kilocalories)
       });
-      const user = UserHealthInfo.create("unspecified" as Sex, 70, 170, ["nonexistent"]);
+      const user = UserHealthInfo.create("unspecified" as Sex, 70 as Kilograms, 170 as Centimeters, ["nonexistent"]);
       const request = EffortRequest.of(dish, user);
 
       // Act & Assert
@@ -209,17 +210,17 @@ describe('EffortCalculator', () => {
           Dish.create({
             dishId: DishId.from("apple"),
             name: "Apple",
-            nutrition: NutritionalInfo.perServing(95)
+            nutrition: NutritionalInfo.perServing(95 as Kilocalories)
           }), 
-          UserHealthInfo.create("unspecified" as Sex, 70, 170, ["walking"])
+          UserHealthInfo.create("unspecified" as Sex, 70 as Kilograms, 170 as Centimeters, ["walking"])
         ),
         EffortRequest.of(
           Dish.create({
             dishId: DishId.from("burger"),
             name: "Burger",
-            nutrition: NutritionalInfo.perServing(540)
+            nutrition: NutritionalInfo.perServing(540 as Kilocalories)
           }), 
-          UserHealthInfo.create("unspecified" as Sex, 80, 170, ["jogging"])
+          UserHealthInfo.create("unspecified" as Sex, 80 as Kilograms, 170 as Centimeters, ["jogging"])
         )
       ];
 
@@ -240,9 +241,9 @@ describe('EffortCalculator', () => {
       const dish = Dish.create({
         dishId: DishId.from("snack"),
         name: "Snack",
-        nutrition: NutritionalInfo.perServing(150)
+        nutrition: NutritionalInfo.perServing(150 as Kilocalories)
       }); // Low calories for quick burn
-      const user = UserHealthInfo.create("unspecified" as Sex, 70, 170, ["walking"]);
+      const user = UserHealthInfo.create("unspecified" as Sex, 70 as Kilograms, 170 as Centimeters, ["walking"]);
       const request = EffortRequest.of(dish, user);
 
       // Act
@@ -260,9 +261,9 @@ describe('EffortCalculator', () => {
       const dish = Dish.create({
         dishId: DishId.from("large-meal"),
         name: "Large Meal",
-        nutrition: NutritionalInfo.perServing(1500)
+        nutrition: NutritionalInfo.perServing(1500 as Kilocalories)
       }); // Very high calories
-      const user = UserHealthInfo.create("unspecified" as Sex, 50, 170, ["walking"]); // Light person
+      const user = UserHealthInfo.create("unspecified" as Sex, 50 as Kilograms, 170 as Centimeters, ["walking"]); // Light person
       const request = EffortRequest.of(dish, user);
       const realCalculator = new EffortCalculator(mockCatalog, standardPolicy);
 
@@ -284,9 +285,9 @@ describe('EffortCalculator', () => {
       const dish = Dish.create({
         dishId: DishId.from("large-meal-2"),
         name: "Large Meal",
-        nutrition: NutritionalInfo.perServing(800)
+        nutrition: NutritionalInfo.perServing(800 as Kilocalories)
       });
-      const user = UserHealthInfo.create("unspecified" as Sex, 70, 170, ["walking"]);
+      const user = UserHealthInfo.create("unspecified" as Sex, 70 as Kilograms, 170 as Centimeters, ["walking"]);
       const request = EffortRequest.of(dish, user);
       const realCalculator = new EffortCalculator(mockCatalog, standardPolicy);
 
@@ -309,9 +310,9 @@ describe('EffortCalculator', () => {
       const dish = Dish.create({
         dishId: DishId.from("meal"),
         name: "Meal",
-        nutrition: NutritionalInfo.perServing(400)
+        nutrition: NutritionalInfo.perServing(400 as Kilocalories)
       });
-      const user = UserHealthInfo.create("unspecified" as Sex, 70, 170, ["walking"]);
+      const user = UserHealthInfo.create("unspecified" as Sex, 70 as Kilograms, 170 as Centimeters, ["walking"]);
       const request = EffortRequest.of(dish, user);
 
       // Act
@@ -337,9 +338,9 @@ describe('EffortCalculator', () => {
       const dish = Dish.create({
         dishId: DishId.from("food-2"),
         name: "Food",
-        nutrition: NutritionalInfo.perServing(300)
+        nutrition: NutritionalInfo.perServing(300 as Kilocalories)
       });
-      const user = UserHealthInfo.create("unspecified" as Sex, 70, 170, ["walking"]);
+      const user = UserHealthInfo.create("unspecified" as Sex, 70 as Kilograms, 170 as Centimeters, ["walking"]);
       const request = EffortRequest.of(dish, user);
       
       const conservativePolicy = new MockEffortPolicy(1.0); // More time required
@@ -361,9 +362,9 @@ describe('EffortCalculator', () => {
       const burger = Dish.create({
         dishId: DishId.from("burger-2"),
         name: "Burger",
-        nutrition: NutritionalInfo.perServing(540)
+        nutrition: NutritionalInfo.perServing(540 as Kilocalories)
       });
-      const user = UserHealthInfo.create("unspecified" as Sex, 70, 170, ["jogging"]);
+      const user = UserHealthInfo.create("unspecified" as Sex, 70 as Kilograms, 170 as Centimeters, ["jogging"]);
       const request = EffortRequest.of(burger, user);
 
       // Act
@@ -386,11 +387,11 @@ describe('EffortCalculator', () => {
       const dish = Dish.create({
         dishId: DishId.from("snack-2"),
         name: "Snack",
-        nutrition: NutritionalInfo.perServing(200)
+        nutrition: NutritionalInfo.perServing(200 as Kilocalories)
       });
       
-      const walkingUser = UserHealthInfo.create("unspecified" as Sex, 70, 170, ["walking"]); // 3.5 MET
-      const runningUser = UserHealthInfo.create("unspecified" as Sex, 70, 170, ["running"]); // 9.8 MET
+      const walkingUser = UserHealthInfo.create("unspecified" as Sex, 70 as Kilograms, 170 as Centimeters, ["walking"]); // 3.5 MET
+      const runningUser = UserHealthInfo.create("unspecified" as Sex, 70 as Kilograms, 170 as Centimeters, ["running"]); // 9.8 MET
       
       const walkingRequest = EffortRequest.of(dish, walkingUser);
       const runningRequest = EffortRequest.of(dish, runningUser);
@@ -411,9 +412,9 @@ describe('EffortCalculator', () => {
       const dish = Dish.create({
         dishId: DishId.from("celery"),
         name: "Celery",
-        nutrition: NutritionalInfo.perServing(10)
+        nutrition: NutritionalInfo.perServing(10 as Kilocalories)
       });
-      const user = UserHealthInfo.create("unspecified" as Sex, 70, 170, ["walking"]);
+      const user = UserHealthInfo.create("unspecified" as Sex, 70 as Kilograms, 170 as Centimeters, ["walking"]);
       const request = EffortRequest.of(dish, user);
 
       // Act
@@ -428,9 +429,9 @@ describe('EffortCalculator', () => {
       const dish = Dish.create({
         dishId: DishId.from("feast"),
         name: "Feast",
-        nutrition: NutritionalInfo.perServing(2000)
+        nutrition: NutritionalInfo.perServing(2000 as Kilocalories)
       });
-      const user = UserHealthInfo.create("unspecified" as Sex, 70, 170, ["walking"]);
+      const user = UserHealthInfo.create("unspecified" as Sex, 70 as Kilograms, 170 as Centimeters, ["walking"]);
       const request = EffortRequest.of(dish, user);
 
       // Act
@@ -446,9 +447,9 @@ describe('EffortCalculator', () => {
       const dish = Dish.create({
         dishId: DishId.from("food-3"),
         name: "Food",
-        nutrition: NutritionalInfo.perServing(200)
+        nutrition: NutritionalInfo.perServing(200 as Kilocalories)
       });
-      const user = UserHealthInfo.create("unspecified" as Sex, 70, 170, []); // No preferences
+      const user = UserHealthInfo.create("unspecified" as Sex, 70 as Kilograms, 170 as Centimeters, []); // No preferences
       const request = EffortRequest.of(dish, user);
 
       // Act
