@@ -125,12 +125,19 @@ export const iconRegistry = {
   ladybug: require("@assets/icons/ladybug.png"),
   lock: require("@assets/icons/lock.png"),
   menu: require("@assets/icons/menu.png"),
+  // NumberStepper icons
+  minus: require("@assets/icons/x.png"), // Temporary: using X icon as minus placeholder
   more: require("@assets/icons/more.png"),
   pin: require("@assets/icons/demo/pin.png"), // @demo remove-current-line
+  // NumberStepper icons  
+  plus: require("@assets/icons/more.png"), // Temporary: using more icon as plus placeholder
   podcast: require("@assets/icons/demo/podcast.png"), // @demo remove-current-line
   settings: require("@assets/icons/settings.png"),
   slack: require("@assets/icons/demo/slack.png"), // @demo remove-current-line
   view: require("@assets/icons/view.png"),
+  // WeightHeight specific icons - using existing icons as placeholders
+  weight: require("@assets/icons/settings.png"), // Temporary: using settings icon as weight placeholder
+  height: require("@assets/icons/caretRight.png"), // Temporary: using caret as height placeholder
   x: require("@assets/icons/x.png"),
 }
 
