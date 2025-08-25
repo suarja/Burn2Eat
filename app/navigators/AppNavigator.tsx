@@ -19,6 +19,7 @@ import { WelcomeScreen } from "@/screens/WelcomeScreen"
 import { ProfileSetupScreen } from "@/screens/ProfileSetupScreen"
 import { HomeScreen } from "@/screens/HomeScreen"
 import { ResultScreen } from "@/screens/ResultScreen"
+import { MainTabNavigator, MainTabParamList } from "./MainTabNavigator"
 import { useAppTheme } from "@/theme/context"
 
 import { DemoNavigator, DemoTabParamList } from "./DemoNavigator" // @demo remove-current-line
@@ -38,8 +39,8 @@ export type AppStackParamList = {
   Login: undefined // @demo remove-current-line
   Demo: NavigatorScreenParams<DemoTabParamList> // @demo remove-current-line
   // 🔥 Burn2Eat screens
-  ProfileSetup: undefined
-  Home: undefined
+  MainTabs: NavigatorScreenParams<MainTabParamList>
+  ProfileTab: undefined
   Result: { foodId: string }
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
@@ -83,8 +84,8 @@ const AppStack = () => {
           {/* @demo remove-block-end */}
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
           {/* Burn2Eat screens */}
-          <Stack.Screen name="ProfileSetup" component={ProfileSetupScreen} />
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="MainTabs" component={MainTabNavigator} />
+          <Stack.Screen name="ProfileTab" component={ProfileSetupScreen} />
           <Stack.Screen name="Result" component={ResultScreen} />
           {/* @demo remove-block-start */}
           <Stack.Screen name="Demo" component={DemoNavigator} />

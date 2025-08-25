@@ -5,14 +5,14 @@ import { Button } from "@/components/Button"
 import { Header } from "@/components/Header"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
-import { WeightHeightSelector } from "@/components/WeightHeightSelector"
+import { WeightHeightSelector, WeightHeightWheelSelector } from "@/components/NumberComponents"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
 import type { ThemedStyle } from "@/theme/types"
 import { useAppTheme } from "@/theme/context"
 import { useSafeAreaInsetsStyle } from "@/utils/useSafeAreaInsetsStyle"
 import { typography } from "@/theme/typography"
 
-interface ProfileSetupScreenProps extends AppStackScreenProps<"ProfileSetup"> {}
+interface ProfileSetupScreenProps extends AppStackScreenProps<"ProfileTab"> {}
 
 export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileSetupScreen(
   props,
@@ -23,20 +23,20 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
   // Temporary state - later will use domain entities
   const [weight, setWeight] = React.useState(75)
   const [height, setHeight] = React.useState(175)
+  const [useWheelPicker, setUseWheelPicker] = React.useState(true) // Toggle between picker types
 
   const handleSave = () => {
     // TODO: Save profile using CreateUserProfileUseCase
     console.log("Saving profile:", { weight, height })
     
-    // Navigate to Home screen
-    navigation.navigate("Home")
+    // Navigate to Main Tabs (Home)
+    navigation.navigate("MainTabs", { screen: "HomeTab" })
   }
 
   const handleBack = () => {
     navigation.goBack()
   }
 
-  const $topInsets = useSafeAreaInsetsStyle(["top"])
 
   return (
     <Screen preset="scroll" style={themed($screenContainer)}>
@@ -44,7 +44,6 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
         title="📋 Ton profil"
         leftIcon="back"
         onLeftPress={handleBack}
-        style={$topInsets}
       />
       
       <View style={themed($contentContainer)}>
@@ -52,13 +51,32 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
           Quelques infos pour personnaliser tes calculs !
         </Text>
 
-        <WeightHeightSelector
-          weight={weight}
-          height={height}
-          onWeightChange={(newWeight) => setWeight(newWeight)}
-          onHeightChange={(newHeight) => setHeight(newHeight)}
-          style={themed($selectorContainer)}
-        />
+        {/* Toggle between picker types
+        <Button
+          preset="default"
+          style={themed($toggleButton)}
+          onPress={() => setUseWheelPicker(!useWheelPicker)}
+        >
+          {useWheelPicker ? "Utiliser steppers" : "Utiliser roue"}
+        </Button> */}
+
+        {useWheelPicker ? (
+          <WeightHeightWheelSelector
+            weight={weight}
+            height={height}
+            onWeightChange={(newWeight) => setWeight(newWeight)}
+            onHeightChange={(newHeight) => setHeight(newHeight)}
+            style={themed($selectorContainer)}
+          />
+        ) : (
+          <WeightHeightSelector
+            weight={weight}
+            height={height}
+            onWeightChange={(newWeight) => setWeight(newWeight)}
+            onHeightChange={(newHeight) => setHeight(newHeight)}
+            style={themed($selectorContainer)}
+          />
+        )}
 
         {/* Placeholder for activity selection */}
         <Text preset="formLabel" style={themed($sectionLabel)}>
@@ -99,7 +117,6 @@ const $welcomeText: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
 })
 
 const $selectorContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginVertical: spacing.lg,
 })
 
 const $sectionLabel: ThemedStyle<TextStyle> = ({ spacing }) => ({
@@ -120,6 +137,12 @@ const $placeholderText: ThemedStyle<ViewStyle> = ({ colors }) => ({
 })
 
 
+
+const $toggleButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  marginVertical: spacing.md,
+  backgroundColor: colors.palette.neutral300,
+  alignSelf: "center",
+})
 
 const $saveButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   marginTop: spacing.xl,

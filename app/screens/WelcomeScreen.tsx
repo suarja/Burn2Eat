@@ -19,17 +19,17 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(
   const { navigation } = _props
 
   function handleStartOnboarding() {
-    navigation.navigate("ProfileSetup")
+    navigation.navigate("ProfileTab")
   }
 
   function handleGuestMode() {
     // Navigate directly to Home with default profile
-    navigation.navigate("Home")
+    navigation.navigate("MainTabs", { screen: "HomeTab" })
   }
 
   function handleCreateProfile() {
     // Same as start onboarding - go to profile setup
-    navigation.navigate("ProfileSetup")
+    navigation.navigate("ProfileTab")
   }
 
   const $bottomContainerInsets = useSafeAreaInsetsStyle(["bottom"])

@@ -6,11 +6,12 @@ import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import { TextField } from "@/components/TextField"
 import { Icon } from "@/components/Icon"
-import type { AppStackScreenProps } from "@/navigators/AppNavigator"
+import type { MainTabScreenProps } from "@/navigators/MainTabNavigator"
 import type { ThemedStyle } from "@/theme/types"
 import { useAppTheme } from "@/theme/context"
+import { $styles } from "@/theme/styles"
 
-interface HomeScreenProps extends AppStackScreenProps<"Home"> {}
+interface HomeScreenProps extends MainTabScreenProps<"HomeTab"> {}
 
 export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
   const { navigation } = props
@@ -21,6 +22,7 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
   const handleFoodSelect = (foodName: string) => {
     // TODO: Navigate to ResultScreen with food data
     console.log("Selected food:", foodName)
+    // @ts-ignore - Navigation types complex with nested navigators
     navigation.navigate("Result", { foodId: foodName.toLowerCase() })
   }
 
@@ -36,21 +38,23 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
 
   return (
     <Screen preset="scroll" style={themed($screenContainer)}>
-      <View style={themed($contentContainer)}>
+      <View style={themed($styles.container)}>
         {/* Search Field */}
-        <TextField
-          value={searchText}
-          onChangeText={setSearchText}
-          placeholder="Rechercher un plat..."
-          RightAccessory={() => (
-            <Icon 
-              icon="view" 
-              size={20}
-              containerStyle={themed($searchIcon)}
-            />
-          )}
-          style={themed($searchField)}
-        />
+        <View style={themed($searchContainer)}>
+          <Icon 
+            icon="view" 
+            size={20}
+            containerStyle={themed($searchIcon)}
+          />
+          <TextField
+            value={searchText}
+            onChangeText={setSearchText}
+            placeholder="Rechercher un plat..."
+            containerStyle={themed($searchFieldContainer)}
+            inputWrapperStyle={themed($searchInputWrapper)}
+            style={themed($searchInput)}
+          />
+        </View>
 
         {/* Popular Foods Section */}
         <Text preset="bold" style={themed($sectionTitle)}>
@@ -95,16 +99,39 @@ const $screenContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
   backgroundColor: colors.background,
 })
 
-const $contentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  padding: spacing.lg,
-})
 
-const $searchField: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+
+const $searchContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  flexDirection: "row",
+  alignItems: "center",
+  backgroundColor: colors.palette.neutral200,
+  borderRadius: 12,
+  marginTop: spacing.xxl,
+  paddingHorizontal: spacing.md,
   marginBottom: spacing.xl,
+  height: 50,
 })
 
-const $searchIcon: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+const $searchIcon: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   marginRight: spacing.sm,
+})
+
+const $searchFieldContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  flex: 1,
+  marginVertical: 0,
+})
+
+const $searchInputWrapper: ThemedStyle<ViewStyle> = ({ colors }) => ({
+  backgroundColor: "transparent",
+  borderWidth: 0,
+  minHeight: 40,
+})
+
+const $searchInput: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
+  fontSize: 16,
+  fontFamily: typography.primary.normal,
+  color: colors.text,
+  paddingVertical: 0,
 })
 
 const $sectionTitle: ThemedStyle<ViewStyle> = ({ spacing }) => ({

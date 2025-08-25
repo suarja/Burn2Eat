@@ -133,49 +133,34 @@ export const NumberStepper: React.FC<NumberStepperProps> = ({
         </Text>
       )}
       <View style={themed($stepperContainer)}>
+        {/* Minus Button */}
         <Button
           style={[themed($button), buttonStyle]}
+          textStyle={themed($buttonText)}
           disabled={!canDecrement}
           onPress={handleDecrement}
           preset="default"
-          LeftAccessory={() => (
-            <Icon 
-              icon="minus" 
-              size={16}
-            />
-          )}
-        />
+        >
+          -
+        </Button>
         
-        <View style={themed($inputContainer)}>
-          <TextField
-            style={[themed($input), inputStyle]}
-            value={inputValue}
-            onChangeText={handleInputChange}
-            onBlur={handleInputBlur}
-            keyboardType="numeric"
-            textAlign="center"
-            editable={!disabled}
-            status={disabled ? "disabled" : undefined}
-          />
-          {suffix && (
-            <Text style={themed($suffix)}>
-              {suffix}
-            </Text>
-          )}
+        {/* Value Display */}
+        <View style={themed($valueContainer)}>
+          <Text style={themed($valueText)}>
+            {value}{suffix}
+          </Text>
         </View>
         
+        {/* Plus Button */}
         <Button
           style={[themed($button), buttonStyle]}
+          textStyle={themed($buttonText)}
           disabled={!canIncrement}
           onPress={handleIncrement}
           preset="default"
-          LeftAccessory={() => (
-            <Icon 
-              icon="plus" 
-              size={16}
-            />
-          )}
-        />
+        >
+          +
+        </Button>
       </View>
     </View>
   )
@@ -189,40 +174,43 @@ const $label: ThemedStyle<TextStyle> = ({ spacing }) => ({
   marginBottom: spacing.xxs,
 })
 
-const $stepperContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+const $stepperContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   flexDirection: "row",
   alignItems: "center",
-  justifyContent: "center",
+  justifyContent: "space-between",
+  backgroundColor: colors.palette.neutral200,
+  borderRadius: 12,
+  padding: spacing.xs,
 })
 
 const $button: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  minHeight: 44,
-  minWidth: 44,
-  paddingHorizontal: spacing.sm,
-  marginHorizontal: spacing.xxs,
-  borderRadius: 8,
+  width: 40,
+  height: 40,
+  borderRadius: 20,
   justifyContent: "center",
   alignItems: "center",
+  backgroundColor: colors.palette.primary500,
 })
 
+const $buttonText: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
+  fontSize: 18,
+  fontFamily: typography.primary.bold,
+  color: colors.palette.neutral100,
+})
 
-const $inputContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+const $valueContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   flex: 1,
-  flexDirection: "row",
   alignItems: "center",
-  marginHorizontal: spacing.xs,
+  justifyContent: "center",
+  marginHorizontal: spacing.sm,
+  paddingVertical: spacing.sm,
+  backgroundColor: colors.background,
+  borderRadius: 8,
 })
 
-const $input: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
-  textAlign: "center",
-  fontSize: 16,
-  fontFamily: typography.primary.medium,
+const $valueText: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
+  fontSize: 18,
+  fontFamily: typography.primary.bold,
   color: colors.text,
-})
-
-const $suffix: ThemedStyle<TextStyle> = ({ spacing, colors, typography }) => ({
-  marginLeft: spacing.xxs,
-  fontSize: 14,
-  fontFamily: typography.primary.normal,
-  color: colors.textDim,
+  textAlign: "center",
 })
