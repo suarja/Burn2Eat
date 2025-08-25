@@ -6,13 +6,13 @@ import { Header } from "@/components/Header"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import { WeightHeightSelector, WeightHeightWheelSelector } from "@/components/NumberComponents"
+import { ActivitySelector } from "@/components/ActivitySelector"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
 import type { ThemedStyle } from "@/theme/types"
 import { useAppTheme } from "@/theme/context"
-import { useSafeAreaInsetsStyle } from "@/utils/useSafeAreaInsetsStyle"
-import { typography } from "@/theme/typography"
+import { UserProfileService } from "@/services/UserProfileService"
 
-interface ProfileSetupScreenProps extends AppStackScreenProps<"ProfileTab"> {}
+interface ProfileSetupScreenProps extends AppStackScreenProps<"Profile"> {}
 
 export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileSetupScreen(
   props,
@@ -20,22 +20,64 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
   const { navigation } = props
   const { themed } = useAppTheme()
   
-  // Temporary state - later will use domain entities
+  // State with persistence support
   const [weight, setWeight] = React.useState(75)
   const [height, setHeight] = React.useState(175)
   const [useWheelPicker, setUseWheelPicker] = React.useState(true) // Toggle between picker types
+  const [selectedActivity, setSelectedActivity] = React.useState<string | null>("jogging") // Default activity
+  const [loading, setLoading] = React.useState(false)
+  const [isInitialLoad, setIsInitialLoad] = React.useState(true)
 
-  const handleSave = () => {
-    // TODO: Save profile using CreateUserProfileUseCase
-    console.log("Saving profile:", { weight, height })
+  const handleSave = async () => {
+    if (!selectedActivity) return
     
-    // Navigate to Main Tabs (Home)
-    navigation.navigate("MainTabs", { screen: "HomeTab" })
+    setLoading(true)
+    try {
+      await UserProfileService.saveProfile({
+        weight,
+        height,
+        preferredActivityKey: selectedActivity,
+      })
+      
+      // Navigate to Main Tabs (Home)
+      navigation.navigate("MainTabs", { screen: "Home" })
+    } catch (error) {
+      console.error("Failed to save profile:", error)
+      // TODO: Show error toast/alert
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleBack = () => {
     navigation.goBack()
   }
+
+  // Load existing profile on mount
+  React.useEffect(() => {
+    const loadProfile = async () => {
+      console.log("🚀 ProfileSetupScreen: Starting to load profile...")
+      try {
+        const existingProfile = await UserProfileService.getProfile()
+        console.log("📋 ProfileSetupScreen: Loaded profile:", existingProfile)
+        
+        if (existingProfile) {
+          console.log("✨ ProfileSetupScreen: Setting state from loaded profile")
+          setWeight(existingProfile.weight)
+          setHeight(existingProfile.height)
+          setSelectedActivity(existingProfile.preferredActivityKey)
+        } else {
+          console.log("🆕 ProfileSetupScreen: No existing profile, using defaults")
+        }
+      } catch (error) {
+        console.warn("❌ ProfileSetupScreen: Failed to load existing profile:", error)
+      } finally {
+        setIsInitialLoad(false)
+      }
+    }
+
+    loadProfile()
+  }, [])
 
 
   return (
@@ -50,6 +92,13 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
         <Text preset="subheading" style={themed($welcomeText)}>
           Quelques infos pour personnaliser tes calculs !
         </Text>
+
+        {/* Debug info */}
+        {isInitialLoad && (
+          <Text style={themed($debugText)}>
+            Chargement du profil...
+          </Text>
+        )}
 
         {/* Toggle between picker types
         <Button
@@ -78,24 +127,19 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
           />
         )}
 
-        {/* Placeholder for activity selection */}
-        <Text preset="formLabel" style={themed($sectionLabel)}>
-          Activité préférée:
-        </Text>
-        
-        <View style={themed($activityContainer)}>
-          <Text style={themed($placeholderText)}>
-            🏃‍♂️ Course (sélectionnée par défaut)
-          </Text>
-        
-        </View>
+        {/* Activity Selection */}
+        <ActivitySelector
+          selectedActivity={selectedActivity}
+          onActivitySelect={setSelectedActivity}
+        />
 
         <Button
           preset="filled"
           style={themed($saveButton)}
           onPress={handleSave}
+          disabled={loading || !selectedActivity}
         >
-          Sauvegarder ✅
+          {loading ? "Sauvegarde..." : "Sauvegarder ✅"}
         </Button>
       </View>
     </Screen>
@@ -142,6 +186,13 @@ const $toggleButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   marginVertical: spacing.md,
   backgroundColor: colors.palette.neutral300,
   alignSelf: "center",
+})
+
+const $debugText: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  textAlign: "center",
+  color: colors.textDim,
+  fontSize: 12,
+  marginBottom: spacing.md,
 })
 
 const $saveButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({

@@ -10,31 +10,33 @@ import type { MainTabScreenProps } from "@/navigators/MainTabNavigator"
 import type { ThemedStyle } from "@/theme/types"
 import { useAppTheme } from "@/theme/context"
 import { $styles } from "@/theme/styles"
+import { FoodDataService, type FoodItem } from "@/services/FoodDataService"
 
-interface HomeScreenProps extends MainTabScreenProps<"HomeTab"> {}
+interface HomeScreenProps extends MainTabScreenProps<"Home"> {}
 
 export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
   const { navigation } = props
   const { themed } = useAppTheme()
   
   const [searchText, setSearchText] = React.useState("")
+  const [searchResults, setSearchResults] = React.useState<FoodItem[]>([])
+  const [popularFoods] = React.useState(() => FoodDataService.getAllFoods())
 
-  const handleFoodSelect = (foodName: string) => {
-    // TODO: Navigate to ResultScreen with food data
-    console.log("Selected food:", foodName)
+  const handleFoodSelect = (food: FoodItem) => {
+    console.log("Selected food:", food.name)
     // @ts-ignore - Navigation types complex with nested navigators
-    navigation.navigate("Result", { foodId: foodName.toLowerCase() })
+    navigation.navigate("Result", { foodId: food.id })
   }
 
-  // Popular foods data (temporary - later from StaticDishRepository)
-  const popularFoods = [
-    { name: "Pizza", emoji: "🍕", calories: 450 },
-    { name: "Burger", emoji: "🍔", calories: 540 },
-    { name: "Frites", emoji: "🍟", calories: 365 },
-    { name: "Soda", emoji: "🥤", calories: 150 },
-    { name: "Glace", emoji: "🍦", calories: 280 },
-    { name: "Salade", emoji: "🥗", calories: 120 },
-  ]
+  // Handle search input
+  React.useEffect(() => {
+    if (searchText.trim().length >= 2) {
+      const results = FoodDataService.searchFoods(searchText)
+      setSearchResults(results)
+    } else {
+      setSearchResults([])
+    }
+  }, [searchText])
 
   return (
     <Screen preset="scroll" style={themed($screenContainer)}>
@@ -56,18 +58,18 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
           />
         </View>
 
-        {/* Popular Foods Section */}
+        {/* Dynamic Foods Section */}
         <Text preset="bold" style={themed($sectionTitle)}>
-          Populaires:
+          {searchResults.length > 0 ? `Résultats (${searchResults.length})` : 'Populaires:'}
         </Text>
 
         <View style={themed($foodGrid)}>
-          {popularFoods.map((food, index) => (
+          {(searchResults.length > 0 ? searchResults : popularFoods).map((food, index) => (
             <Button
-              key={index}
+              key={food.id}
               preset="default"
               style={themed($foodCard)}
-              onPress={() => handleFoodSelect(food.name)}
+              onPress={() => handleFoodSelect(food)}
             >
               <View style={themed($foodCardContent)}>
                 <Text style={themed($foodEmoji)}>{food.emoji}</Text>
@@ -87,8 +89,14 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
           Scanner code-barre 📷
         </Button>
 
+        {searchResults.length === 0 && searchText.trim().length >= 2 && (
+          <Text style={themed($noResultsText)}>
+            Aucun résultat pour "{searchText}"
+          </Text>
+        )}
+        
         <Text style={themed($comingSoon)}>
-          Recherche et scanner à venir dans les prochaines versions...
+          Scanner code-barre à venir dans les prochaines versions...
         </Text>
       </View>
     </Screen>
@@ -185,4 +193,12 @@ const $comingSoon: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
   fontSize: 12,
   fontStyle: "italic",
   marginTop: spacing.md,
+})
+
+const $noResultsText: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
+  textAlign: "center",
+  color: colors.textDim,
+  fontSize: 14,
+  marginTop: spacing.lg,
+  marginBottom: spacing.md,
 })

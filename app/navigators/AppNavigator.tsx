@@ -40,7 +40,8 @@ export type AppStackParamList = {
   Demo: NavigatorScreenParams<DemoTabParamList> // @demo remove-current-line
   // 🔥 Burn2Eat screens
   MainTabs: NavigatorScreenParams<MainTabParamList>
-  ProfileTab: undefined
+  Profile: undefined
+  Home: undefined
   Result: { foodId: string }
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
@@ -79,22 +80,23 @@ const AppStack = () => {
       initialRouteName={isAuthenticated ? "Welcome" : "Login"} // @demo remove-current-line
     >
       {/* @demo remove-block-start */}
-      {isAuthenticated ? (
+      {/* {isAuthenticated ? ( */}
         <>
           {/* @demo remove-block-end */}
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
           {/* Burn2Eat screens */}
           <Stack.Screen name="MainTabs" component={MainTabNavigator} />
-          <Stack.Screen name="ProfileTab" component={ProfileSetupScreen} />
           <Stack.Screen name="Result" component={ResultScreen} />
+          <Stack.Screen name="Profile" component={ProfileSetupScreen} />
+          <Stack.Screen name="Home" component={HomeScreen} />
           {/* @demo remove-block-start */}
           <Stack.Screen name="Demo" component={DemoNavigator} />
         </>
-      ) : (
+      {/* ) : (
         <>
           <Stack.Screen name="Login" component={LoginScreen} />
         </>
-      )}
+      )} */}
       {/* @demo remove-block-end */}
       {/** 🔥 Your screens go here */}
       {/* IGNITE_GENERATOR_ANCHOR_APP_STACK_SCREENS */}

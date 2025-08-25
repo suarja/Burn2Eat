@@ -111,9 +111,6 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
 
   return (
     <View style={[themed($container), { height }, style]}>
-      {/* Selection indicator */}
-      <View style={themed($selectionIndicator)} />
-      
       <ScrollView
         ref={scrollViewRef}
         style={themed($scrollView)}
@@ -123,6 +120,8 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
         decelerationRate="fast"
         onMomentumScrollEnd={handleScroll}
         scrollEnabled={!disabled}
+        bounces={false}
+        overScrollMode="never"
       >
         {displayValues.map((val, index) => {
           const isSelected = val === value
@@ -156,18 +155,6 @@ const $container: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   overflow: "hidden",
 })
 
-const $selectionIndicator: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
-  position: "absolute",
-  top: "50%",
-  left: spacing.sm,
-  right: spacing.sm,
-  height: ITEM_HEIGHT,
-  marginTop: -ITEM_HEIGHT / 2,
-  backgroundColor: colors.palette.accent200,
-  borderRadius: 8,
-  zIndex: 1,
-  opacity: 0.3,
-})
 
 const $scrollView: ThemedStyle<ViewStyle> = ({}) => ({
   flex: 1,

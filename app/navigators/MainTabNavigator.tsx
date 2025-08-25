@@ -11,10 +11,12 @@ import type { ThemedStyle } from "@/theme/types"
 import { useAppTheme } from "@/theme/context"
 
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
+import { DemoDebugScreen } from "@/screens/DemoDebugScreen"
 
 export type MainTabParamList = {
-  HomeTab: undefined
-  ProfileTab: undefined
+  Home: undefined
+  Profile: undefined
+  DebugTab: undefined
   // HistoryTab: undefined // Will add later
 }
 
@@ -54,7 +56,7 @@ export function MainTabNavigator() {
       }}
     >
       <Tab.Screen
-        name="HomeTab"
+        name="Home"
         component={HomeScreen}
         options={{
           tabBarLabel: "Accueil",
@@ -69,7 +71,7 @@ export function MainTabNavigator() {
       />
       
       <Tab.Screen
-        name="ProfileTab"
+        name="Profile"
         component={ProfileSetupScreen}
         options={{
           tabBarLabel: "Profil",
@@ -83,10 +85,9 @@ export function MainTabNavigator() {
         }}
       />
       
-      {/* Future tabs
       <Tab.Screen
-        name="HistoryTab"
-        component={HistoryScreen}
+        name="DebugTab"
+        component={DemoDebugScreen}
         options={{
           tabBarLabel: "Historique",
           tabBarIcon: ({ focused }) => (
@@ -98,7 +99,7 @@ export function MainTabNavigator() {
           ),
         }}
       />
-      */}
+     
     </Tab.Navigator>
   )
 }
