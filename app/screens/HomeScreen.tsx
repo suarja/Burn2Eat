@@ -47,7 +47,7 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
   return (
     <Screen preset="fixed" safeAreaEdges={["top"]} style={themed($screenContainer)}>
       <FlatList<Dish>
-        contentContainerStyle={themed([ $listContentContainer])}
+        contentContainerStyle={themed([$listContentContainer])}
         data={displayData}
         numColumns={2}
         keyExtractor={(item) => item.getId().toString()}
