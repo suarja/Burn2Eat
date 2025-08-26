@@ -5,6 +5,7 @@ import { Button } from "@/components/Button"
 import { Header } from "@/components/Header"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
+import { Card } from "@/components/Card"
 import { WeightHeightSelector, WeightHeightWheelSelector } from "@/components/NumberComponents"
 import { ActivityWheelPicker } from "@/components/ActivityWheelPicker"
 import { useUserProfile } from "@/hooks/useUserProfile"
@@ -39,7 +40,16 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
 
 
   const handleSave = async () => {
-    if (!selectedActivity) return
+    if (!selectedActivity) {
+      Toast.warn(
+        "⚠️ Sélectionne ton sport préféré !",
+        'bottom',
+        'warning',
+        'Ionicons',
+        false
+      )
+      return
+    }
     
     try {
       const result = await createProfile({
@@ -50,14 +60,37 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
       })
       
       if (result.success && result.userProfile) {
-        Toast.error('Center toast', 'center')
+        Toast.success(
+          "🎉 Profil sauvegardé avec succès !",
+          'bottom',
+          'checkmark-circle',
+          'Ionicons',
+          false
+        )
+        
+        // Navigate to home after a delay
+        setTimeout(() => {
+          navigation.navigate("MainTabs", { screen: "Home" })
+        }, 2000)
       } else {
         console.error("❌ ProfileSetupScreen: Failed to save profile via DDD:", result.error)
-        // TODO: Show error toast/alert with result.error
+        Toast.error(
+          "❌ Erreur lors de la sauvegarde",
+          'bottom',
+          'close-circle',
+          'Ionicons',
+          false
+        )
       }
     } catch (error) {
       console.error("💥 ProfileSetupScreen: Exception during save:", error)
-      // TODO: Show error toast/alert
+      Toast.error(
+        "💥 Une erreur est survenue",
+        'bottom',
+        'alert-circle',
+        'Ionicons',
+        false
+      )
     }
   }
 
@@ -79,10 +112,23 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
           if (primaryActivity) {
             setSelectedActivity(primaryActivity)
           }
-          Toast.success('Top toast', 'top') // default
           
+          Toast.info(
+            `👋 Salut ! Profil récupéré`,
+            'top',
+            'person-circle',
+            'Ionicons',
+            false
+          )
         } else {
           console.log("🆕 ProfileSetupScreen: No existing profile via DDD, using defaults")
+          Toast.info(
+            `🆕 Créons ton profil !`,
+            'top',
+            'add-circle',
+            'Ionicons',
+            false
+          )
         }
       } catch (error) {
         console.warn("❌ ProfileSetupScreen: Failed to load existing profile via DDD:", error)
@@ -98,75 +144,101 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
   return (
     <Screen preset="scroll" style={themed($screenContainer)}>
       <Header 
-        title="📋 Ton profil"
+        title="🏋️ Configuration"
         leftIcon="back"
         onLeftPress={handleBack}
       />
       
       <View style={themed($contentContainer)}>
+        {/* Welcome Message */}
+        <Card
+          style={themed($welcomeCard)}
+          heading="👋 Salut !"
+          content="Configure ton profil pour des calculs d'effort personnalisés"
+          footer="Quelques infos rapides..."
+        />
+
         {error && (
-          <Text style={themed($errorText)}>
-            ❌ Erreur: {error}
-          </Text>
-        )}
-
-        {/* Toggle between picker types
-        <Button
-          preset="default"
-          style={themed($toggleButton)}
-          onPress={() => setUseWheelPicker(!useWheelPicker)}
-        >
-          {useWheelPicker ? "Utiliser steppers" : "Utiliser roue"}
-        </Button> */}
-
-        {useWheelPicker ? (
-          // Ne render le WheelPicker qu'après le chargement initial pour éviter les race conditions
-          !isInitialLoad ? (
-            <WeightHeightWheelSelector
-              weight={weight}
-              height={height}
-              onWeightChange={handleWeightChange}
-              onHeightChange={handleHeightChange}
-              style={themed($selectorContainer)}
-            />
-          ) : (
-            <Text style={themed($debugText)}>
-              Chargement des wheel pickers...
-            </Text>
-          )
-        ) : (
-          <WeightHeightSelector
-            weight={weight}
-            height={height}
-            onWeightChange={handleWeightChange}
-            onHeightChange={handleHeightChange}
-            style={themed($selectorContainer)}
+          <Card
+            style={themed($errorCard)}
+            preset="reversed"
+            heading="❌ Erreur"
+            content={error}
           />
         )}
 
-        {/* Activity Selection */}
-        {!isInitialLoad ? (
-          <ActivityWheelPicker
-            selectedActivity={selectedActivity}
-            onActivitySelect={(activityKey) => {
-              setSelectedActivity(activityKey)
-            }}
-            height={180}
-          />
-        ) : (
-          <Text style={themed($debugText)}>
-            Chargement de l'activité...
-          </Text>
-        )}
+        {/* Physical Stats Card */}
+        <Card
+          style={themed($physicalCard)}
+          heading="📏 Tes mesures"
+          footer="Poids et taille pour des calculs précis"
+          ContentComponent={
+            <View style={themed($cardContent)}>
+              {useWheelPicker ? (
+                // Ne render le WheelPicker qu'après le chargement initial pour éviter les race conditions
+                !isInitialLoad ? (
+                  <WeightHeightWheelSelector
+                    weight={weight}
+                    height={height}
+                    onWeightChange={handleWeightChange}
+                    onHeightChange={handleHeightChange}
+                    style={themed($selectorContainer)}
+                  />
+                ) : (
+                  <Text style={themed($loadingText)}>
+                    ⏳ Chargement...
+                  </Text>
+                )
+              ) : (
+                <WeightHeightSelector
+                  weight={weight}
+                  height={height}
+                  onWeightChange={handleWeightChange}
+                  onHeightChange={handleHeightChange}
+                  style={themed($selectorContainer)}
+                />
+              )}
+            </View>
+          }
+        />
 
+        {/* Activity Selection Card */}
+        <Card
+          style={themed($activityCard)}
+          heading="🏃‍♂️ Ton sport préféré"
+          footer="Pour personnaliser tes calculs d'effort"
+          ContentComponent={
+            <View style={themed($cardContent)}>
+              {!isInitialLoad ? (
+                <ActivityWheelPicker
+                  selectedActivity={selectedActivity}
+                  onActivitySelect={(activityKey) => {
+                    setSelectedActivity(activityKey)
+                  }}
+                  height={180}
+                />
+              ) : (
+                <Text style={themed($loadingText)}>
+                  ⏳ Chargement des activités...
+                </Text>
+              )}
+            </View>
+          }
+        />
+
+        {/* Save Button */}
         <Button
           preset="filled"
           style={themed($saveButton)}
           onPress={handleSave}
           disabled={loading || !selectedActivity}
         >
-          {loading ? "Sauvegarde..." : "Sauvegarder ✅"}
+          {loading ? "💾 Sauvegarde..." : "🚀 Commencer l'aventure !"}
         </Button>
+
+        <Text style={themed($footerText)}>
+          Tu pourras modifier ces infos plus tard ⚙️
+        </Text>
       </View>
     </Screen>
   )
@@ -180,55 +252,62 @@ const $contentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   padding: spacing.lg,
 })
 
-const $welcomeText: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
-  textAlign: "center",
+const $welcomeCard: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  marginBottom: spacing.lg,
+  backgroundColor: colors.gamificationBackground,
+  borderColor: colors.gamification,
+  borderWidth: 1,
+})
+
+const $errorCard: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  marginBottom: spacing.lg,
+  backgroundColor: colors.errorBackground,
+  borderColor: colors.error,
+  borderWidth: 1,
+})
+
+const $physicalCard: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  marginBottom: spacing.lg,
+  backgroundColor: colors.palette.accent100,
+  borderColor: colors.palette.accent500,
+  borderWidth: 1,
+})
+
+const $activityCard: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   marginBottom: spacing.xl,
-  color: colors.textDim,
+  backgroundColor: colors.successBackground,
+  borderColor: colors.success,
+  borderWidth: 1,
+})
+
+const $cardContent: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  paddingVertical: spacing.sm,
 })
 
 const $selectorContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  marginVertical: spacing.sm,
 })
 
-const $sectionLabel: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginTop: spacing.xl,
-  marginBottom: spacing.md,
-})
-
-const $activityContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  padding: spacing.md,
-  borderRadius: 8,
-  backgroundColor: colors.palette.neutral200,
-  marginBottom: spacing.xl,
-})
-
-const $placeholderText: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  color: colors.text,
-  marginBottom: 4,
-})
-
-
-
-const $toggleButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  marginVertical: spacing.md,
-  backgroundColor: colors.palette.neutral300,
-  alignSelf: "center",
-})
-
-const $debugText: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+const $loadingText: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
   textAlign: "center",
   color: colors.textDim,
-  fontSize: 12,
-  marginBottom: spacing.md,
-})
-
-const $errorText: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  textAlign: "center",
-  color: colors.error,
-  fontSize: 12,
-  marginBottom: spacing.md,
+  fontSize: 14,
+  marginVertical: spacing.lg,
+  fontStyle: "italic",
 })
 
 const $saveButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  marginTop: spacing.xl,
-  backgroundColor: colors.palette.primary500,
+  marginTop: spacing.lg,
+  marginBottom: spacing.md,
+  backgroundColor: colors.gamification,
+  borderRadius: 12,
+  paddingVertical: spacing.md,
+})
+
+const $footerText: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
+  textAlign: "center",
+  color: colors.textDim,
+  fontSize: 12,
+  fontStyle: "italic",
+  marginBottom: spacing.lg,
 })

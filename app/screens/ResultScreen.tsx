@@ -6,6 +6,9 @@ import { Header } from "@/components/Header"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import { Card } from "@/components/Card"
+import { ChoiceModal } from "@/components/ChoiceModal"
+import ConfettiCannon from 'react-native-confetti-cannon'
+import { FoodCard } from "@/components/FoodCard"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
 import type { ThemedStyle } from "@/theme/types"
 import { useAppTheme } from "@/theme/context"
@@ -22,6 +25,12 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
 
   const [dish, setDish] = useState<Dish | null>(null)
   const [computedEffort, setComputedEffort] = useState<CalculateEffortOutput | null>(null)
+  
+  // Modal states
+  const [showDecisionModal, setShowDecisionModal] = useState(false)
+  const [showAteItModal, setShowAteItModal] = useState(false)
+  const [showDidntEatModal, setShowDidntEatModal] = useState(false)
+  const [showConfetti, setShowConfetti] = useState(false)
   
   // Get food ID from navigation params
   const { foodId } = route.params
@@ -60,72 +69,103 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
     if (!effort) throw new Error("No errror calculated");
     setComputedEffort(effort)
 
-    // 🎉 Affichage des félicitations avec toast
-    showCelebrationToast(dish, effort)
+    // Afficher le toast initial puis la modale de décision
+    showInitialToast(dish)
+    setTimeout(() => {
+      setShowDecisionModal(true)
+    }, 1500)
   }
 
-  const showCelebrationToast = (dish: Dish, effort: CalculateEffortOutput) => {
-    const primaryActivity = effort.effort.primary
+  const showInitialToast = (dish: Dish) => {
     const calories = dish.getCalories()
     
-    // Messages de félicitations personnalisés selon les calories
+    // Messages d'info personnalisés selon les calories
     if (calories < 200) {
-      Toast.success(
-        `🌟 Excellent choix !`,
+      Toast.info(
+        `🌟 Choix léger !`,
         'bottom',
-        'check-circle',
+        'leaf',
         'Ionicons',
         false
       )
     } else if (calories < 400) {
-      Toast.success(
-        `💪 Tu peux le faire !`,
+      Toast.info(
+        `⚡ Énergie modérée !`,
         'bottom', 
-        'trending-up',
+        'flash',
         'Ionicons',
         false
       )
     } else {
-      Toast.success(
-        `🔥 Challenge accepté !`,
+      Toast.info(
+        `🔥 Gros apport énergétique !`,
         'bottom',
         'flame',
         'Ionicons', 
         false
       )
     }
-
-    // Toast avec détails de l'effort après un délai
-    setTimeout(() => {
-      Toast.info(
-        `${primaryActivity.minutes} min de ${primaryActivity.activityLabel}`,
-        'bottom',
-        'fitness',
-        'Ionicons',
-        false
-      )
-    }, 1000)
   }
 
   const handleBack = () => {
     navigation.goBack()
   }
 
-  const handleChangeActivity = () => {
-    console.log("Activity selector coming soon")
+  const handleDecisionMade = (decision: 'eat' | 'skip') => {
+    setShowDecisionModal(false)
+    
+    if (decision === 'eat') {
+      setShowAteItModal(true)
+      // Toast pour dire qu'il va falloir faire du sport
+      setTimeout(() => {
+        Toast.warn(
+          `🏃‍♂️ C'est parti pour l'effort !`,
+          'bottom',
+          'fitness',
+          'Ionicons',
+          false
+        )
+      }, 500)
+    } else {
+      setShowDidntEatModal(true)
+      // Déclencher les confettis pour la félicitation
+      setShowConfetti(true)
+      setTimeout(() => {
+        Toast.success(
+          `🎉 Bravo ! Excellent self-control !`,
+          'bottom',
+          'trophy',
+          'Ionicons',
+          false
+        )
+      }, 500)
+    }
   }
 
-  const handleAddToHistory = () => {
-    // Toast de confirmation d'ajout à l'historique
-    Toast.success(
-      `📚 Ajouté à l'historique !`,
+  const handleAteItConfirm = () => {
+    setShowAteItModal(false)
+    Toast.info(
+      `📝 Ajouté à ton journal !`,
       'bottom',
-      'bookmark',
+      'journal',
       'Ionicons',
       false
     )
+    setTimeout(() => {
+      navigation.navigate("MainTabs", { screen: "Home" })
+    }, 1500)
+  }
 
-    // Retourner à la page d'accueil après un délai
+  const handleDidntEatConfirm = () => {
+    setShowDidntEatModal(false)
+    setShowConfetti(false)
+    Toast.success(
+      `💪 Continue comme ça !`,
+      'bottom',
+      'thumbs-up',
+      'Ionicons',
+      false
+    )
     setTimeout(() => {
       navigation.navigate("MainTabs", { screen: "Home" })
     }, 1500)
@@ -150,65 +190,111 @@ No effort
   )
 
   return (
-    <Screen preset="scroll" style={themed($screenContainer)}>
-      <Header 
-        title={dish.getName()}
-        leftIcon="back"
-        onLeftPress={handleBack}
-      />
-      
-      <View style={themed($contentContainer)}>
-        {/* Food Info Card */}
-        <Card
-          style={themed($foodCard)}
-          heading={`${dish.getName()}`}
-          content={`${dish.getCalories()} kcal par portion`}
-          footer="Informations nutritionnelles"
+    <>
+      <Screen preset="scroll" style={themed($screenContainer)}>
+        <Header 
+          title="Calcul d'Effort"
+          leftIcon="back"
+          onLeftPress={handleBack}
         />
+        
+        <View style={themed($contentContainer)}>
+          {/* Food Card Display */}
+          <View style={themed($foodCardContainer)}>
+            <FoodCard
+              dish={dish}
+              onPress={() => {}} // Disabled in result view
+              size="large"
+              disabled={true}
+            />
+          </View>
 
-        {/* Effort Results Card */}
-        <Card
-          style={themed($effortCard)}
-          preset="reversed"
-          heading="🔥 EFFORT NÉCESSAIRE:"
-          ContentComponent={
-            <View style={themed($effortContent)}>
-              <Text style={themed($effortItem)}>
-                {computedEffort.effort.primary.minutes} min de {computedEffort.effort.primary.activityLabel}
-              </Text>
-              {computedEffort.effort.alternatives.map((alt, index) => (
-                <Text key={index} style={themed($effortItem)}>
-                 {alt.minutes} min de {alt.activityLabel}
+          {/* Effort Results Card */}
+          <Card
+            style={themed($effortCard)}
+            preset="reversed"
+            heading="🔥 EFFORT NÉCESSAIRE"
+            ContentComponent={
+              <View style={themed($effortContent)}>
+                <Text style={themed($primaryEffort)}>
+                  {computedEffort.effort.primary.minutes} min
                 </Text>
-              ))}
-            </View>
-          }
-        />
+                <Text style={themed($primaryActivity)}>
+                  de {computedEffort.effort.primary.activityLabel}
+                </Text>
+                
+                <View style={themed($alternativesList)}>
+                  <Text style={themed($alternativesTitle)}>Ou bien :</Text>
+                  {computedEffort.effort.alternatives.slice(0, 2).map((alt, index) => (
+                    <Text key={index} style={themed($alternativeItem)}>
+                      • {alt.minutes} min de {alt.activityLabel}
+                    </Text>
+                  ))}
+                </View>
+              </View>
+            }
+          />
 
-        {/* Action Buttons */}
-        <View style={themed($actionButtons)}>
-          <Button
-            preset="default"
-            style={themed($actionButton)}
-            onPress={handleChangeActivity}
-          >
-            Changer sport ⚡
-          </Button>
-          
-          <Button
-            preset="filled"
-            style={themed($actionButton)}
-            onPress={handleAddToHistory}
-          >
-            Ajouter à l'historique
-          </Button>
+          <Text style={themed($instruction)}>
+            Maintenant, dis-nous : vas-tu manger ce plat ? 🤔
+          </Text>
         </View>
+      </Screen>
 
-        <Text style={themed($comingSoon)}>
-          Calculs réels et animation confettis à venir...
-        </Text>
-      </View>
-    </Screen>
+      {/* Decision Modal */}
+      <ChoiceModal
+        visible={showDecisionModal}
+        title="Décision temps ⏰"
+        content={`Vas-tu manger ce ${dish.getName()} ?`}
+        secondaryContent={`${dish.getCalories()} kcal = ${computedEffort?.effort.primary.minutes} min de sport`}
+        icon="🍽️"
+        primaryButtonText="Oui, je mange ! 😋"
+        secondaryButtonText="Non, je passe 💪"
+        onPrimaryPress={() => handleDecisionMade('eat')}
+        onSecondaryPress={() => handleDecisionMade('skip')}
+        onDismiss={() => setShowDecisionModal(false)}
+        variant="default"
+      />
+
+      {/* Ate It Modal */}
+      <ChoiceModal
+        visible={showAteItModal}
+        title="Tu l'as mangé ! 🍽️"
+        content={`Time to burn those ${dish.getCalories()} calories!`}
+        secondaryContent="N'oublie pas de faire ton sport maintenant 💪"
+        icon="🏃‍♂️"
+        primaryButtonText="J'ajoute à mon journal"
+        onPrimaryPress={handleAteItConfirm}
+        onDismiss={() => setShowAteItModal(false)}
+        variant="challenge"
+      />
+
+      {/* Didn't Eat Modal */}
+      <ChoiceModal
+        visible={showDidntEatModal}
+        title="Excellent self-control ! 🎉"
+        content="Tu as résisté à la tentation !"
+        secondaryContent="Continue comme ça, tu es sur la bonne voie ! 💪"
+        icon="🏆"
+        primaryButtonText="Retour à l'accueil"
+        onPrimaryPress={handleDidntEatConfirm}
+        onDismiss={() => setShowDidntEatModal(false)}
+        variant="success"
+      />
+
+      {/* Confetti Animation */}
+      {showConfetti && (
+        <ConfettiCannon
+          count={200}
+          origin={{ x: -10, y: 0 }}
+          autoStart={true}
+          fadeOut={true}
+          fallSpeed={2500}
+          explosionSpeed={350}
+          onAnimationEnd={() => setShowConfetti(false)}
+        />
+      )}
+    </>
   )
 }
 
@@ -220,42 +306,64 @@ const $contentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   padding: spacing.lg,
 })
 
-const $foodCard: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginBottom: spacing.lg,
+const $foodCardContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  alignItems: "center",
+  marginBottom: spacing.xl,
 })
 
 const $effortCard: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   marginBottom: spacing.xl,
-  backgroundColor: colors.palette.accent200, // Gradient placeholder
+  backgroundColor: colors.gamificationBackground,
+  borderColor: colors.gamification,
+  borderWidth: 2,
 })
 
 const $effortContent: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  paddingVertical: spacing.sm,
+  alignItems: "center",
+  paddingVertical: spacing.md,
 })
 
-const $effortItem: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  fontSize: 16,
-  color: colors.text,
+const $primaryEffort: ThemedStyle<ViewStyle> = ({ spacing, colors, typography }) => ({
+  fontSize: 32,
+  fontFamily: typography.primary.bold,
+  color: colors.gamification,
+  textAlign: "center",
   marginBottom: spacing.xs,
+})
+
+const $primaryActivity: ThemedStyle<ViewStyle> = ({ spacing, colors, typography }) => ({
+  fontSize: 18,
+  fontFamily: typography.primary.medium,
+  color: colors.text,
   textAlign: "center",
+  marginBottom: spacing.lg,
 })
 
-const $actionButtons: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  flexDirection: "row",
-  justifyContent: "space-between",
-  gap: spacing.sm,
-  marginBottom: spacing.xl,
+const $alternativesList: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  alignItems: "center",
+  marginTop: spacing.sm,
 })
 
-const $actionButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  flex: 1,
-  marginHorizontal: spacing.xs,
-})
-
-const $comingSoon: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  textAlign: "center",
+const $alternativesTitle: ThemedStyle<ViewStyle> = ({ spacing, colors, typography }) => ({
+  fontSize: 14,
+  fontFamily: typography.primary.medium,
   color: colors.textDim,
-  fontSize: 12,
-  fontStyle: "italic",
-  marginTop: spacing.md,
+  marginBottom: spacing.xs,
+})
+
+const $alternativeItem: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  fontSize: 14,
+  color: colors.textDim,
+  marginBottom: spacing.xxxs,
+  textAlign: "center",
+})
+
+const $instruction: ThemedStyle<ViewStyle> = ({ spacing, colors, typography }) => ({
+  fontSize: 18,
+  fontFamily: typography.primary.medium,
+  color: colors.text,
+  textAlign: "center",
+  marginTop: spacing.lg,
+  marginBottom: spacing.xl,
+  paddingHorizontal: spacing.md,
 })
