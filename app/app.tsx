@@ -28,6 +28,7 @@ import { AuthProvider } from "./context/AuthContext" // @demo remove-current-lin
 import { initI18n } from "./i18n"
 import { AppNavigator } from "./navigators/AppNavigator"
 import { useNavigationPersistence } from "./navigators/navigationUtilities"
+import { initializeDependencies } from "./services/Dependencies"
 import { ThemeProvider } from "./theme/context"
 import { customFontsToLoad } from "./theme/typography"
 import { loadDateFnsLocale } from "./utils/formatDate"
@@ -75,6 +76,10 @@ export function App() {
     initI18n()
       .then(() => setIsI18nInitialized(true))
       .then(() => loadDateFnsLocale())
+      .then(() => {
+        // Initialize DDD dependencies after everything else
+        initializeDependencies()
+      })
   }, [])
 
   // Before we show the app, we have to wait for our state to be ready.

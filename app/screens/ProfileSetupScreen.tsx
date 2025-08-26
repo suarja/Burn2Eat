@@ -6,11 +6,11 @@ import { Header } from "@/components/Header"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import { WeightHeightSelector, WeightHeightWheelSelector } from "@/components/NumberComponents"
-import { ActivitySelector } from "@/components/ActivitySelector"
+import { ActivityWheelPicker } from "@/components/ActivityWheelPicker"
+import { useUserProfile } from "@/hooks/useUserProfile"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
 import type { ThemedStyle } from "@/theme/types"
 import { useAppTheme } from "@/theme/context"
-import { UserProfileService } from "@/services/UserProfileService"
 
 interface ProfileSetupScreenProps extends AppStackScreenProps<"Profile"> {}
 
@@ -20,33 +20,51 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
   const { navigation } = props
   const { themed } = useAppTheme()
   
+  // Use DDD hooks instead of direct service calls
+  const { createProfile, loadCurrentProfile, loading, error, currentProfile } = useUserProfile()
+  
   // State with persistence support
   const [weight, setWeight] = React.useState(75)
   const [height, setHeight] = React.useState(175)
   const [useWheelPicker, setUseWheelPicker] = React.useState(true) // Toggle between picker types
   const [selectedActivity, setSelectedActivity] = React.useState<string | null>("jogging") // Default activity
-  const [loading, setLoading] = React.useState(false)
   const [isInitialLoad, setIsInitialLoad] = React.useState(true)
+
+  // Enhanced setters with logging
+  const handleWeightChange = (newWeight: number) => {
+    console.log(`⚖️ ProfileSetupScreen: Weight changing from ${weight} to ${newWeight}`)
+    setWeight(newWeight)
+  }
+
+  const handleHeightChange = (newHeight: number) => {
+    console.log(`📏 ProfileSetupScreen: Height changing from ${height} to ${newHeight}`)
+    setHeight(newHeight)
+  }
 
 
   const handleSave = async () => {
     if (!selectedActivity) return
     
-    setLoading(true)
     try {
-      await UserProfileService.saveProfile({
+      console.log("🔄 ProfileSetupScreen: Saving profile with DDD use case...")
+      const result = await createProfile({
+        sex: "unspecified", // Default sex, can be enhanced later
         weight,
         height,
-        preferredActivityKey: selectedActivity,
+        preferredActivityKeys: [selectedActivity], // DDD expects array of activities
       })
       
-      // Navigate to Main Tabs (Home)
-      navigation.navigate("MainTabs", { screen: "Home" })
+      if (result.success && result.userProfile) {
+        console.log("✅ ProfileSetupScreen: Profile saved successfully via DDD:", result.userProfile)
+        // Navigate to Main Tabs (Home)
+        navigation.navigate("MainTabs", { screen: "Home" })
+      } else {
+        console.error("❌ ProfileSetupScreen: Failed to save profile via DDD:", result.error)
+        // TODO: Show error toast/alert with result.error
+      }
     } catch (error) {
-      console.error("Failed to save profile:", error)
+      console.error("💥 ProfileSetupScreen: Exception during save:", error)
       // TODO: Show error toast/alert
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -54,33 +72,41 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
     navigation.goBack()
   }
 
-  // Load existing profile on mount
   React.useEffect(() => {
     const loadProfile = async () => {
-      setLoading(true)
-      console.log("🚀 ProfileSetupScreen: Starting to load profile...")
+      console.log("🚀 ProfileSetupScreen: Starting to load profile with DDD...")
       try {
-        const existingProfile = await UserProfileService.getProfile()
-        console.log("📋 ProfileSetupScreen: Loaded profile:", existingProfile)
+        const result = await loadCurrentProfile()
+        console.log("📋 ProfileSetupScreen: Loaded profile via DDD:", result)
         
-        if (existingProfile) {
-          console.log("✨ ProfileSetupScreen: Setting state from loaded profile")
-          setWeight(existingProfile.weight)
-          setHeight(existingProfile.height)
-          setSelectedActivity(existingProfile.preferredActivityKey)
+        if (result.success && result.userProfile) {
+          console.log("✨ ProfileSetupScreen: Setting state from loaded DDD profile")
+          console.log(`📊 ProfileSetupScreen: Current state - weight: ${weight}, height: ${height}, activity: ${selectedActivity}`)
+          console.log(`📊 ProfileSetupScreen: Loading state - weight: ${result.userProfile.weight}, height: ${result.userProfile.height}`)
+          
+          setWeight(result.userProfile.weight)
+          setHeight(result.userProfile.height)
+          
+          const primaryActivity = result.userProfile.preferredActivityKeys?.[0] || result.userProfile.primaryActivityKey
+          console.log(`📊 ProfileSetupScreen: Setting activity to: ${primaryActivity}`)
+          
+          if (primaryActivity) {
+            setSelectedActivity(primaryActivity)
+          }
+          
+          console.log(`📊 ProfileSetupScreen: After setState - weight should be: ${result.userProfile.weight}, height should be: ${result.userProfile.height}`)
         } else {
-          console.log("🆕 ProfileSetupScreen: No existing profile, using defaults")
+          console.log("🆕 ProfileSetupScreen: No existing profile via DDD, using defaults")
         }
       } catch (error) {
-        console.warn("❌ ProfileSetupScreen: Failed to load existing profile:", error)
+        console.warn("❌ ProfileSetupScreen: Failed to load existing profile via DDD:", error)
       } finally {
-        setLoading(false)
         setIsInitialLoad(false)
       }
     }
 
     loadProfile()
-  }, [])
+  }, [loadCurrentProfile])
 
 
   return (
@@ -92,14 +118,18 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
       />
       
       <View style={themed($contentContainer)}>
-        <Text preset="subheading" style={themed($welcomeText)}>
-          Quelques infos pour personnaliser tes calculs !
-        </Text>
+  
 
         {/* Debug info */}
-        {isInitialLoad && (
+        {(isInitialLoad || loading) && (
           <Text style={themed($debugText)}>
             Chargement du profil...
+          </Text>
+        )}
+
+        {error && (
+          <Text style={themed($errorText)}>
+            ❌ Erreur: {error}
           </Text>
         )}
 
@@ -113,28 +143,44 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
         </Button> */}
 
         {useWheelPicker ? (
-          <WeightHeightWheelSelector
-            weight={weight}
-            height={height}
-            onWeightChange={(newWeight) => setWeight(newWeight)}
-            onHeightChange={(newHeight) => setHeight(newHeight)}
-            style={themed($selectorContainer)}
-          />
+          // Ne render le WheelPicker qu'après le chargement initial pour éviter les race conditions
+          !isInitialLoad ? (
+            <WeightHeightWheelSelector
+              weight={weight}
+              height={height}
+              onWeightChange={handleWeightChange}
+              onHeightChange={handleHeightChange}
+              style={themed($selectorContainer)}
+            />
+          ) : (
+            <Text style={themed($debugText)}>
+              Chargement des wheel pickers...
+            </Text>
+          )
         ) : (
           <WeightHeightSelector
             weight={weight}
             height={height}
-            onWeightChange={(newWeight) => setWeight(newWeight)}
-            onHeightChange={(newHeight) => setHeight(newHeight)}
+            onWeightChange={handleWeightChange}
+            onHeightChange={handleHeightChange}
             style={themed($selectorContainer)}
           />
         )}
 
         {/* Activity Selection */}
-        <ActivitySelector
-          selectedActivity={selectedActivity}
-          onActivitySelect={setSelectedActivity}
-        />
+        {!isInitialLoad ? (
+          <ActivityWheelPicker
+            selectedActivity={selectedActivity}
+            onActivitySelect={(activityKey) => {
+              setSelectedActivity(activityKey)
+            }}
+            height={180}
+          />
+        ) : (
+          <Text style={themed($debugText)}>
+            Chargement de l'activité...
+          </Text>
+        )}
 
         <Button
           preset="filled"
@@ -194,6 +240,13 @@ const $toggleButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
 const $debugText: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   textAlign: "center",
   color: colors.textDim,
+  fontSize: 12,
+  marginBottom: spacing.md,
+})
+
+const $errorText: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  textAlign: "center",
+  color: colors.error,
   fontSize: 12,
   marginBottom: spacing.md,
 })

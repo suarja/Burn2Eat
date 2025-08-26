@@ -74,6 +74,11 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
   // Find current index
   const currentIndex = values.indexOf(value)
   
+  // Debug logging to track value changes
+  React.useEffect(() => {
+    console.log(`🎡 WheelPicker DEBUG: value=${value}, currentIndex=${currentIndex}, values.length=${values.length}`)
+  }, [value, currentIndex, values.length])
+  
   // Add padding items for centering
   const paddingCount = Math.floor(height / ITEM_HEIGHT / 2)
   const displayValues = [
@@ -90,8 +95,11 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
     const index = Math.round(offsetY / ITEM_HEIGHT)
     const actualIndex = index - paddingCount
     
+    console.log(`🎡 WheelPicker SCROLL: offsetY=${offsetY}, index=${index}, actualIndex=${actualIndex}, currentValue=${value}`)
+    
     if (actualIndex >= 0 && actualIndex < values.length) {
       const newValue = values[actualIndex]
+      console.log(`🎡 WheelPicker SCROLL: newValue=${newValue}, currentValue=${value}, will${newValue !== value ? '' : ' NOT'} trigger onChange`)
       if (newValue !== value) {
         onChange(newValue)
       }
@@ -102,12 +110,15 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
   useEffect(() => {
     if (currentIndex >= 0) {
       const targetOffset = (currentIndex + paddingCount) * ITEM_HEIGHT
+      console.log(`🎡 WheelPicker SCROLL TO: value=${value}, currentIndex=${currentIndex}, targetOffset=${targetOffset}`)
       scrollViewRef.current?.scrollTo({
         y: targetOffset,
         animated: false,
       })
+    } else {
+      console.log(`🎡 WheelPicker SCROLL TO: value=${value} NOT FOUND in values array (currentIndex=${currentIndex})`)
     }
-  }, [currentIndex, paddingCount])
+  }, [currentIndex, paddingCount, value])
 
   return (
     <View style={[themed($container), { height }, style]}>

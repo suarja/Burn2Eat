@@ -51,10 +51,12 @@ export const WeightHeightWheelSelector: React.FC<WeightHeightWheelSelectorProps>
   const { themed } = useAppTheme()
 
   const handleWeightChange = (newWeight: number) => {
+    console.log(`⚖️ WeightHeightWheel: Weight changed from ${weight} to ${newWeight}`)
     onWeightChange(newWeight as Kilograms)
   }
 
   const handleHeightChange = (newHeight: number) => {
+    console.log(`📏 WeightHeightWheel: Height changed from ${height} to ${newHeight}`)
     onHeightChange(newHeight as Centimeters)
   }
 
