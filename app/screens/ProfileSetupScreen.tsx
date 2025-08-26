@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from "react"
+import React, { FC, useEffect, useState } from "react"
 import { View, ViewStyle, TextStyle } from "react-native"
 
 import { Button } from "@/components/Button"
@@ -20,24 +20,19 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
   const { navigation } = props
   const { themed } = useAppTheme()
   
-  // Use DDD hooks instead of direct service calls
-  const { createProfile, loadCurrentProfile, loading, error, currentProfile } = useUserProfile()
+  const { createProfile, loadCurrentProfile, loading, error } = useUserProfile()
   
-  // State with persistence support
-  const [weight, setWeight] = React.useState(75)
-  const [height, setHeight] = React.useState(175)
-  const [useWheelPicker, setUseWheelPicker] = React.useState(true) // Toggle between picker types
-  const [selectedActivity, setSelectedActivity] = React.useState<string | null>("jogging") // Default activity
-  const [isInitialLoad, setIsInitialLoad] = React.useState(true)
+  const [weight, setWeight] = useState(75)
+  const [height, setHeight] = useState(175)
+  const [useWheelPicker, setUseWheelPicker] = useState(true) 
+  const [selectedActivity, setSelectedActivity] = useState<string | null>("jogging") // Default activity
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
 
-  // Enhanced setters with logging
   const handleWeightChange = (newWeight: number) => {
-    console.log(`⚖️ ProfileSetupScreen: Weight changing from ${weight} to ${newWeight}`)
     setWeight(newWeight)
   }
 
   const handleHeightChange = (newHeight: number) => {
-    console.log(`📏 ProfileSetupScreen: Height changing from ${height} to ${newHeight}`)
     setHeight(newHeight)
   }
 
@@ -46,17 +41,14 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
     if (!selectedActivity) return
     
     try {
-      console.log("🔄 ProfileSetupScreen: Saving profile with DDD use case...")
       const result = await createProfile({
         sex: "unspecified", // Default sex, can be enhanced later
         weight,
         height,
-        preferredActivityKeys: [selectedActivity], // DDD expects array of activities
+        preferredActivityKeys: [selectedActivity], 
       })
       
       if (result.success && result.userProfile) {
-        console.log("✅ ProfileSetupScreen: Profile saved successfully via DDD:", result.userProfile)
-        // Navigate to Main Tabs (Home)
         navigation.navigate("MainTabs", { screen: "Home" })
       } else {
         console.error("❌ ProfileSetupScreen: Failed to save profile via DDD:", result.error)
@@ -72,29 +64,22 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
     navigation.goBack()
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     const loadProfile = async () => {
       console.log("🚀 ProfileSetupScreen: Starting to load profile with DDD...")
       try {
         const result = await loadCurrentProfile()
-        console.log("📋 ProfileSetupScreen: Loaded profile via DDD:", result)
         
         if (result.success && result.userProfile) {
-          console.log("✨ ProfileSetupScreen: Setting state from loaded DDD profile")
-          console.log(`📊 ProfileSetupScreen: Current state - weight: ${weight}, height: ${height}, activity: ${selectedActivity}`)
-          console.log(`📊 ProfileSetupScreen: Loading state - weight: ${result.userProfile.weight}, height: ${result.userProfile.height}`)
-          
           setWeight(result.userProfile.weight)
           setHeight(result.userProfile.height)
           
           const primaryActivity = result.userProfile.preferredActivityKeys?.[0] || result.userProfile.primaryActivityKey
-          console.log(`📊 ProfileSetupScreen: Setting activity to: ${primaryActivity}`)
           
           if (primaryActivity) {
             setSelectedActivity(primaryActivity)
           }
           
-          console.log(`📊 ProfileSetupScreen: After setState - weight should be: ${result.userProfile.weight}, height should be: ${result.userProfile.height}`)
         } else {
           console.log("🆕 ProfileSetupScreen: No existing profile via DDD, using defaults")
         }

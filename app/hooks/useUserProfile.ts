@@ -14,7 +14,6 @@ export const useUserProfile = () => {
   const [error, setError] = useState<string | null>(null)
   const [currentProfile, setCurrentProfile] = useState<GetUserProfileOutput["userProfile"] | null>(null)
 
-  // Get use cases from dependency injection
   const createUserUseCase = Dependencies.createUserUseCase()
   const getUserUseCase = Dependencies.getUserUseCase()
   const updateUserUseCase = Dependencies.updateUserUseCase()
@@ -27,11 +26,9 @@ export const useUserProfile = () => {
     setError(null)
 
     try {
-      console.log("🔄 useUserProfile: Creating profile with input:", input)
       const result = await createUserUseCase.createPrimary(input)
       
       if (result.success && result.userProfile) {
-        console.log("✅ useUserProfile: Profile created successfully:", result.userProfile)
         // Convert CreateUserProfileOutput to GetUserProfileOutput format by adding primaryActivityKey
         const profileWithPrimaryKey = {
           ...result.userProfile,
@@ -66,14 +63,11 @@ export const useUserProfile = () => {
     setError(null)
 
     try {
-      console.log("🔍 useUserProfile: Loading current profile...")
       const result = await getUserUseCase.getCurrent()
 
       if (result.success && result.userProfile) {
-        console.log("✅ useUserProfile: Profile loaded successfully:", result.userProfile)
         setCurrentProfile(result.userProfile)
       } else {
-        console.log("ℹ️ useUserProfile: No current profile found:", result.error)
         setCurrentProfile(null)
       }
 
@@ -100,11 +94,9 @@ export const useUserProfile = () => {
     setError(null)
 
     try {
-      console.log("🔄 useUserProfile: Updating profile with input:", input)
       const result = await updateUserUseCase.updateCurrent(input)
 
       if (result.success && result.userProfile) {
-        console.log("✅ useUserProfile: Profile updated successfully:", result.userProfile)
         // Convert UpdateUserProfileOutput to GetUserProfileOutput format by adding primaryActivityKey
         const profileWithPrimaryKey = {
           ...result.userProfile,
