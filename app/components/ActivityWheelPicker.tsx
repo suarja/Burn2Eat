@@ -1,16 +1,13 @@
 import React, { useRef, useEffect } from "react"
-import { View, ViewStyle, TextStyle, ScrollView, Dimensions } from "react-native"
+import { View, ViewStyle, TextStyle, ScrollView } from "react-native"
 
+import { useActivityCatalog } from "@/hooks/useActivityCatalog"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 
 import { Text } from "./Text"
-import { colors } from "@/theme/colors"
-import { Dependencies } from "@/services/Dependencies"
-import { useActivityCatalog } from "@/hooks/useActivityCatalog"
 
 const ITEM_HEIGHT = 60
-const { width: SCREEN_WIDTH } = Dimensions.get("window")
 
 export interface ActivityOption {
   key: string
@@ -41,7 +38,6 @@ export interface ActivityWheelPickerProps {
   height?: number
 }
 
-
 /**
  * Internal ActivityWheel component for scrollable activity selection
  */
@@ -64,7 +60,7 @@ const ActivityWheel: React.FC<ActivityWheelProps> = ({
 }) => {
   const { themed } = useAppTheme()
   const scrollViewRef = useRef<ScrollView>(null)
-  
+
   // Add padding items for centering
   const paddingCount = Math.floor(height / ITEM_HEIGHT / 2)
   const displayActivities = [
@@ -76,15 +72,19 @@ const ActivityWheel: React.FC<ActivityWheelProps> = ({
   // Handle scroll and snap to activity
   const handleScroll = (event: any) => {
     if (disabled) return
-    
+
     const offsetY = event.nativeEvent.contentOffset.y
     const index = Math.round(offsetY / ITEM_HEIGHT)
     const actualIndex = index - paddingCount
-    
-    console.log(`🎯 ActivityWheel SCROLL: offsetY=${offsetY}, index=${index}, actualIndex=${actualIndex}`)
-    
+
+    console.log(
+      `🎯 ActivityWheel SCROLL: offsetY=${offsetY}, index=${index}, actualIndex=${actualIndex}`,
+    )
+
     if (actualIndex >= 0 && actualIndex < activities.length) {
-      console.log(`🎯 ActivityWheel SCROLL: Selecting activity ${activities[actualIndex].name} at index ${actualIndex}`)
+      console.log(
+        `🎯 ActivityWheel SCROLL: Selecting activity ${activities[actualIndex].name} at index ${actualIndex}`,
+      )
       if (actualIndex !== selectedIndex) {
         onChange(actualIndex)
       }
@@ -95,7 +95,9 @@ const ActivityWheel: React.FC<ActivityWheelProps> = ({
   useEffect(() => {
     if (selectedIndex >= 0 && selectedIndex < activities.length) {
       const targetOffset = (selectedIndex + paddingCount) * ITEM_HEIGHT
-      console.log(`🎯 ActivityWheel SCROLL TO: selectedIndex=${selectedIndex}, targetOffset=${targetOffset}`)
+      console.log(
+        `🎯 ActivityWheel SCROLL TO: selectedIndex=${selectedIndex}, targetOffset=${targetOffset}`,
+      )
       scrollViewRef.current?.scrollTo({
         y: targetOffset,
         animated: false,
@@ -117,9 +119,10 @@ const ActivityWheel: React.FC<ActivityWheelProps> = ({
         overScrollMode="never"
       >
         {displayActivities.map((activity, index) => {
-          const isSelected = activity && activities[selectedIndex] && activity.key === activities[selectedIndex].key
+          const isSelected =
+            activity && activities[selectedIndex] && activity.key === activities[selectedIndex].key
           const isVisible = activity !== null
-          
+
           return (
             <View key={index} style={themed($itemContainer)}>
               {isVisible && (
@@ -131,11 +134,13 @@ const ActivityWheel: React.FC<ActivityWheelProps> = ({
                   ])}>
                     {activity.emoji}
                   </Text> */}
-                  <Text style={themed([
-                    $activityText,
-                    isSelected && $selectedActivityText,
-                    disabled && $disabledText,
-                  ])}>
+                  <Text
+                    style={themed([
+                      $activityText,
+                      isSelected && $selectedActivityText,
+                      disabled && $disabledText,
+                    ])}
+                  >
                     {activity.name}
                   </Text>
                   {/* <Text style={themed([
@@ -165,14 +170,13 @@ export const ActivityWheelPicker: React.FC<ActivityWheelPickerProps> = ({
   const { themed } = useAppTheme()
 
   const {
-    data: {catalog}
+    data: { catalog },
   } = useActivityCatalog()
 
-
   // Find current activity index
-  const currentActivityIndex = selectedActivity 
-    ? catalog?.findIndex(activity => activity.key === selectedActivity)
-    : catalog?.findIndex(activity => activity.key === 'jogging') // Default to jogging
+  const currentActivityIndex = selectedActivity
+    ? catalog?.findIndex((activity) => activity.key === selectedActivity)
+    : catalog?.findIndex((activity) => activity.key === "jogging") // Default to jogging
 
   const validIndex = currentActivityIndex >= 0 ? currentActivityIndex : 0
 
@@ -180,7 +184,9 @@ export const ActivityWheelPicker: React.FC<ActivityWheelPickerProps> = ({
   const handleActivityChange = (newIndex: number) => {
     if (newIndex >= 0 && newIndex < catalog.length) {
       const selectedActivityData = catalog[newIndex]
-      console.log(`🎯 ActivityWheelPicker: Activity changed to ${selectedActivityData.name} (${selectedActivityData.key})`)
+      console.log(
+        `🎯 ActivityWheelPicker: Activity changed to ${selectedActivityData.name} (${selectedActivityData.key})`,
+      )
       onActivitySelect(selectedActivityData.key)
     }
   }
@@ -190,12 +196,12 @@ export const ActivityWheelPicker: React.FC<ActivityWheelPickerProps> = ({
       <Text preset="formLabel" style={themed($sectionLabel)}>
         Activité préférée:
       </Text>
-      
+
       <View style={themed($wheelContainer)}>
         <Text preset="formHelper" style={themed($helperText)}>
           Faites défiler pour choisir votre activité préférée
         </Text>
-        
+
         <ActivityWheel
           activities={catalog}
           selectedIndex={validIndex}
@@ -204,7 +210,7 @@ export const ActivityWheelPicker: React.FC<ActivityWheelPickerProps> = ({
           height={height}
           style={themed($wheelPickerStyle)}
         />
-        
+
         {/* Show selected activity details */}
         {/* <View style={themed($selectedActivityInfo)}>
           <Text style={themed($selectedActivityPreviewText)}>
@@ -224,10 +230,14 @@ export const ActivityWheelPicker: React.FC<ActivityWheelPickerProps> = ({
  */
 const getCategoryLabel = (category: string): string => {
   switch (category) {
-    case 'light': return 'Intensité faible'
-    case 'moderate': return 'Intensité modérée'
-    case 'vigorous': return 'Intensité élevée'
-    default: return 'Intensité inconnue'
+    case "light":
+      return "Intensité faible"
+    case "moderate":
+      return "Intensité modérée"
+    case "vigorous":
+      return "Intensité élevée"
+    default:
+      return "Intensité inconnue"
   }
 }
 

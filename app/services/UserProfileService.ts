@@ -35,7 +35,7 @@ export class UserProfileService {
   static async saveProfile(input: CreateProfileInput): Promise<UserProfile> {
     const now = new Date().toISOString()
     const existingProfile = await this.getProfile()
-    
+
     const profile: UserProfile = {
       id: existingProfile?.id || DEFAULT_PROFILE_ID,
       weight: input.weight,
@@ -48,7 +48,7 @@ export class UserProfileService {
     console.log("🔄 Attempting to save profile:", profile)
     const success = save(USER_PROFILE_KEY, profile)
     console.log("💾 Save result:", success)
-    
+
     if (!success) {
       throw new Error("Failed to save user profile")
     }
@@ -56,7 +56,7 @@ export class UserProfileService {
     // Verify save by reading back
     const savedProfile = load(USER_PROFILE_KEY)
     console.log("✅ Profile verified after save:", savedProfile)
-    
+
     return profile
   }
 

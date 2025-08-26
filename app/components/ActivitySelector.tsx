@@ -12,7 +12,7 @@ export interface Activity {
   name: string
   emoji: string
   met: number
-  category: 'light' | 'moderate' | 'vigorous'
+  category: "light" | "moderate" | "vigorous"
 }
 
 export interface ActivitySelectorProps {
@@ -37,18 +37,18 @@ export interface ActivitySelectorProps {
 // Mock activities data - later from StaticActivityCatalog
 const ACTIVITIES: Activity[] = [
   // Light activities (1-3 MET)
-  { key: 'walking_slow', name: 'Marche lente', emoji: '🚶‍♀️', met: 2.5, category: 'light' },
-  { key: 'yoga', name: 'Yoga', emoji: '🧘‍♀️', met: 2.5, category: 'light' },
-  
+  { key: "walking_slow", name: "Marche lente", emoji: "🚶‍♀️", met: 2.5, category: "light" },
+  { key: "yoga", name: "Yoga", emoji: "🧘‍♀️", met: 2.5, category: "light" },
+
   // Moderate activities (3-6 MET)
-  { key: 'walking_brisk', name: 'Marche rapide', emoji: '🚶‍♂️', met: 3.5, category: 'moderate' },
-  { key: 'dancing', name: 'Danse', emoji: '💃', met: 4.0, category: 'moderate' },
-  { key: 'cycling_leisure', name: 'Vélo loisir', emoji: '🚴‍♀️', met: 5.8, category: 'moderate' },
-  
+  { key: "walking_brisk", name: "Marche rapide", emoji: "🚶‍♂️", met: 3.5, category: "moderate" },
+  { key: "dancing", name: "Danse", emoji: "💃", met: 4.0, category: "moderate" },
+  { key: "cycling_leisure", name: "Vélo loisir", emoji: "🚴‍♀️", met: 5.8, category: "moderate" },
+
   // Vigorous activities (6+ MET)
-  { key: 'jogging', name: 'Course', emoji: '🏃‍♂️', met: 7.0, category: 'vigorous' },
-  { key: 'swimming', name: 'Natation', emoji: '🏊‍♀️', met: 8.0, category: 'vigorous' },
-  { key: 'crossfit', name: 'CrossFit', emoji: '💪', met: 10.0, category: 'vigorous' },
+  { key: "jogging", name: "Course", emoji: "🏃‍♂️", met: 7.0, category: "vigorous" },
+  { key: "swimming", name: "Natation", emoji: "🏊‍♀️", met: 8.0, category: "vigorous" },
+  { key: "crossfit", name: "CrossFit", emoji: "💪", met: 10.0, category: "vigorous" },
 ]
 
 export const ActivitySelector: React.FC<ActivitySelectorProps> = ({
@@ -60,9 +60,9 @@ export const ActivitySelector: React.FC<ActivitySelectorProps> = ({
   const { themed } = useAppTheme()
 
   // Group activities by category
-  const lightActivities = ACTIVITIES.filter(a => a.category === 'light')
-  const moderateActivities = ACTIVITIES.filter(a => a.category === 'moderate')
-  const vigorousActivities = ACTIVITIES.filter(a => a.category === 'vigorous')
+  const lightActivities = ACTIVITIES.filter((a) => a.category === "light")
+  const moderateActivities = ACTIVITIES.filter((a) => a.category === "moderate")
+  const vigorousActivities = ACTIVITIES.filter((a) => a.category === "vigorous")
 
   const renderActivityGroup = (title: string, activities: Activity[]) => (
     <View key={title} style={themed($categorySection)}>
@@ -76,10 +76,7 @@ export const ActivitySelector: React.FC<ActivitySelectorProps> = ({
             <Button
               key={activity.key}
               preset={isSelected ? "filled" : "default"}
-              style={themed([
-                $activityButton,
-                isSelected && $selectedActivityButton,
-              ])}
+              style={themed([$activityButton, isSelected && $selectedActivityButton])}
               disabled={disabled}
               onPress={() => onActivitySelect(activity.key)}
             >
@@ -96,7 +93,7 @@ export const ActivitySelector: React.FC<ActivitySelectorProps> = ({
       <Text preset="formLabel" style={themed($sectionLabel)}>
         Activité préférée:
       </Text>
-      
+
       <View style={themed($selectorCard)}>
         {renderActivityGroup("Intensité faible (1-3 MET)", lightActivities)}
         {renderActivityGroup("Intensité modérée (3-6 MET)", moderateActivities)}

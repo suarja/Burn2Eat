@@ -1,12 +1,12 @@
 import React from "react"
 import { View, ViewStyle, TextStyle, TouchableOpacity, Dimensions } from "react-native"
 
+import type { Dish } from "@/domain/nutrition/Dish"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
-import type { Dish } from "@/domain/nutrition/Dish"
 
-import { Text } from "./Text"
 import { AutoImage } from "./AutoImage"
+import { Text } from "./Text"
 
 export interface FoodCardProps {
   /**
@@ -28,10 +28,9 @@ export interface FoodCardProps {
   /**
    * Size variant
    */
-  size?: "small" | "medium" | "large"
+  size?: "small" | "medium" | "large" | "result"
 }
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window")
 
 export const FoodCard: React.FC<FoodCardProps> = ({
   dish,
@@ -42,43 +41,34 @@ export const FoodCard: React.FC<FoodCardProps> = ({
 }) => {
   const { themed, theme } = useAppTheme()
 
-  // Get category color for gradient
-  const getCategoryGradientColors = (calories: number): [string, string] => {
-    if (calories < 200) {
-      return [theme.colors.palette.success100, theme.colors.palette.success500] // Green for light
-    } else if (calories < 400) {
-      return [theme.colors.palette.accent100, theme.colors.palette.accent500] // Yellow for medium
-    } else {
-      return [theme.colors.palette.primary100, theme.colors.palette.primary500] // Orange for high
-    }
-  }
+  // Use single pastel color for all cards
+  const lightColor = theme.colors.palette.secondary100
+  const strongColor = theme.colors.palette.accent500
 
-  const [lightColor, strongColor] = getCategoryGradientColors(dish.getCalories())
-  
   // Get emoji fallback for food
   const getFoodEmoji = (dishName: string): string => {
     const name = dishName.toLowerCase()
-    if (name.includes('burger') || name.includes('sandwich')) return '🍔'
-    if (name.includes('pizza')) return '🍕'
-    if (name.includes('frites') || name.includes('fries')) return '🍟'
-    if (name.includes('soda') || name.includes('coca')) return '🥤'
-    if (name.includes('glace') || name.includes('ice')) return '🍦'
-    if (name.includes('salade') || name.includes('salad')) return '🥗'
-    if (name.includes('pomme') || name.includes('apple')) return '🍎'
-    if (name.includes('banane') || name.includes('banana')) return '🍌'
-    if (name.includes('orange')) return '🍊'
-    if (name.includes('pain') || name.includes('bread')) return '🍞'
-    if (name.includes('pâtes') || name.includes('pasta')) return '🍝'
-    if (name.includes('riz') || name.includes('rice')) return '🍚'
-    if (name.includes('poulet') || name.includes('chicken')) return '🍗'
-    if (name.includes('poisson') || name.includes('fish') || name.includes('saumon')) return '🐟'
-    if (name.includes('œuf') || name.includes('egg')) return '🍳'
-    if (name.includes('chocolat') || name.includes('chocolate')) return '🍫'
-    if (name.includes('gâteau') || name.includes('cake')) return '🍰'
-    if (name.includes('croissant')) return '🥐'
-    if (name.includes('hot') && name.includes('dog')) return '🌭'
-    if (name.includes('donut')) return '🍩'
-    return '🍽️' // Generic food emoji
+    if (name.includes("burger") || name.includes("sandwich")) return "🍔"
+    if (name.includes("pizza")) return "🍕"
+    if (name.includes("frites") || name.includes("fries")) return "🍟"
+    if (name.includes("soda") || name.includes("coca")) return "🥤"
+    if (name.includes("glace") || name.includes("ice")) return "🍦"
+    if (name.includes("salade") || name.includes("salad")) return "🥗"
+    if (name.includes("pomme") || name.includes("apple")) return "🍎"
+    if (name.includes("banane") || name.includes("banana")) return "🍌"
+    if (name.includes("orange")) return "🍊"
+    if (name.includes("pain") || name.includes("bread")) return "🍞"
+    if (name.includes("pâtes") || name.includes("pasta")) return "🍝"
+    if (name.includes("riz") || name.includes("rice")) return "🍚"
+    if (name.includes("poulet") || name.includes("chicken")) return "🍗"
+    if (name.includes("poisson") || name.includes("fish") || name.includes("saumon")) return "🐟"
+    if (name.includes("œuf") || name.includes("egg")) return "🍳"
+    if (name.includes("chocolat") || name.includes("chocolate")) return "🍫"
+    if (name.includes("gâteau") || name.includes("cake")) return "🍰"
+    if (name.includes("croissant")) return "🥐"
+    if (name.includes("hot") && name.includes("dog")) return "🌭"
+    if (name.includes("donut")) return "🍩"
+    return "🍽️" // Generic food emoji
   }
 
   const cardSizeStyle = themed($cardSizes[size])
@@ -113,30 +103,22 @@ export const FoodCard: React.FC<FoodCardProps> = ({
 
       {/* Content Section */}
       <View style={themed($contentContainer)}>
-        <Text 
-          preset="bold" 
-          style={themed($dishName)}
-          numberOfLines={2}
-          ellipsizeMode="tail"
-        >
+        <Text preset="bold" style={themed($dishName)} numberOfLines={2} ellipsizeMode="tail">
           {dish.getName()}
         </Text>
-        
-        <View style={themed($caloriesContainer)}>
-          <Text style={themed($caloriesText)}>
-            {dish.getCalories()}
-          </Text>
-          <Text style={themed($caloriesUnit)}>
-            kcal
-          </Text>
-        </View>
 
-        {/* High calorie indicator */}
-        {dish.isHighCalorie() && (
+        {/* Show calories only for result variant */}
+        {size === "result" && (
+          <View style={themed($caloriesContainer)}>
+            <Text style={themed($caloriesText)}>{dish.getCalories()}</Text>
+            <Text style={themed($caloriesUnit)}>kcal</Text>
+          </View>
+        )}
+
+        {/* High calorie indicator only for result variant */}
+        {size === "result" && dish.isHighCalorie() && (
           <View style={themed($highCalorieBadge)}>
-            <Text style={themed($highCalorieText)}>
-              🔥 Intense
-            </Text>
+            <Text style={themed($highCalorieText)}>🔥 Intense</Text>
           </View>
         )}
       </View>
@@ -181,6 +163,11 @@ const $cardSizes: Record<string, ThemedStyle<ViewStyle>> = {
     minHeight: 140,
     maxHeight: 180, // Prevent overflow
   }),
+  result: ({ spacing }) => ({
+    padding: spacing.md, // Reduced padding to prevent overflow
+    minHeight: 160, // Reduced minimum height
+    maxHeight: 200, // Added maxHeight to prevent overflow
+  }),
 }
 
 const $imageContainer: ThemedStyle<ViewStyle> = ({}) => ({
@@ -211,6 +198,10 @@ const $imageSizes: Record<string, ThemedStyle<any>> = {
   large: ({}) => ({
     width: 60,
     height: 60,
+  }),
+  result: ({}) => ({
+    width: 80, // Reduced image size to prevent overflow
+    height: 80,
   }),
 }
 

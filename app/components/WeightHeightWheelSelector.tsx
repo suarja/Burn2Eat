@@ -1,18 +1,18 @@
 import React from "react"
 import { View, ViewStyle } from "react-native"
 
+import type { Kilograms, Centimeters } from "@/domain/common/UnitTypes"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
-import type { Kilograms, Centimeters } from "@/domain/common/UnitTypes"
 
-import { WheelPicker } from "./WheelPicker"
 import { Text } from "./Text"
+import { WheelPicker } from "./WheelPicker"
 
 export interface WeightHeightWheelSelectorProps {
   /**
    * Current weight in kilograms
    */
-  weight: number 
+  weight: number
   /**
    * Current height in centimeters
    */
@@ -62,8 +62,6 @@ export const WeightHeightWheelSelector: React.FC<WeightHeightWheelSelectorProps>
 
   return (
     <View style={[themed($container), style]}>
- 
-      
       <View style={themed($wheelContainer)}>
         <View style={themed($wheelSection)}>
           <Text preset="formLabel" style={themed($wheelLabel)}>

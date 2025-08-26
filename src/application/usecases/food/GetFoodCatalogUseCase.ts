@@ -1,12 +1,9 @@
-import { DishRepository } from "@/domain/nutrition/DishRepository";
-
+import { DishRepository } from "@/domain/nutrition/DishRepository"
 
 export class GetFoodCatalogUseCase {
-    constructor(
-        private readonly dishRepository: DishRepository
-      ) {}
+  constructor(private readonly dishRepository: DishRepository) {}
 
-    async execute() {
-        return this.dishRepository.getAll()
-    }
+  async execute() {
+    return this.dishRepository.getAll()
+  }
 }

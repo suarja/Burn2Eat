@@ -1,4 +1,4 @@
-import { Activity } from "./Activity";
+import { Activity } from "./Activity"
 
 /**
  * Domain port for accessing physical activity data
@@ -8,30 +8,30 @@ export interface ActivityCatalog {
   /**
    * Get activity by its key
    */
-  getByKey(key: string): Activity | null;
-  
+  getByKey(key: string): Activity | null
+
   /**
    * Get default/popular activities for initial selection
    */
-  listDefaults(): Activity[];
-  
+  listDefaults(): Activity[]
+
   /**
    * Search activities by name or tag
    */
-  search?(query: string): Activity[];
-  
+  search?(query: string): Activity[]
+
   /**
    * Get activities by intensity level
    */
-  getByIntensity?(intensity: 'light' | 'moderate' | 'vigorous'): Activity[];
-  
+  getByIntensity?(intensity: "light" | "moderate" | "vigorous"): Activity[]
+
   /**
    * Get activities within MET range
    */
-  getByMETRange?(minMET: number, maxMET: number): Activity[];
-  
+  getByMETRange?(minMET: number, maxMET: number): Activity[]
+
   /**
    * Get all available activities
    */
-  getAll?(): Activity[];
+  getAll?(): Activity[]
 }

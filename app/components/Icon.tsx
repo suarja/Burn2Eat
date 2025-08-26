@@ -129,7 +129,7 @@ export const iconRegistry = {
   minus: require("@assets/icons/x.png"), // Temporary: using X icon as minus placeholder
   more: require("@assets/icons/more.png"),
   pin: require("@assets/icons/demo/pin.png"), // @demo remove-current-line
-  // NumberStepper icons  
+  // NumberStepper icons
   plus: require("@assets/icons/more.png"), // Temporary: using more icon as plus placeholder
   podcast: require("@assets/icons/demo/podcast.png"), // @demo remove-current-line
   settings: require("@assets/icons/settings.png"),

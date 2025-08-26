@@ -1,9 +1,15 @@
 import { useCallback, useEffect, useState } from "react"
-import { Dependencies } from "../services/Dependencies"
 
-import type { CreateUserProfileInput, CreateUserProfileOutput } from "../../src/application/usecases/CreateUserProfileUseCase"
+import type {
+  CreateUserProfileInput,
+  CreateUserProfileOutput,
+} from "../../src/application/usecases/CreateUserProfileUseCase"
 import type { GetUserProfileOutput } from "../../src/application/usecases/GetUserProfileUseCase"
-import type { UpdateUserProfileInput, UpdateUserProfileOutput } from "../../src/application/usecases/UpdateUserProfileUseCase"
+import type {
+  UpdateUserProfileInput,
+  UpdateUserProfileOutput,
+} from "../../src/application/usecases/UpdateUserProfileUseCase"
+import { Dependencies } from "../services/Dependencies"
 
 /**
  * Custom hook for user profile management using DDD use cases
@@ -12,7 +18,9 @@ import type { UpdateUserProfileInput, UpdateUserProfileOutput } from "../../src/
 export const useUserProfile = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [currentProfile, setCurrentProfile] = useState<GetUserProfileOutput["userProfile"] | null>(null)
+  const [currentProfile, setCurrentProfile] = useState<GetUserProfileOutput["userProfile"] | null>(
+    null,
+  )
 
   const createUserUseCase = Dependencies.createUserUseCase()
   const getUserUseCase = Dependencies.getUserUseCase()
@@ -21,39 +29,42 @@ export const useUserProfile = () => {
   /**
    * Create a new user profile (primary profile for single-user app)
    */
-  const createProfile = useCallback(async (input: CreateUserProfileInput): Promise<CreateUserProfileOutput> => {
-    setLoading(true)
-    setError(null)
+  const createProfile = useCallback(
+    async (input: CreateUserProfileInput): Promise<CreateUserProfileOutput> => {
+      setLoading(true)
+      setError(null)
 
-    try {
-      const result = await createUserUseCase.createPrimary(input)
-      
-      if (result.success && result.userProfile) {
-        // Convert CreateUserProfileOutput to GetUserProfileOutput format by adding primaryActivityKey
-        const profileWithPrimaryKey = {
-          ...result.userProfile,
-          primaryActivityKey: result.userProfile.preferredActivityKeys[0] || null
+      try {
+        const result = await createUserUseCase.createPrimary(input)
+
+        if (result.success && result.userProfile) {
+          // Convert CreateUserProfileOutput to GetUserProfileOutput format by adding primaryActivityKey
+          const profileWithPrimaryKey = {
+            ...result.userProfile,
+            primaryActivityKey: result.userProfile.preferredActivityKeys[0] || null,
+          }
+          setCurrentProfile(profileWithPrimaryKey)
+        } else {
+          console.warn("❌ useUserProfile: Failed to create profile:", result.error)
+          setError(result.error || "Failed to create profile")
         }
-        setCurrentProfile(profileWithPrimaryKey)
-      } else {
-        console.warn("❌ useUserProfile: Failed to create profile:", result.error)
-        setError(result.error || "Failed to create profile")
-      }
 
-      return result
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      console.error("💥 useUserProfile: Exception during profile creation:", errorMessage)
-      setError(errorMessage)
-      return {
-        success: false,
-        error: errorMessage,
-        userProfile: null
+        return result
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        console.error("💥 useUserProfile: Exception during profile creation:", errorMessage)
+        setError(errorMessage)
+        return {
+          success: false,
+          error: errorMessage,
+          userProfile: null,
+        }
+      } finally {
+        setLoading(false)
       }
-    } finally {
-      setLoading(false)
-    }
-  }, [createUserUseCase])
+    },
+    [createUserUseCase],
+  )
 
   /**
    * Load the current user profile
@@ -79,7 +90,7 @@ export const useUserProfile = () => {
       return {
         success: false,
         error: errorMessage,
-        userProfile: null
+        userProfile: null,
       }
     } finally {
       setLoading(false)
@@ -89,39 +100,42 @@ export const useUserProfile = () => {
   /**
    * Update the current user profile
    */
-  const updateProfile = useCallback(async (input: UpdateUserProfileInput): Promise<UpdateUserProfileOutput> => {
-    setLoading(true)
-    setError(null)
+  const updateProfile = useCallback(
+    async (input: UpdateUserProfileInput): Promise<UpdateUserProfileOutput> => {
+      setLoading(true)
+      setError(null)
 
-    try {
-      const result = await updateUserUseCase.updateCurrent(input)
+      try {
+        const result = await updateUserUseCase.updateCurrent(input)
 
-      if (result.success && result.userProfile) {
-        // Convert UpdateUserProfileOutput to GetUserProfileOutput format by adding primaryActivityKey
-        const profileWithPrimaryKey = {
-          ...result.userProfile,
-          primaryActivityKey: result.userProfile.preferredActivityKeys[0] || null
+        if (result.success && result.userProfile) {
+          // Convert UpdateUserProfileOutput to GetUserProfileOutput format by adding primaryActivityKey
+          const profileWithPrimaryKey = {
+            ...result.userProfile,
+            primaryActivityKey: result.userProfile.preferredActivityKeys[0] || null,
+          }
+          setCurrentProfile(profileWithPrimaryKey)
+        } else {
+          console.warn("❌ useUserProfile: Failed to update profile:", result.error)
+          setError(result.error || "Failed to update profile")
         }
-        setCurrentProfile(profileWithPrimaryKey)
-      } else {
-        console.warn("❌ useUserProfile: Failed to update profile:", result.error)
-        setError(result.error || "Failed to update profile")
-      }
 
-      return result
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      console.error("💥 useUserProfile: Exception during profile update:", errorMessage)
-      setError(errorMessage)
-      return {
-        success: false,
-        error: errorMessage,
-        userProfile: null
+        return result
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        console.error("💥 useUserProfile: Exception during profile update:", errorMessage)
+        setError(errorMessage)
+        return {
+          success: false,
+          error: errorMessage,
+          userProfile: null,
+        }
+      } finally {
+        setLoading(false)
       }
-    } finally {
-      setLoading(false)
-    }
-  }, [updateUserUseCase])
+    },
+    [updateUserUseCase],
+  )
 
   /**
    * Check if a current profile exists

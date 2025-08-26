@@ -5,9 +5,9 @@ import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 
 import { Button } from "./Button"
-import { TextField } from "./TextField"
-import { Text } from "./Text"
 import { Icon } from "./Icon"
+import { Text } from "./Text"
+import { TextField } from "./TextField"
 
 export interface NumberStepperProps {
   /**
@@ -88,19 +88,22 @@ export const NumberStepper: React.FC<NumberStepperProps> = ({
     }
   }, [value, step, min, onChange])
 
-  const handleInputChange = useCallback((text: string) => {
-    // Allow empty string for editing
-    setInputValue(text)
-    
-    // Parse and validate numeric input
-    const numericValue = parseFloat(text)
-    if (!isNaN(numericValue)) {
-      const clampedValue = Math.max(min, Math.min(max, numericValue))
-      if (clampedValue !== value) {
-        onChange(clampedValue)
+  const handleInputChange = useCallback(
+    (text: string) => {
+      // Allow empty string for editing
+      setInputValue(text)
+
+      // Parse and validate numeric input
+      const numericValue = parseFloat(text)
+      if (!isNaN(numericValue)) {
+        const clampedValue = Math.max(min, Math.min(max, numericValue))
+        if (clampedValue !== value) {
+          onChange(clampedValue)
+        }
       }
-    }
-  }, [min, max, value, onChange])
+    },
+    [min, max, value, onChange],
+  )
 
   const handleInputBlur = useCallback(() => {
     // Reset to current valid value if input is invalid
@@ -143,14 +146,15 @@ export const NumberStepper: React.FC<NumberStepperProps> = ({
         >
           -
         </Button>
-        
+
         {/* Value Display */}
         <View style={themed($valueContainer)}>
           <Text style={themed($valueText)}>
-            {value}{suffix}
+            {value}
+            {suffix}
           </Text>
         </View>
-        
+
         {/* Plus Button */}
         <Button
           style={[themed($button), buttonStyle]}

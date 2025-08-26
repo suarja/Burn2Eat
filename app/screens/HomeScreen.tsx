@@ -1,34 +1,30 @@
 import React, { FC, useEffect, useState } from "react"
 import { View, ViewStyle, TextStyle, ScrollView, Dimensions } from "react-native"
 
-import { Button } from "@/components/Button"
+import { FoodCard } from "@/components/FoodCard"
+import { Icon } from "@/components/Icon"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import { TextField } from "@/components/TextField"
-import { Icon } from "@/components/Icon"
-import { FoodCard } from "@/components/FoodCard"
-import type { MainTabScreenProps } from "@/navigators/MainTabNavigator"
-import type { ThemedStyle } from "@/theme/types"
-import { useAppTheme } from "@/theme/context"
-import { $styles } from "@/theme/styles"
-import { FoodDataService, type FoodItem } from "@/services/FoodDataService"
 import { Dish } from "@/domain/nutrition/Dish"
 import { useFoodCatalog } from "@/hooks/useFoodData"
+import type { MainTabScreenProps } from "@/navigators/MainTabNavigator"
+import { useAppTheme } from "@/theme/context"
+import { $styles } from "@/theme/styles"
+import type { ThemedStyle } from "@/theme/types"
+import { colors } from "@/theme/colors"
 
 interface HomeScreenProps extends MainTabScreenProps<"Home"> {}
 
 export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
   const { navigation } = props
   const { themed } = useAppTheme()
-  
+
   const [searchText, setSearchText] = useState("")
-  const [searchResults, setSearchResults] = useState<Dish[] >([])
-  const [popularFoods, setPopularFoods] = useState<Dish[] | null>()
+  const [searchResults, setSearchResults] = useState<Dish[]>([])
 
   const {
-    data: {catalog
-      , loading
-    }
+    data: { catalog, loading },
   } = useFoodCatalog()
 
   const handleFoodSelect = (food: Dish) => {
@@ -38,32 +34,27 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
   }
 
   useEffect(() => {
-    if (!catalog ) return
-    if (searchText=== "" ) {
+    if (!catalog) return
+    if (searchText === "") {
       setSearchResults([])
       return
     }
-    setSearchResults(catalog.filter(dish => dish.getName().toString().includes(searchText)))
+    setSearchResults(catalog.filter((dish) => dish.getName().toString().includes(searchText)))
   }, [searchText])
 
-if (loading || !catalog) return (
-  <View>
-    <Text>
-    Empty Catalog
-    </Text>
-  </View>
-)
+  if (loading || !catalog)
+    return (
+      <View>
+        <Text>Empty Catalog</Text>
+      </View>
+    )
 
   return (
     <Screen preset="scroll" style={themed($screenContainer)}>
       <View style={themed($styles.container)}>
         {/* Search Field */}
         <View style={themed($searchContainer)}>
-          <Icon 
-            icon="view" 
-            size={20}
-            containerStyle={themed($searchIcon)}
-          />
+          <Icon icon="view" size={20} containerStyle={themed($searchIcon)} />
           <TextField
             value={searchText}
             onChangeText={setSearchText}
@@ -76,11 +67,11 @@ if (loading || !catalog) return (
 
         {/* Dynamic Foods Section */}
         <Text preset="bold" style={themed($sectionTitle)}>
-          {searchResults.length > 0 ? `Résultats (${searchResults.length})` : 'Populaires:'}
+          {searchResults.length > 0 ? `Résultats (${searchResults.length})` : "Plats:"}
         </Text>
         <ScrollView style={themed($foodScroll)}>
           <View style={themed($foodGrid)}>
-            {(searchResults.length > 0 ? searchResults : catalog).map((dish) => (
+            {(searchText.length > 0 ? searchResults : catalog).length ? (searchText.length > 0 ? searchResults : catalog).map((dish) => (
               <FoodCard
                 key={dish.getId().toString()}
                 dish={dish}
@@ -88,27 +79,19 @@ if (loading || !catalog) return (
                 style={themed($foodCardWrapper)}
                 size="medium"
               />
-            ))}
+            )): (
+              <View style={{display: "flex", alignItems: "center", width: "100%", height: "100%"}}>
+                <Text style={{ color: colors.palette.angry500, fontWeight: "500", fontSize: 20, }}>
+             
+🚫
+                </Text>
+              </View>
+            )}
           </View>
         </ScrollView>
-        {/* Scanner Placeholder */}
-        <Button
-          preset="default"
-          style={themed($scannerButton)}
-          onPress={() => console.log("Scanner functionality coming soon")}
-        >
-          Scanner code-barre 📷
-        </Button>
-
         {searchResults.length === 0 && searchText.trim().length >= 2 && (
-          <Text style={themed($noResultsText)}>
-            Aucun résultat pour "{searchText}"
-          </Text>
+          <Text style={themed($noResultsText)}>Aucun résultat pour "{searchText}"</Text>
         )}
-        
-        <Text style={themed($comingSoon)}>
-          Scanner code-barre à venir dans les prochaines versions...
-        </Text>
       </View>
     </Screen>
   )
@@ -117,8 +100,6 @@ if (loading || !catalog) return (
 const $screenContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
   backgroundColor: colors.background,
 })
-
-
 
 const $searchContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   flexDirection: "row",
@@ -141,9 +122,10 @@ const $searchFieldContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 })
 
 const $searchInputWrapper: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  backgroundColor: "transparent",
   borderWidth: 0,
   minHeight: 40,
+  backgroundColor: colors.palette.accent200
+
 })
 
 const $searchInput: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
@@ -166,8 +148,8 @@ const $foodGrid: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginBottom: spacing.xl,
 })
 const $foodScroll: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-height: SCREEN_HEIGHT / 2,
-marginVertical: spacing.md
+  height: SCREEN_HEIGHT * 0.6,
+  marginVertical: spacing.md,
 })
 
 const $foodCardWrapper: ThemedStyle<ViewStyle> = ({ spacing }) => ({
@@ -175,18 +157,6 @@ const $foodCardWrapper: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginHorizontal: "1%",
 })
 
-const $scannerButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  marginBottom: spacing.lg,
-  backgroundColor: colors.palette.neutral200,
-})
-
-const $comingSoon: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
-  textAlign: "center",
-  color: colors.textDim,
-  fontSize: 12,
-  fontStyle: "italic",
-  marginTop: spacing.md,
-})
 
 const $noResultsText: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
   textAlign: "center",

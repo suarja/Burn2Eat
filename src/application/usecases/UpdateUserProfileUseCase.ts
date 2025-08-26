@@ -1,15 +1,14 @@
-import { UserHealthInfoRepository } from "../../domain/physiology/UserHealthInfoRepository";
-import { UserHealthInfoId } from "../../domain/physiology/UserHealthInfoId";
-import { Sex } from "../../domain/physiology/Sex";
-import { Centimeters, Kilograms } from "src/domain/common/UnitTypes";
+import { Centimeters, Kilograms } from "src/domain/common/UnitTypes"
+
+import { Sex } from "../../domain/physiology/Sex"
+import { UserHealthInfoId } from "../../domain/physiology/UserHealthInfoId"
+import { UserHealthInfoRepository } from "../../domain/physiology/UserHealthInfoRepository"
 
 /**
  * Use case for updating an existing user profile
  */
 export class UpdateUserProfileUseCase {
-  constructor(
-    private readonly userRepository: UserHealthInfoRepository
-  ) {}
+  constructor(private readonly userRepository: UserHealthInfoRepository) {}
 
   /**
    * Execute the use case to update a user profile
@@ -17,34 +16,32 @@ export class UpdateUserProfileUseCase {
   async execute(input: UpdateUserProfileInput): Promise<UpdateUserProfileOutput> {
     try {
       // Validate input
-      this.validateInput(input);
+      this.validateInput(input)
 
       // Get the user ID (use primary if not specified)
-      const userId = input.id ? UserHealthInfoId.from(input.id) : UserHealthInfoId.primary();
+      const userId = input.id ? UserHealthInfoId.from(input.id) : UserHealthInfoId.primary()
 
       // Find the existing profile
-      const existingProfile = await this.userRepository.findById(userId);
+      const existingProfile = await this.userRepository.findById(userId)
 
       if (!existingProfile) {
         return {
           success: false,
           error: `User profile with ID ${userId.toString()} not found`,
-          userProfile: null
-        };
+          userProfile: null,
+        }
       }
-
 
       // Update the profile with new data
       const updatedProfile = existingProfile.withProfileData(
         input.sex,
         input.weight as Kilograms,
         input.height as Centimeters,
-        input.preferredActivityKeys
-      );
-
+        input.preferredActivityKeys,
+      )
 
       // Save the updated profile
-      const savedProfile = await this.userRepository.save(updatedProfile);
+      const savedProfile = await this.userRepository.save(updatedProfile)
 
       return {
         success: true,
@@ -56,44 +53,44 @@ export class UpdateUserProfileUseCase {
           preferredActivityKeys: savedProfile.getPreferredActivityKeys(),
           bmi: savedProfile.calculateBMI(),
           bmiCategory: savedProfile.getBMICategory(),
-          hasHealthyWeight: savedProfile.hasHealthyWeight()
-        }
-      };
+          hasHealthyWeight: savedProfile.hasHealthyWeight(),
+        },
+      }
     } catch (error) {
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
-        userProfile: null
-      };
+        userProfile: null,
+      }
     }
   }
 
   /**
    * Update the current user profile (convenience method)
    */
-  async updateCurrent(input: Omit<UpdateUserProfileInput, 'id'>): Promise<UpdateUserProfileOutput> {
+  async updateCurrent(input: Omit<UpdateUserProfileInput, "id">): Promise<UpdateUserProfileOutput> {
     try {
       // Get the current profile
-      const currentProfile = await this.userRepository.getCurrent();
+      const currentProfile = await this.userRepository.getCurrent()
       if (!currentProfile) {
         return {
           success: false,
-          error: 'No current user profile found',
-          userProfile: null
-        };
+          error: "No current user profile found",
+          userProfile: null,
+        }
       }
 
       // Update with the current profile's ID
       return await this.execute({
         ...input,
-        id: currentProfile.getId().toString()
-      });
+        id: currentProfile.getId().toString(),
+      })
     } catch (error) {
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
-        userProfile: null
-      };
+        userProfile: null,
+      }
     }
   }
 
@@ -103,8 +100,8 @@ export class UpdateUserProfileUseCase {
   async updateWeight(weight: number, userId?: string): Promise<UpdateUserProfileOutput> {
     return await this.execute({
       id: userId,
-      weight: weight
-    });
+      weight: weight,
+    })
   }
 
   /**
@@ -113,18 +110,21 @@ export class UpdateUserProfileUseCase {
   async updateHeight(height: number, userId?: string): Promise<UpdateUserProfileOutput> {
     return await this.execute({
       id: userId,
-      height: height
-    });
+      height: height,
+    })
   }
 
   /**
    * Update only preferred activities (convenience method)
    */
-  async updatePreferredActivities(activityKeys: string[], userId?: string): Promise<UpdateUserProfileOutput> {
+  async updatePreferredActivities(
+    activityKeys: string[],
+    userId?: string,
+  ): Promise<UpdateUserProfileOutput> {
     return await this.execute({
       id: userId,
-      preferredActivityKeys: activityKeys
-    });
+      preferredActivityKeys: activityKeys,
+    })
   }
 
   /**
@@ -132,7 +132,7 @@ export class UpdateUserProfileUseCase {
    */
   private validateInput(input: UpdateUserProfileInput): void {
     if (!input) {
-      throw new Error('Input data is required');
+      throw new Error("Input data is required")
     }
 
     // At least one field must be provided for update
@@ -142,28 +142,28 @@ export class UpdateUserProfileUseCase {
       input.height === undefined &&
       input.preferredActivityKeys === undefined
     ) {
-      throw new Error('At least one field must be provided for update');
+      throw new Error("At least one field must be provided for update")
     }
 
-    if (input.sex !== undefined && !['male', 'female', 'unspecified'].includes(input.sex)) {
-      throw new Error('Valid sex is required (male, female, or unspecified)');
+    if (input.sex !== undefined && !["male", "female", "unspecified"].includes(input.sex)) {
+      throw new Error("Valid sex is required (male, female, or unspecified)")
     }
 
     if (input.weight !== undefined && (input.weight < 30 || input.weight > 300)) {
-      throw new Error('Weight must be between 30 and 300 kg');
+      throw new Error("Weight must be between 30 and 300 kg")
     }
 
     if (input.height !== undefined && (input.height < 120 || input.height > 250)) {
-      throw new Error('Height must be between 120 and 250 cm');
+      throw new Error("Height must be between 120 and 250 cm")
     }
 
     if (input.preferredActivityKeys !== undefined) {
       if (!Array.isArray(input.preferredActivityKeys)) {
-        throw new Error('Preferred activity keys must be an array');
+        throw new Error("Preferred activity keys must be an array")
       }
 
-      if (input.preferredActivityKeys.some(key => typeof key !== 'string' || key.trim() === '')) {
-        throw new Error('All preferred activity keys must be non-empty strings');
+      if (input.preferredActivityKeys.some((key) => typeof key !== "string" || key.trim() === "")) {
+        throw new Error("All preferred activity keys must be non-empty strings")
       }
     }
   }
@@ -173,27 +173,27 @@ export class UpdateUserProfileUseCase {
  * Input for updating a user profile
  */
 export interface UpdateUserProfileInput {
-  id?: string; // If not provided, updates current user
-  sex?: Sex;
-  weight?: number; // Kilograms
-  height?: number; // Centimeters
-  preferredActivityKeys?: string[];
+  id?: string // If not provided, updates current user
+  sex?: Sex
+  weight?: number // Kilograms
+  height?: number // Centimeters
+  preferredActivityKeys?: string[]
 }
 
 /**
  * Output from updating a user profile
  */
 export interface UpdateUserProfileOutput {
-  success: boolean;
-  error?: string;
+  success: boolean
+  error?: string
   userProfile: {
-    id: string;
-    sex: Sex;
-    weight: number;
-    height: number;
-    preferredActivityKeys: string[];
-    bmi: number;
-    bmiCategory: 'underweight' | 'normal' | 'overweight' | 'obese';
-    hasHealthyWeight: boolean;
-  } | null;
+    id: string
+    sex: Sex
+    weight: number
+    height: number
+    preferredActivityKeys: string[]
+    bmi: number
+    bmiCategory: "underweight" | "normal" | "overweight" | "obese"
+    hasHealthyWeight: boolean
+  } | null
 }

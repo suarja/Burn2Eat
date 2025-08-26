@@ -1,17 +1,17 @@
-import { MMKVUserHealthInfoRepository } from "../../src/infrastructure/adapters/MMKVUserHealthInfoRepository"
+import { GetFoodCatalogUseCase } from "@/application/usecases/food/GetFoodCatalogUseCase"
+
+import { CalculateEffortUseCase } from "../../src/application/usecases/CalculateEffortUseCase"
 import { CreateUserProfileUseCase } from "../../src/application/usecases/CreateUserProfileUseCase"
 import { GetUserProfileUseCase } from "../../src/application/usecases/GetUserProfileUseCase"
 import { UpdateUserProfileUseCase } from "../../src/application/usecases/UpdateUserProfileUseCase"
+import { StandardMETEffortPolicy } from "../../src/domain/effort/EffortPolicy"
+import type { EffortPolicy } from "../../src/domain/effort/EffortPolicy"
+import type { DishRepository } from "../../src/domain/nutrition/DishRepository"
+import type { ActivityCatalog } from "../../src/domain/physiology/ActivityCatalog"
+import type { UserHealthInfoRepository } from "../../src/domain/physiology/UserHealthInfoRepository"
+import { MMKVUserHealthInfoRepository } from "../../src/infrastructure/adapters/MMKVUserHealthInfoRepository"
 import { StaticActivityCatalog } from "../../src/infrastructure/adapters/StaticActivityCatalog"
 import { StaticDishRepository } from "../../src/infrastructure/adapters/StaticDishRepository"
-import { CalculateEffortUseCase } from "../../src/application/usecases/CalculateEffortUseCase"
-import { StandardMETEffortPolicy } from "../../src/domain/effort/EffortPolicy"
-
-import type { UserHealthInfoRepository } from "../../src/domain/physiology/UserHealthInfoRepository"
-import type { ActivityCatalog } from "../../src/domain/physiology/ActivityCatalog"
-import type { DishRepository } from "../../src/domain/nutrition/DishRepository"
-import type { EffortPolicy } from "../../src/domain/effort/EffortPolicy"
-import { GetFoodCatalogUseCase } from "@/application/usecases/food/GetFoodCatalogUseCase"
 
 /**
  * Singleton dependency injection container for DDD architecture
@@ -50,7 +50,7 @@ export class Dependencies {
     this._calculateEffortUseCase = new CalculateEffortUseCase(
       this._dishRepository,
       this._activityCatalog,
-      this._effortPolicy
+      this._effortPolicy,
     )
     this._getFoodCatalogUseCase = new GetFoodCatalogUseCase(this._dishRepository)
 

@@ -32,7 +32,7 @@ export interface SimpleConfettiProps {
   onComplete?: () => void
 }
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window")
 
 export const SimpleConfetti: React.FC<SimpleConfettiProps> = ({
   active,
@@ -85,7 +85,7 @@ export const SimpleConfetti: React.FC<SimpleConfettiProps> = ({
             toValue: 360,
             duration: 1000 + Math.random() * 500,
             useNativeDriver: false,
-          })
+          }),
         ),
         // Fade out animation
         Animated.sequence([
@@ -94,7 +94,7 @@ export const SimpleConfetti: React.FC<SimpleConfettiProps> = ({
             toValue: 0,
             duration: duration * 0.3,
             useNativeDriver: false,
-          })
+          }),
         ]),
         // Horizontal drift (simplified)
         Animated.loop(
@@ -109,7 +109,7 @@ export const SimpleConfetti: React.FC<SimpleConfettiProps> = ({
               duration: 2000,
               useNativeDriver: false,
             }),
-          ])
+          ]),
         ),
       ])
     })
@@ -149,7 +149,7 @@ export const SimpleConfetti: React.FC<SimpleConfettiProps> = ({
                 {
                   rotate: piece.rotation.interpolate({
                     inputRange: [0, 360],
-                    outputRange: ['0deg', '360deg'],
+                    outputRange: ["0deg", "360deg"],
                   }),
                 },
               ],

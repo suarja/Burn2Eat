@@ -1,9 +1,9 @@
 import React from "react"
 import { View, ViewStyle } from "react-native"
 
+import type { Kilograms, Centimeters } from "@/domain/common/UnitTypes"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
-import type { Kilograms, Centimeters } from "@/domain/common/UnitTypes"
 
 import { NumberStepper } from "./NumberStepper"
 import { Text } from "./Text"
@@ -65,7 +65,7 @@ export const WeightHeightSelector: React.FC<WeightHeightSelectorProps> = ({
           Informations physiques
         </Text>
       )}
-      
+
       <View style={themed($selectorsContainer)}>
         <View style={themed($selectorWrapper)}>
           <NumberStepper

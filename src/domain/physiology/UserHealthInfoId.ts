@@ -9,17 +9,17 @@ export class UserHealthInfoId {
    * Create from existing ID string
    */
   static from(value: string): UserHealthInfoId {
-    if (!value || value.trim() === '') {
-      throw new Error('UserHealthInfoId cannot be empty');
+    if (!value || value.trim() === "") {
+      throw new Error("UserHealthInfoId cannot be empty")
     }
-    
+
     // Basic UUID format validation
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
     if (!uuidRegex.test(value)) {
-      throw new Error('UserHealthInfoId must be a valid UUID format');
+      throw new Error("UserHealthInfoId must be a valid UUID format")
     }
-    
-    return new UserHealthInfoId(value);
+
+    return new UserHealthInfoId(value)
   }
 
   /**
@@ -28,34 +28,34 @@ export class UserHealthInfoId {
    */
   static generate(): UserHealthInfoId {
     // Generate UUID v4
-    const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      const r = Math.random() * 16 | 0;
-      const v = c === 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-    
-    return new UserHealthInfoId(uuid);
+    const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+      const r = (Math.random() * 16) | 0
+      const v = c === "x" ? r : (r & 0x3) | 0x8
+      return v.toString(16)
+    })
+
+    return new UserHealthInfoId(uuid)
   }
 
   /**
    * Get the ID value as string
    */
   toString(): string {
-    return this.value;
+    return this.value
   }
 
   /**
    * Get the raw value
    */
   getValue(): string {
-    return this.value;
+    return this.value
   }
 
   /**
    * Check equality with another UserHealthInfoId
    */
   equals(other: UserHealthInfoId): boolean {
-    return this.value === other.value;
+    return this.value === other.value
   }
 
   /**
@@ -63,6 +63,6 @@ export class UserHealthInfoId {
    * For single-user scenarios
    */
   static primary(): UserHealthInfoId {
-    return UserHealthInfoId.from('00000000-0000-4000-8000-000000000001');
+    return UserHealthInfoId.from("00000000-0000-4000-8000-000000000001")
   }
 }

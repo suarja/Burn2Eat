@@ -3,12 +3,12 @@ import { Slot, SplashScreen } from "expo-router"
 import { useFonts } from "@expo-google-fonts/space-grotesk"
 import { KeyboardProvider } from "react-native-keyboard-controller"
 import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-context"
+import ToastManager from "toastify-react-native"
 
 import { initI18n } from "@/i18n"
 import { ThemeProvider } from "@/theme/context"
 import { customFontsToLoad } from "@/theme/typography"
 import { loadDateFnsLocale } from "@/utils/formatDate"
-import ToastManager from 'toastify-react-native'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -18,7 +18,6 @@ if (__DEV__) {
   // to only execute this in development.
   require("src/devtools/ReactotronConfig.ts")
 }
-
 
 export default function Root() {
   const [fontsLoaded, fontError] = useFonts(customFontsToLoad)
@@ -54,7 +53,6 @@ export default function Root() {
         </KeyboardProvider>
       </ThemeProvider>
       <ToastManager />
-
     </SafeAreaProvider>
   )
 }

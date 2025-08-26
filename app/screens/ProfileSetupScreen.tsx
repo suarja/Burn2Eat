@@ -1,32 +1,30 @@
 import React, { FC, useEffect, useState } from "react"
 import { View, ViewStyle, TextStyle } from "react-native"
+import { Toast } from "toastify-react-native"
 
+import { ActivityWheelPicker } from "@/components/ActivityWheelPicker"
 import { Button } from "@/components/Button"
+import { Card } from "@/components/Card"
 import { Header } from "@/components/Header"
+import { WeightHeightSelector, WeightHeightWheelSelector } from "@/components/NumberComponents"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
-import { Card } from "@/components/Card"
-import { WeightHeightSelector, WeightHeightWheelSelector } from "@/components/NumberComponents"
-import { ActivityWheelPicker } from "@/components/ActivityWheelPicker"
 import { useUserProfile } from "@/hooks/useUserProfile"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
-import type { ThemedStyle } from "@/theme/types"
 import { useAppTheme } from "@/theme/context"
-import { Toast } from "toastify-react-native"
+import type { ThemedStyle } from "@/theme/types"
 
 interface ProfileSetupScreenProps extends AppStackScreenProps<"Profile"> {}
 
-export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileSetupScreen(
-  props,
-) {
+export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileSetupScreen(props) {
   const { navigation } = props
   const { themed } = useAppTheme()
-  
+
   const { createProfile, loadCurrentProfile, loading, error } = useUserProfile()
-  
+
   const [weight, setWeight] = useState(75)
   const [height, setHeight] = useState(175)
-  const [useWheelPicker, setUseWheelPicker] = useState(true) 
+  const [useWheelPicker, setUseWheelPicker] = useState(true)
   const [selectedActivity, setSelectedActivity] = useState<string | null>("jogging") // Default activity
   const [isInitialLoad, setIsInitialLoad] = useState(true)
 
@@ -38,59 +36,40 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
     setHeight(newHeight)
   }
 
-
   const handleSave = async () => {
     if (!selectedActivity) {
-      Toast.warn(
-        "⚠️ Sélectionne ton sport préféré !",
-        'bottom',
-        'warning',
-        'Ionicons',
-        false
-      )
+      Toast.warn("⚠️ Sélectionne ton sport préféré !", "bottom", "warning", "Ionicons", false)
       return
     }
-    
+
     try {
       const result = await createProfile({
         sex: "unspecified", // Default sex, can be enhanced later
         weight,
         height,
-        preferredActivityKeys: [selectedActivity], 
+        preferredActivityKeys: [selectedActivity],
       })
-      
+
       if (result.success && result.userProfile) {
         Toast.success(
           "🎉 Profil sauvegardé avec succès !",
-          'bottom',
-          'checkmark-circle',
-          'Ionicons',
-          false
+          "bottom",
+          "checkmark-circle",
+          "Ionicons",
+          false,
         )
-        
+
         // Navigate to home after a delay
         setTimeout(() => {
           navigation.navigate("MainTabs", { screen: "Home" })
         }, 2000)
       } else {
         console.error("❌ ProfileSetupScreen: Failed to save profile via DDD:", result.error)
-        Toast.error(
-          "❌ Erreur lors de la sauvegarde",
-          'bottom',
-          'close-circle',
-          'Ionicons',
-          false
-        )
+        Toast.error("❌ Erreur lors de la sauvegarde", "bottom", "close-circle", "Ionicons", false)
       }
     } catch (error) {
       console.error("💥 ProfileSetupScreen: Exception during save:", error)
-      Toast.error(
-        "💥 Une erreur est survenue",
-        'bottom',
-        'alert-circle',
-        'Ionicons',
-        false
-      )
+      Toast.error("💥 Une erreur est survenue", "bottom", "alert-circle", "Ionicons", false)
     }
   }
 
@@ -102,33 +81,21 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
     const loadProfile = async () => {
       try {
         const result = await loadCurrentProfile()
-        
+
         if (result.success && result.userProfile) {
           setWeight(result.userProfile.weight)
           setHeight(result.userProfile.height)
-          
-          const primaryActivity = result.userProfile.preferredActivityKeys?.[0] || result.userProfile.primaryActivityKey
-          
+
+          const primaryActivity =
+            result.userProfile.preferredActivityKeys?.[0] || result.userProfile.primaryActivityKey
+
           if (primaryActivity) {
             setSelectedActivity(primaryActivity)
           }
-          
-          Toast.info(
-            `👋 Salut ! Profil récupéré`,
-            'top',
-            'person-circle',
-            'Ionicons',
-            false
-          )
+
         } else {
           console.log("🆕 ProfileSetupScreen: No existing profile via DDD, using defaults")
-          Toast.info(
-            `🆕 Créons ton profil !`,
-            'top',
-            'add-circle',
-            'Ionicons',
-            false
-          )
+          Toast.info(`🆕 Créons ton profil !`, "top", "add-circle", "Ionicons", false)
         }
       } catch (error) {
         console.warn("❌ ProfileSetupScreen: Failed to load existing profile via DDD:", error)
@@ -140,38 +107,17 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
     loadProfile()
   }, [loadCurrentProfile])
 
-
   return (
     <Screen preset="scroll" style={themed($screenContainer)}>
-      <Header 
-        title="Configuration"
-        leftIcon="back"
-        onLeftPress={handleBack}
-      />
-      
-      <View style={themed($contentContainer)}>
-        {error && (
-          <Text style={themed($errorText)}>
-            ❌ {error}
-          </Text>
-        )}
+      <Header title="Configuration" leftIcon="back" onLeftPress={handleBack} />
 
-        {/* Welcome Section */}
-        <View style={themed($section)}>
-          <Text style={themed($sectionTitle)}>
-            👋 Quelques infos rapides
-          </Text>
-          <Text style={themed($sectionSubtitle)}>
-            Pour des calculs d'effort personnalisés
-          </Text>
-        </View>
+      <View style={themed($contentContainer)}>
+        {error && <Text style={themed($errorText)}>❌ {error}</Text>}
 
         {/* Physical Stats Section */}
         <View style={themed($section)}>
-          <Text style={themed($sectionTitle)}>
-            📏 Tes mesures
-          </Text>
-          
+          <Text style={themed($sectionTitle)}>📏 Tes mesures</Text>
+
           {useWheelPicker ? (
             !isInitialLoad ? (
               <WeightHeightWheelSelector
@@ -182,9 +128,7 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
                 style={themed($selectorContainer)}
               />
             ) : (
-              <Text style={themed($loadingText)}>
-                ⏳ Chargement...
-              </Text>
+              <Text style={themed($loadingText)}>⏳ Chargement...</Text>
             )
           ) : (
             <WeightHeightSelector
@@ -199,22 +143,16 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
 
         {/* Activity Selection Section */}
         <View style={themed($section)}>
-          <Text style={themed($sectionTitle)}>
-            🏃‍♂️ Ton sport préféré
-          </Text>
-          
           {!isInitialLoad ? (
             <ActivityWheelPicker
               selectedActivity={selectedActivity}
               onActivitySelect={(activityKey) => {
                 setSelectedActivity(activityKey)
               }}
-              height={150}
+              height={120} // Reduced height from 150
             />
           ) : (
-            <Text style={themed($loadingText)}>
-              ⏳ Chargement des activités...
-            </Text>
+            <Text style={themed($loadingText)}>⏳ Chargement des activités...</Text>
           )}
         </View>
 
@@ -228,9 +166,7 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
           {loading ? "💾 Sauvegarde..." : "🚀 Commencer l'aventure !"}
         </Button>
 
-        <Text style={themed($footerText)}>
-          Tu pourras modifier ces infos plus tard dans les paramètres
-        </Text>
+        <Text style={themed($footerText)}>Modifiable dans les paramètres</Text>
       </View>
     </Screen>
   )
@@ -245,7 +181,7 @@ const $contentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 })
 
 const $section: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginBottom: spacing.xl,
+  marginBottom: spacing.sm, // Reduced from xl to lg
 })
 
 const $sectionTitle: ThemedStyle<TextStyle> = ({ spacing, colors, typography }) => ({
@@ -258,7 +194,7 @@ const $sectionTitle: ThemedStyle<TextStyle> = ({ spacing, colors, typography }) 
 const $sectionSubtitle: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
   fontSize: 14,
   color: colors.textDim,
-  marginBottom: spacing.md,
+  marginBottom: spacing.sm, // Reduced from md to sm
 })
 
 const $selectorContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
@@ -275,8 +211,7 @@ const $loadingText: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
 
 const $saveButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   backgroundColor: colors.tint,
-  marginTop: spacing.lg,
-  marginBottom: spacing.md,
+  marginBottom: spacing.sm, // Reduced from md to sm
 })
 
 const $errorText: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
@@ -290,6 +225,6 @@ const $footerText: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
   color: colors.textDim,
   fontSize: 12,
   fontStyle: "italic",
-  marginTop: spacing.sm,
-  marginBottom: spacing.lg,
+  marginTop: spacing.xs, // Reduced from sm
+  marginBottom: spacing.sm, // Reduced from lg
 })

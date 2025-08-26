@@ -1,4 +1,4 @@
-import { Dish } from "./Dish";
+import { Dish } from "./Dish"
 
 /**
  * Domain port for accessing dish data
@@ -9,31 +9,34 @@ export interface DishRepository {
    * Find dishes by name query
    * Supports partial matching and multiple languages
    */
-  findByName(query: string, limit?: number): Promise<Dish[]>;
-  
+  findByName(query: string, limit?: number): Promise<Dish[]>
+
   /**
    * Find a dish by its unique identifier
    */
-  findById(id: string): Promise<Dish | null>;
-  
+  findById(id: string): Promise<Dish | null>
+
   /**
    * Get popular dishes for recommendations
    */
-  findPopular(limit?: number): Promise<Dish[]>;
-  
+  findPopular(limit?: number): Promise<Dish[]>
+
   /**
    * Find dishes by category (if applicable)
    */
-  findByCategory?(category: string, limit?: number): Promise<Dish[]>;
-  
+  findByCategory?(category: string, limit?: number): Promise<Dish[]>
+
   /**
    * Search dishes by tags or keywords
    */
-  search?(query: string, filters?: {
-    category?: string;
-    maxCalories?: number;
-    minCalories?: number;
-  }): Promise<Dish[]>;
+  search?(
+    query: string,
+    filters?: {
+      category?: string
+      maxCalories?: number
+      minCalories?: number
+    },
+  ): Promise<Dish[]>
 
-  getAll() :Promise<Dish[]> 
+  getAll(): Promise<Dish[]>
 }

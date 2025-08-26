@@ -1,24 +1,25 @@
-import { UserHealthInfoRepository } from "../../domain/physiology/UserHealthInfoRepository";
-import { UserHealthInfo } from "../../domain/physiology/UserHealthInfo";
-import { UserHealthInfoId } from "../../domain/physiology/UserHealthInfoId";
-import { Sex } from "../../domain/physiology/Sex";
-import { UserHealthInfoData, isValidUserHealthInfoData } from "../types/UserHealthInfoData";
-import { load, save, remove, clear } from "../../../app/utils/storage";
-import { Centimeters, Kilograms } from "src/domain/common/UnitTypes";
+import { Centimeters, Kilograms } from "src/domain/common/UnitTypes"
+
+import { load, save, remove, clear } from "../../../app/utils/storage"
+import { Sex } from "../../domain/physiology/Sex"
+import { UserHealthInfo } from "../../domain/physiology/UserHealthInfo"
+import { UserHealthInfoId } from "../../domain/physiology/UserHealthInfoId"
+import { UserHealthInfoRepository } from "../../domain/physiology/UserHealthInfoRepository"
+import { UserHealthInfoData, isValidUserHealthInfoData } from "../types/UserHealthInfoData"
 
 /**
  * MMKV implementation of UserHealthInfoRepository
  * Uses the existing Ignite MMKV storage utilities
  */
 export class MMKVUserHealthInfoRepository implements UserHealthInfoRepository {
-  private readonly CURRENT_USER_KEY = "current-user-profile";
-  private readonly USER_PREFIX = "user-profile-";
+  private readonly CURRENT_USER_KEY = "current-user-profile"
+  private readonly USER_PREFIX = "user-profile-"
 
   /**
    * Generate storage key for a user profile
    */
   private getUserKey(id: UserHealthInfoId): string {
-    return `${this.USER_PREFIX}${id.toString()}`;
+    return `${this.USER_PREFIX}${id.toString()}`
   }
 
   /**
@@ -32,8 +33,8 @@ export class MMKVUserHealthInfoRepository implements UserHealthInfoRepository {
       height: userProfile.getHeight(),
       preferredActivityKeys: userProfile.getPreferredActivityKeys(),
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
+      updatedAt: new Date().toISOString(),
+    }
   }
 
   /**
@@ -41,20 +42,20 @@ export class MMKVUserHealthInfoRepository implements UserHealthInfoRepository {
    */
   private toDomain(data: UserHealthInfoData): UserHealthInfo {
     try {
-      const id = UserHealthInfoId.from(data.id);
+      const id = UserHealthInfoId.from(data.id)
       return UserHealthInfo.createWithId(
         id,
         data.sex,
         data.weight as Kilograms,
         data.height as Centimeters,
-        data.preferredActivityKeys
-      );
+        data.preferredActivityKeys,
+      )
     } catch (error) {
       throw new Error(
         `Failed to convert UserHealthInfoData to domain: ${
           error instanceof Error ? error.message : String(error)
-        }`
-      );
+        }`,
+      )
     }
   }
 
@@ -63,17 +64,19 @@ export class MMKVUserHealthInfoRepository implements UserHealthInfoRepository {
    */
   async save(userProfile: UserHealthInfo): Promise<UserHealthInfo> {
     try {
-      const data = this.toData(userProfile);
-      const key = this.getUserKey(userProfile.getId());
-      
-      const success = save(key, data);
+      const data = this.toData(userProfile)
+      const key = this.getUserKey(userProfile.getId())
+
+      const success = save(key, data)
       if (!success) {
-        throw new Error('Failed to save user profile to storage');
+        throw new Error("Failed to save user profile to storage")
       }
 
-      return userProfile;
+      return userProfile
     } catch (error) {
-      throw new Error(`Error saving user profile: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(
+        `Error saving user profile: ${error instanceof Error ? error.message : String(error)}`,
+      )
     }
   }
 
@@ -82,24 +85,24 @@ export class MMKVUserHealthInfoRepository implements UserHealthInfoRepository {
    */
   async findById(id: UserHealthInfoId): Promise<UserHealthInfo | null> {
     try {
-      const key = this.getUserKey(id);
-      const data = load<UserHealthInfoData>(key);
+      const key = this.getUserKey(id)
+      const data = load<UserHealthInfoData>(key)
 
       if (!data) {
-        return null;
+        return null
       }
 
       if (!isValidUserHealthInfoData(data)) {
-        throw new Error('Invalid user profile data found in storage');
+        throw new Error("Invalid user profile data found in storage")
       }
 
-      return this.toDomain(data);
+      return this.toDomain(data)
     } catch (error) {
-      if (error instanceof Error && error.message.includes('Invalid user profile data')) {
-        throw error;
+      if (error instanceof Error && error.message.includes("Invalid user profile data")) {
+        throw error
       }
       // Return null for other errors (e.g., key not found)
-      return null;
+      return null
     }
   }
 
@@ -108,17 +111,17 @@ export class MMKVUserHealthInfoRepository implements UserHealthInfoRepository {
    */
   async getCurrent(): Promise<UserHealthInfo | null> {
     try {
-      const currentIdData = load<string>(this.CURRENT_USER_KEY);
-      
+      const currentIdData = load<string>(this.CURRENT_USER_KEY)
+
       if (!currentIdData) {
-        return null;
+        return null
       }
 
-      const currentId = UserHealthInfoId.from(currentIdData);
-      return await this.findById(currentId);
+      const currentId = UserHealthInfoId.from(currentIdData)
+      return await this.findById(currentId)
     } catch (error) {
       // Return null if current user key is corrupted or invalid
-      return null;
+      return null
     }
   }
 
@@ -128,20 +131,20 @@ export class MMKVUserHealthInfoRepository implements UserHealthInfoRepository {
   async setCurrent(userProfile: UserHealthInfo): Promise<UserHealthInfo> {
     try {
       // First save the profile
-      const savedProfile = await this.save(userProfile);
-      
+      const savedProfile = await this.save(userProfile)
+
       // Then set it as current
-      const success = save(this.CURRENT_USER_KEY, userProfile.getId().toString());
+      const success = save(this.CURRENT_USER_KEY, userProfile.getId().toString())
       if (!success) {
-        throw new Error('Failed to set current user profile');
+        throw new Error("Failed to set current user profile")
       }
 
-      return savedProfile;
+      return savedProfile
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(`Error setting current user profile: ${error.message}`);
+        throw new Error(`Error setting current user profile: ${error.message}`)
       } else {
-        throw new Error('Error setting current user profile: Unknown error');
+        throw new Error("Error setting current user profile: Unknown error")
       }
     }
   }
@@ -151,29 +154,29 @@ export class MMKVUserHealthInfoRepository implements UserHealthInfoRepository {
    */
   async deleteById(id: UserHealthInfoId): Promise<boolean> {
     try {
-      const key = this.getUserKey(id);
-      
+      const key = this.getUserKey(id)
+
       // Check if profile exists first
-      const exists = await this.exists(id);
+      const exists = await this.exists(id)
       if (!exists) {
-        return false;
+        return false
       }
 
       // Remove the profile
-      remove(key);
+      remove(key)
 
       // If this was the current user, clear current user key
-      const currentProfile = await this.getCurrent();
+      const currentProfile = await this.getCurrent()
       if (currentProfile && currentProfile.getId().equals(id)) {
-        remove(this.CURRENT_USER_KEY);
+        remove(this.CURRENT_USER_KEY)
       }
 
-      return true;
+      return true
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(`Error deleting user profile: ${error.message}`);
+        throw new Error(`Error deleting user profile: ${error.message}`)
       } else {
-        throw new Error('Error deleting user profile: Unknown error');
+        throw new Error("Error deleting user profile: Unknown error")
       }
     }
   }
@@ -183,10 +186,10 @@ export class MMKVUserHealthInfoRepository implements UserHealthInfoRepository {
    */
   async exists(id: UserHealthInfoId): Promise<boolean> {
     try {
-      const profile = await this.findById(id);
-      return profile !== null;
+      const profile = await this.findById(id)
+      return profile !== null
     } catch (error) {
-      return false;
+      return false
     }
   }
 
@@ -198,26 +201,26 @@ export class MMKVUserHealthInfoRepository implements UserHealthInfoRepository {
       // Note: MMKV doesn't provide easy way to clear by prefix
       // For now, just clear the current user key
       // In production, you might want to keep a list of all user IDs
-      remove(this.CURRENT_USER_KEY);
-      
+      remove(this.CURRENT_USER_KEY)
+
       // Clear common user profiles
       const commonIds = [
         UserHealthInfoId.primary(),
         // Add other known IDs if needed
-      ];
+      ]
 
       for (const id of commonIds) {
         try {
-          await this.deleteById(id);
+          await this.deleteById(id)
         } catch {
           // Ignore errors when deleting individual profiles
         }
       }
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(`Error clearing user profiles: ${error.message}`);
+        throw new Error(`Error clearing user profiles: ${error.message}`)
       } else {
-        throw new Error('Error clearing user profiles: Unknown error');
+        throw new Error("Error clearing user profiles: Unknown error")
       }
     }
   }
@@ -229,25 +232,25 @@ export class MMKVUserHealthInfoRepository implements UserHealthInfoRepository {
     sex: Sex,
     weight: number,
     height: number,
-    preferredActivityKeys: string[]
+    preferredActivityKeys: string[],
   ): Promise<UserHealthInfo> {
     try {
-      const primaryId = UserHealthInfoId.primary();
+      const primaryId = UserHealthInfoId.primary()
       const userProfile = UserHealthInfo.createWithId(
         primaryId,
         sex,
         weight as Kilograms,
         height as Centimeters,
-        preferredActivityKeys
-      );
+        preferredActivityKeys,
+      )
 
-      return await this.setCurrent(userProfile);
+      return await this.setCurrent(userProfile)
     } catch (error) {
       throw new Error(
         `Error creating/updating primary user profile: ${
           error instanceof Error ? error.message : String(error)
-        }`
-      );
+        }`,
+      )
     }
   }
 
@@ -256,10 +259,10 @@ export class MMKVUserHealthInfoRepository implements UserHealthInfoRepository {
    */
   async hasPrimaryProfile(): Promise<boolean> {
     try {
-      const primaryId = UserHealthInfoId.primary();
-      return await this.exists(primaryId);
+      const primaryId = UserHealthInfoId.primary()
+      return await this.exists(primaryId)
     } catch (error) {
-      return false;
+      return false
     }
   }
 }

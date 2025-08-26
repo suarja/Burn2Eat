@@ -1,14 +1,12 @@
-import { UserHealthInfoRepository } from "../../domain/physiology/UserHealthInfoRepository";
-import { UserHealthInfoId } from "../../domain/physiology/UserHealthInfoId";
-import { Sex } from "../../domain/physiology/Sex";
+import { Sex } from "../../domain/physiology/Sex"
+import { UserHealthInfoId } from "../../domain/physiology/UserHealthInfoId"
+import { UserHealthInfoRepository } from "../../domain/physiology/UserHealthInfoRepository"
 
 /**
  * Use case for retrieving user profile information
  */
 export class GetUserProfileUseCase {
-  constructor(
-    private readonly userRepository: UserHealthInfoRepository
-  ) {}
+  constructor(private readonly userRepository: UserHealthInfoRepository) {}
 
   /**
    * Execute the use case to get a user profile by ID
@@ -19,20 +17,20 @@ export class GetUserProfileUseCase {
       if (!input.id) {
         return {
           success: false,
-          error: 'User ID is required',
-          userProfile: null
-        };
+          error: "User ID is required",
+          userProfile: null,
+        }
       }
 
-      const userId = UserHealthInfoId.from(input.id);
-      const userProfile = await this.userRepository.findById(userId);
+      const userId = UserHealthInfoId.from(input.id)
+      const userProfile = await this.userRepository.findById(userId)
 
       if (!userProfile) {
         return {
           success: false,
           error: `User profile with ID ${input.id} not found`,
-          userProfile: null
-        };
+          userProfile: null,
+        }
       }
 
       return {
@@ -46,15 +44,15 @@ export class GetUserProfileUseCase {
           primaryActivityKey: userProfile.getPrimaryActivityKey(),
           bmi: userProfile.calculateBMI(),
           bmiCategory: userProfile.getBMICategory(),
-          hasHealthyWeight: userProfile.hasHealthyWeight()
-        }
-      };
+          hasHealthyWeight: userProfile.hasHealthyWeight(),
+        },
+      }
     } catch (error) {
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
-        userProfile: null
-      };
+        userProfile: null,
+      }
     }
   }
 
@@ -63,14 +61,14 @@ export class GetUserProfileUseCase {
    */
   async getCurrent(): Promise<GetUserProfileOutput> {
     try {
-      const userProfile = await this.userRepository.getCurrent();
+      const userProfile = await this.userRepository.getCurrent()
 
       if (!userProfile) {
         return {
           success: false,
-          error: 'No current user profile found',
-          userProfile: null
-        };
+          error: "No current user profile found",
+          userProfile: null,
+        }
       }
 
       return {
@@ -84,15 +82,15 @@ export class GetUserProfileUseCase {
           primaryActivityKey: userProfile.getPrimaryActivityKey(),
           bmi: userProfile.calculateBMI(),
           bmiCategory: userProfile.getBMICategory(),
-          hasHealthyWeight: userProfile.hasHealthyWeight()
-        }
-      };
+          hasHealthyWeight: userProfile.hasHealthyWeight(),
+        },
+      }
     } catch (error) {
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
-        userProfile: null
-      };
+        userProfile: null,
+      }
     }
   }
 
@@ -101,14 +99,14 @@ export class GetUserProfileUseCase {
    */
   async getPrimary(): Promise<GetUserProfileOutput> {
     try {
-      const primaryId = UserHealthInfoId.primary();
-      return await this.execute({ id: primaryId.toString() });
+      const primaryId = UserHealthInfoId.primary()
+      return await this.execute({ id: primaryId.toString() })
     } catch (error) {
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
-        userProfile: null
-      };
+        userProfile: null,
+      }
     }
   }
 
@@ -120,24 +118,24 @@ export class GetUserProfileUseCase {
       if (!input.id) {
         return {
           success: false,
-          error: 'User ID is required',
-          exists: false
-        };
+          error: "User ID is required",
+          exists: false,
+        }
       }
 
-      const userId = UserHealthInfoId.from(input.id);
-      const exists = await this.userRepository.exists(userId);
+      const userId = UserHealthInfoId.from(input.id)
+      const exists = await this.userRepository.exists(userId)
 
       return {
         success: true,
-        exists: exists
-      };
+        exists: exists,
+      }
     } catch (error) {
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
-        exists: false
-      };
+        exists: false,
+      }
     }
   }
 
@@ -146,18 +144,18 @@ export class GetUserProfileUseCase {
    */
   async currentExists(): Promise<UserProfileExistsOutput> {
     try {
-      const currentProfile = await this.userRepository.getCurrent();
-      
+      const currentProfile = await this.userRepository.getCurrent()
+
       return {
         success: true,
-        exists: currentProfile !== null
-      };
+        exists: currentProfile !== null,
+      }
     } catch (error) {
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
-        exists: false
-      };
+        exists: false,
+      }
     }
   }
 
@@ -167,36 +165,36 @@ export class GetUserProfileUseCase {
   async getCurrentOrDefault(): Promise<GetUserProfileOutput> {
     try {
       // Try to get current profile
-      const currentResult = await this.getCurrent();
-      
+      const currentResult = await this.getCurrent()
+
       if (currentResult.success && currentResult.userProfile) {
-        return currentResult;
+        return currentResult
       }
 
       // If no current profile, return default data structure
       const defaultProfile = {
         id: UserHealthInfoId.primary().toString(),
-        sex: 'unspecified' as Sex,
+        sex: "unspecified" as Sex,
         weight: 70,
         height: 170,
-        preferredActivityKeys: ['walking_brisk', 'jogging_general', 'cycling_moderate'],
-        primaryActivityKey: 'walking_brisk',
+        preferredActivityKeys: ["walking_brisk", "jogging_general", "cycling_moderate"],
+        primaryActivityKey: "walking_brisk",
         bmi: 24.2, // 70kg / (1.7m)^2
-        bmiCategory: 'normal' as const,
-        hasHealthyWeight: true
-      };
+        bmiCategory: "normal" as const,
+        hasHealthyWeight: true,
+      }
 
       return {
         success: true,
         userProfile: defaultProfile,
-        isDefault: true
-      };
+        isDefault: true,
+      }
     } catch (error) {
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
-        userProfile: null
-      };
+        userProfile: null,
+      }
     }
   }
 }
@@ -205,34 +203,34 @@ export class GetUserProfileUseCase {
  * Input for getting a user profile
  */
 export interface GetUserProfileInput {
-  id: string;
+  id: string
 }
 
 /**
  * Output from getting a user profile
  */
 export interface GetUserProfileOutput {
-  success: boolean;
-  error?: string;
+  success: boolean
+  error?: string
   userProfile: {
-    id: string;
-    sex: Sex;
-    weight: number;
-    height: number;
-    preferredActivityKeys: string[];
-    primaryActivityKey: string | null;
-    bmi: number;
-    bmiCategory: 'underweight' | 'normal' | 'overweight' | 'obese';
-    hasHealthyWeight: boolean;
-  } | null;
-  isDefault?: boolean; // Indicates if this is default data, not persisted
+    id: string
+    sex: Sex
+    weight: number
+    height: number
+    preferredActivityKeys: string[]
+    primaryActivityKey: string | null
+    bmi: number
+    bmiCategory: "underweight" | "normal" | "overweight" | "obese"
+    hasHealthyWeight: boolean
+  } | null
+  isDefault?: boolean // Indicates if this is default data, not persisted
 }
 
 /**
  * Output for checking if user profile exists
  */
 export interface UserProfileExistsOutput {
-  success: boolean;
-  error?: string;
-  exists: boolean;
+  success: boolean
+  error?: string
+  exists: boolean
 }

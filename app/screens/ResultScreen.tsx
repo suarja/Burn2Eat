@@ -1,21 +1,20 @@
 import React, { FC, useEffect, useState } from "react"
 import { View, ViewStyle } from "react-native"
+import { Toast } from "toastify-react-native"
 
+import { CalculateEffortOutput } from "@/application/usecases"
 import { Button } from "@/components/Button"
+import { Card } from "@/components/Card"
+import { ChoiceModal } from "@/components/ChoiceModal"
+import { FoodCard } from "@/components/FoodCard"
 import { Header } from "@/components/Header"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
-import { Card } from "@/components/Card"
-import { ChoiceModal } from "@/components/ChoiceModal"
-import ConfettiCannon from 'react-native-confetti-cannon'
-import { FoodCard } from "@/components/FoodCard"
-import type { AppStackScreenProps } from "@/navigators/AppNavigator"
-import type { ThemedStyle } from "@/theme/types"
-import { useAppTheme } from "@/theme/context"
-import { useFoodCatalog } from "@/hooks/useFoodData"
-import { CalculateEffortOutput } from "@/application/usecases"
 import { Dish } from "@/domain/nutrition/Dish"
-import { Toast } from "toastify-react-native"
+import { useFoodCatalog } from "@/hooks/useFoodData"
+import type { AppStackScreenProps } from "@/navigators/AppNavigator"
+import { useAppTheme } from "@/theme/context"
+import type { ThemedStyle } from "@/theme/types"
 
 interface ResultScreenProps extends AppStackScreenProps<"Result"> {}
 
@@ -25,26 +24,21 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
 
   const [dish, setDish] = useState<Dish | null>(null)
   const [computedEffort, setComputedEffort] = useState<CalculateEffortOutput | null>(null)
-  
+
   // User choice states
-  const [userChoice, setUserChoice] = useState<'eat' | 'skip' | null>(null)
+  const [userChoice, setUserChoice] = useState<"eat" | "skip" | null>(null)
   const [showAteItModal, setShowAteItModal] = useState(false)
   const [showDidntEatModal, setShowDidntEatModal] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
-  
+
   // Get food ID from navigation params
   const { foodId } = route.params
 
   console.log("Food id param", foodId)
   const {
-    data: {catalog},
-    actions: {
-      calculateEffort,
-      findDish
-    }
+    data: { catalog },
+    actions: { calculateEffort, findDish },
   } = useFoodCatalog()
-
-
 
   useEffect(() => {
     const getDish = () => {
@@ -54,39 +48,28 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
     }
 
     getDish()
-  }, [ foodId, findDish])
+  }, [foodId, findDish])
 
   useEffect(() => {
     if (!dish) return
     getCalculatedEffort()
-
-  }, [ foodId, dish])
-
+  }, [foodId, dish])
 
   const getCalculatedEffort = async () => {
     if (!dish) return
-    const effort  = await calculateEffort(dish.getId().toString())
-    if (!effort) throw new Error("No error calculated");
+    const effort = await calculateEffort(dish.getId().toString())
+    if (!effort) throw new Error("No error calculated")
     setComputedEffort(effort)
-    
-    // Un seul toast de confirmation que les données sont chargées
-    Toast.success(
-      `💪 Calcul terminé !`,
-      'bottom',
-      'checkmark-circle',
-      'Ionicons',
-      false
-    )
   }
 
   const handleBack = () => {
     navigation.goBack()
   }
 
-  const handleDecisionMade = (decision: 'eat' | 'skip') => {
+  const handleDecisionMade = (decision: "eat" | "skip") => {
     setUserChoice(decision)
-    
-    if (decision === 'eat') {
+
+    if (decision === "eat") {
       setShowAteItModal(true)
     } else {
       setShowDidntEatModal(true)
@@ -106,51 +89,43 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
     navigation.navigate("MainTabs", { screen: "Home" })
   }
 
+  if (!dish)
+    return (
+      <Screen preset="fixed" style={themed($screenContainer)}>
+        <View style={themed($contentContainer)}>
+          <Text style={themed($loadingText)}>Plat non trouvé...</Text>
+        </View>
+      </Screen>
+    )
 
-  if (!dish) return (
-    <Screen preset="fixed" style={themed($screenContainer)}>
-      <View style={themed($contentContainer)}>
-        <Text style={themed($loadingText)}>
-          Plat non trouvé...
-        </Text>
-      </View>
-    </Screen>
-  )
-  
-  if (!computedEffort) return (
-    <Screen preset="fixed" style={themed($screenContainer)}>
-      <View style={themed($contentContainer)}>
-        <Text style={themed($loadingText)}>
-          Calcul en cours...
-        </Text>
-      </View>
-    </Screen>
-  )
+  if (!computedEffort)
+    return (
+      <Screen preset="fixed" style={themed($screenContainer)}>
+        <View style={themed($contentContainer)}>
+          <Text style={themed($loadingText)}>Calcul en cours...</Text>
+        </View>
+      </Screen>
+    )
 
   return (
     <>
       <Screen preset="scroll" style={themed($screenContainer)}>
-        <Header 
-          title="Calcul d'Effort"
-          leftIcon="back"
-          onLeftPress={handleBack}
-        />
-        
+        <Header title="Calcul d'Effort" leftIcon="back" onLeftPress={handleBack} />
+
         <View style={themed($contentContainer)}>
           {/* Food Card Display */}
           <View style={themed($foodCardContainer)}>
             <FoodCard
               dish={dish}
-              onPress={() => {}} // Disabled in result view
-              size="small"
-              disabled={true}
+              onPress={() => {}} // No action needed in result view
+              size="result"
             />
           </View>
 
           {/* Effort Results - Simplified without Card wrapper */}
           <View style={themed($effortSection)}>
             <Text style={themed($sectionTitle)}>🔥 Effort nécessaire</Text>
-            
+
             <View style={themed($effortContent)}>
               <Text style={themed($primaryEffort)}>
                 {computedEffort.effort.primary.minutes} min
@@ -158,7 +133,7 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
               <Text style={themed($primaryActivity)}>
                 de {computedEffort.effort.primary.activityLabel}
               </Text>
-              
+
               {computedEffort.effort.alternatives.length > 0 && (
                 <View style={themed($alternativesList)}>
                   <Text style={themed($alternativesTitle)}>Ou bien :</Text>
@@ -174,23 +149,21 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
 
           {/* Decision Section */}
           <View style={themed($decisionSection)}>
-            <Text style={themed($questionText)}>
-              Vas-tu manger ce plat ? 🤔
-            </Text>
-            
+            <Text style={themed($questionText)}>Vas-tu manger ce plat ? 🤔</Text>
+
             <View style={themed($choiceButtons)}>
               <Button
                 preset="filled"
                 style={themed($eatButton)}
-                onPress={() => handleDecisionMade('eat')}
+                onPress={() => handleDecisionMade("eat")}
               >
                 😋 Oui, je mange !
               </Button>
-              
+
               <Button
                 preset="default"
                 style={themed($skipButton)}
-                onPress={() => handleDecisionMade('skip')}
+                onPress={() => handleDecisionMade("skip")}
               >
                 💪 Non, je passe
               </Button>
@@ -224,18 +197,7 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
         variant="success"
       />
 
-      {/* Confetti Animation */}
-      {showConfetti && (
-        <ConfettiCannon
-          count={150}
-          origin={{ x: -10, y: 0 }}
-          autoStart={true}
-          fadeOut={true}
-          fallSpeed={2500}
-          explosionSpeed={350}
-          onAnimationEnd={() => setShowConfetti(false)}
-        />
-      )}
+ 
     </>
   )
 }
@@ -245,22 +207,21 @@ const $screenContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
 })
 
 const $contentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  padding: spacing.lg,
+  padding: spacing.lg, // Reduced padding to fit more content
 })
 
 const $foodCardContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   alignItems: "center",
-  marginBottom: spacing.lg,
-  height: 140, // Fixed height to prevent overflow
-  width: "60%",
+  marginBottom: spacing.lg, // Reduced spacing
+  width: "75%", // Reduced width to prevent overflow
   alignSelf: "center",
 })
 
 const $effortSection: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   backgroundColor: colors.palette.neutral100,
   borderRadius: 12,
-  padding: spacing.lg,
-  marginBottom: spacing.lg,
+  padding: spacing.lg, // Reduced padding
+  marginBottom: spacing.lg, // Reduced spacing
 })
 
 const $sectionTitle: ThemedStyle<ViewStyle> = ({ spacing, colors, typography }) => ({
@@ -276,7 +237,7 @@ const $effortContent: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 })
 
 const $primaryEffort: ThemedStyle<ViewStyle> = ({ spacing, colors, typography }) => ({
-  fontSize: 24,
+  fontSize: 24, // Increased from 24px for better hierarchy
   fontFamily: typography.primary.bold,
   color: colors.tint,
   textAlign: "center",
@@ -284,7 +245,7 @@ const $primaryEffort: ThemedStyle<ViewStyle> = ({ spacing, colors, typography })
 })
 
 const $primaryActivity: ThemedStyle<ViewStyle> = ({ spacing, colors, typography }) => ({
-  fontSize: 16,
+  fontSize: 18, // Increased from 16px for better hierarchy
   fontFamily: typography.primary.medium,
   color: colors.text,
   textAlign: "center",

@@ -4,8 +4,8 @@ import { View, ViewStyle, TextStyle, Modal, Pressable } from "react-native"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 
-import { Text } from "./Text"
 import { Button } from "./Button"
+import { Text } from "./Text"
 
 export interface ChoiceModalProps {
   /**
@@ -92,21 +92,10 @@ export const ChoiceModal: React.FC<ChoiceModalProps> = ({
   const variantColors = getVariantColors()
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onDismiss}
-    >
-      <Pressable 
-        style={themed($backdrop)} 
-        onPress={onDismiss}
-      >
-        <Pressable 
-          style={[
-            themed($modalContainer),
-            { backgroundColor: variantColors.background }
-          ]}
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onDismiss}>
+      <Pressable style={themed($backdrop)} onPress={onDismiss}>
+        <Pressable
+          style={[themed($modalContainer), { backgroundColor: variantColors.background }]}
           onPress={(e) => e.stopPropagation()}
         >
           {/* Icon */}
@@ -122,36 +111,23 @@ export const ChoiceModal: React.FC<ChoiceModalProps> = ({
           </Text>
 
           {/* Main content */}
-          <Text style={themed($content)}>
-            {content}
-          </Text>
+          <Text style={themed($content)}>{content}</Text>
 
           {/* Secondary content */}
-          {secondaryContent && (
-            <Text style={themed($secondaryContent)}>
-              {secondaryContent}
-            </Text>
-          )}
+          {secondaryContent && <Text style={themed($secondaryContent)}>{secondaryContent}</Text>}
 
           {/* Buttons */}
           <View style={themed($buttonContainer)}>
             <Button
               preset="filled"
-              style={[
-                themed($primaryButton),
-                { backgroundColor: variantColors.accent }
-              ]}
+              style={[themed($primaryButton), { backgroundColor: variantColors.accent }]}
               onPress={onPrimaryPress}
             >
               {primaryButtonText}
             </Button>
 
             {secondaryButtonText && onSecondaryPress && (
-              <Button
-                preset="default"
-                style={themed($secondaryButton)}
-                onPress={onSecondaryPress}
-              >
+              <Button preset="default" style={themed($secondaryButton)} onPress={onSecondaryPress}>
                 {secondaryButtonText}
               </Button>
             )}

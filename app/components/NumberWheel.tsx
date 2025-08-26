@@ -84,11 +84,12 @@ export const NumberWheel: React.FC<NumberWheelProps> = ({
           {label}
         </Text>
       )}
-      
+
       <View style={themed($pickerContainer)}>
         {/* Placeholder implementation - requires @react-native-picker/picker */}
         <Text style={themed($placeholderText)}>
-          NumberWheel: {value}{suffix}
+          NumberWheel: {value}
+          {suffix}
         </Text>
         <Text style={themed($instructionText)}>
           Install @react-native-picker/picker for wheel picker functionality

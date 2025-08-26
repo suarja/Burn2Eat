@@ -32,7 +32,7 @@ const palette = {
   angry500: "#C03403",
 
   // Success/celebration colors for MVP
-  success100: "#D4EDDA", 
+  success100: "#D4EDDA",
   success500: "#06FFA5", // Vert néon pour célébrations
 
   // Enhanced accent for gamification

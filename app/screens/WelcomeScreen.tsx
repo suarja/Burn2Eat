@@ -4,22 +4,20 @@ import { ImageStyle, TextStyle, View, ViewStyle } from "react-native"
 import { Button } from "@/components/Button"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
+import { useUserProfile } from "@/hooks/useUserProfile"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
-import type { ThemedStyle } from "@/theme/types"
 import { useAppTheme } from "@/theme/context"
 import { $styles } from "@/theme/styles"
+import type { ThemedStyle } from "@/theme/types"
 import { useSafeAreaInsetsStyle } from "@/utils/useSafeAreaInsetsStyle"
-import { useUserProfile } from "@/hooks/useUserProfile"
 
 interface WelcomeScreenProps extends AppStackScreenProps<"Welcome"> {}
 
-export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(
-  _props,
-) {
+export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(_props) {
   const { themed } = useAppTheme()
   const { navigation } = _props
   const { loadCurrentProfile } = useUserProfile()
-  
+
   const [hasExistingProfile, setHasExistingProfile] = useState<boolean | null>(null)
   const [isCheckingProfile, setIsCheckingProfile] = useState(true)
 
@@ -68,9 +66,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(
           <Text preset="heading" style={themed($loadingText)}>
             🔥 Burn2Eat
           </Text>
-          <Text style={themed($loadingSubtext)}>
-            Chargement...
-          </Text>
+          <Text style={themed($loadingSubtext)}>Chargement...</Text>
         </View>
       </Screen>
     )
@@ -88,24 +84,17 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(
     <Screen preset="fixed" contentContainerStyle={$styles.flex1}>
       <View style={themed($topContainer)}>
         {/* App Title & Logo */}
-        <Text 
-          testID="app-title"
-          preset="heading" 
-          style={themed($appTitle)}
-        >
+        <Text testID="app-title" preset="heading" style={themed($appTitle)}>
           🔥 Burn2Eat 🍔
         </Text>
-        
-        <Text 
-          preset="subheading" 
-          style={themed($tagline)}
-        >
+
+        <Text preset="subheading" style={themed($tagline)}>
           "Born to eat. Burn to eat."
         </Text>
 
         {/* Main CTA */}
         <Button
-          testID="start-button" 
+          testID="start-button"
           preset="filled"
           style={themed($mainButton)}
           onPress={handleStartOnboarding}
@@ -125,9 +114,9 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(
           >
             Mode invité
           </Button>
-          
+
           <Button
-            testID="create-profile-button" 
+            testID="create-profile-button"
             preset="default"
             style={themed($secondaryButton)}
             onPress={handleCreateProfile}
