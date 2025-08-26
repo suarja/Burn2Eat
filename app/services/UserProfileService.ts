@@ -89,9 +89,7 @@ export class UserProfileService {
    */
   static async getProfile(): Promise<UserProfile | null> {
     try {
-      console.log("🔍 Attempting to load profile with key:", USER_PROFILE_KEY)
       const profile = load<UserProfile>(USER_PROFILE_KEY)
-      console.log("📖 User profile loaded:", profile)
       return profile
     } catch (error) {
       console.warn("⚠️ Failed to load user profile:", error)

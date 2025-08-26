@@ -168,7 +168,6 @@ export const ActivityWheelPicker: React.FC<ActivityWheelPickerProps> = ({
     data: {catalog}
   } = useActivityCatalog()
 
-  console.log({catalog})
 
   // Find current activity index
   const currentActivityIndex = selectedActivity 

@@ -8,6 +8,7 @@ import { initI18n } from "@/i18n"
 import { ThemeProvider } from "@/theme/context"
 import { customFontsToLoad } from "@/theme/typography"
 import { loadDateFnsLocale } from "@/utils/formatDate"
+import ToastManager from 'toastify-react-native'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -52,6 +53,8 @@ export default function Root() {
           <Slot />
         </KeyboardProvider>
       </ThemeProvider>
+      <ToastManager />
+
     </SafeAreaProvider>
   )
 }

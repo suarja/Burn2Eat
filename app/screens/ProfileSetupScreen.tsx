@@ -11,6 +11,7 @@ import { useUserProfile } from "@/hooks/useUserProfile"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
 import type { ThemedStyle } from "@/theme/types"
 import { useAppTheme } from "@/theme/context"
+import { Toast } from "toastify-react-native"
 
 interface ProfileSetupScreenProps extends AppStackScreenProps<"Profile"> {}
 
@@ -49,7 +50,7 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
       })
       
       if (result.success && result.userProfile) {
-        navigation.navigate("MainTabs", { screen: "Home" })
+        Toast.error('Center toast', 'center')
       } else {
         console.error("❌ ProfileSetupScreen: Failed to save profile via DDD:", result.error)
         // TODO: Show error toast/alert with result.error
@@ -66,7 +67,6 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
 
   useEffect(() => {
     const loadProfile = async () => {
-      console.log("🚀 ProfileSetupScreen: Starting to load profile with DDD...")
       try {
         const result = await loadCurrentProfile()
         
@@ -79,6 +79,7 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
           if (primaryActivity) {
             setSelectedActivity(primaryActivity)
           }
+          Toast.success('Top toast', 'top') // default
           
         } else {
           console.log("🆕 ProfileSetupScreen: No existing profile via DDD, using defaults")
@@ -103,15 +104,6 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
       />
       
       <View style={themed($contentContainer)}>
-  
-
-        {/* Debug info */}
-        {(isInitialLoad || loading) && (
-          <Text style={themed($debugText)}>
-            Chargement du profil...
-          </Text>
-        )}
-
         {error && (
           <Text style={themed($errorText)}>
             ❌ Erreur: {error}
