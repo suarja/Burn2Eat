@@ -264,7 +264,7 @@ const $helperText: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
 })
 
 const $wheelPickerStyle: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
-  backgroundColor: colors.palette.angry100,
+  backgroundColor: colors.palette.accent300,
   borderRadius: 8,
   marginBottom: spacing.md,
 })
