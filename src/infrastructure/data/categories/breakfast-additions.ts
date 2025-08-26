@@ -14,9 +14,9 @@ export const BREAKFAST_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=400&h=400&fit=crop",
     description: {
       en: "Fluffy scrambled eggs, high in protein",
-      fr: "Œufs brouillés moelleux, riches en protéines"
+      fr: "Œufs brouillés moelleux, riches en protéines",
     },
-    tags: ["eggs", "breakfast", "protein", "scrambled", "morning"]
+    tags: ["eggs", "breakfast", "protein", "scrambled", "morning"],
   },
   {
     id: "pancakes-stack",
@@ -27,9 +27,9 @@ export const BREAKFAST_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=400&fit=crop",
     description: {
       en: "Stack of fluffy pancakes with syrup",
-      fr: "Pile de crêpes moelleuses au sirop"
+      fr: "Pile de crêpes moelleuses au sirop",
     },
-    tags: ["pancakes", "breakfast", "sweet", "syrup", "fluffy"]
+    tags: ["pancakes", "breakfast", "sweet", "syrup", "fluffy"],
   },
   {
     id: "oatmeal-bowl",
@@ -40,9 +40,9 @@ export const BREAKFAST_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1517673132405-a56a62b18caf?w=400&h=400&fit=crop",
     description: {
       en: "Healthy oatmeal with toppings",
-      fr: "Avoine saine avec garnitures"
+      fr: "Avoine saine avec garnitures",
     },
-    tags: ["oatmeal", "healthy", "breakfast", "fiber", "wholesome"]
+    tags: ["oatmeal", "healthy", "breakfast", "fiber", "wholesome"],
   },
   {
     id: "avocado-toast",
@@ -53,9 +53,9 @@ export const BREAKFAST_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=400&h=400&fit=crop",
     description: {
       en: "Whole grain toast topped with fresh avocado",
-      fr: "Toast de grains entiers garni d'avocat frais"
+      fr: "Toast de grains entiers garni d'avocat frais",
     },
-    tags: ["avocado", "toast", "healthy", "breakfast", "whole-grain"]
+    tags: ["avocado", "toast", "healthy", "breakfast", "whole-grain"],
   },
   {
     id: "greek-yogurt",
@@ -66,8 +66,8 @@ export const BREAKFAST_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&h=400&fit=crop",
     description: {
       en: "Creamy Greek yogurt with berries",
-      fr: "Yaourt grec crémeux aux baies"
+      fr: "Yaourt grec crémeux aux baies",
     },
-    tags: ["yogurt", "greek", "protein", "healthy", "berries"]
-  }
+    tags: ["yogurt", "greek", "protein", "healthy", "berries"],
+  },
 ]

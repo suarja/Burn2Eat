@@ -82,7 +82,7 @@ export class StaticActivityCatalog implements ActivityCatalog {
     const met = Met.of(activityData.met)
 
     // Use English name as the label (could be made configurable for i18n)
-    const label = activityData.names.fr
+    const label = activityData.names.en
 
     return Activity.define(activityData.key, label, met)
   }

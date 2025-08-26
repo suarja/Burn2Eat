@@ -14,9 +14,9 @@ export const FAST_FOOD_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=400&h=400&fit=crop",
     description: {
       en: "Crispy breaded chicken nuggets",
-      fr: "Nuggets de poulet panés croustillants"
+      fr: "Nuggets de poulet panés croustillants",
     },
-    tags: ["chicken", "nuggets", "crispy", "fast-food", "fried"]
+    tags: ["chicken", "nuggets", "crispy", "fast-food", "fried"],
   },
   {
     id: "fish-and-chips",
@@ -27,9 +27,9 @@ export const FAST_FOOD_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1544982503-9f984c14501a?w=400&h=400&fit=crop",
     description: {
       en: "Battered fish with crispy chips",
-      fr: "Poisson en pâte avec frites croustillantes"
+      fr: "Poisson en pâte avec frites croustillantes",
     },
-    tags: ["fish", "chips", "battered", "british", "fried"]
+    tags: ["fish", "chips", "battered", "british", "fried"],
   },
   {
     id: "chicken-wrap",
@@ -40,9 +40,9 @@ export const FAST_FOOD_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1565299585323-38174c13a6d0?w=400&h=400&fit=crop",
     description: {
       en: "Grilled chicken wrap with vegetables",
-      fr: "Wrap au poulet grillé avec légumes"
+      fr: "Wrap au poulet grillé avec légumes",
     },
-    tags: ["wrap", "chicken", "vegetables", "tortilla", "lunch"]
+    tags: ["wrap", "chicken", "vegetables", "tortilla", "lunch"],
   },
   {
     id: "pepperoni-pizza",
@@ -53,9 +53,9 @@ export const FAST_FOOD_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=400&fit=crop",
     description: {
       en: "Classic pepperoni pizza slice",
-      fr: "Part de pizza au pepperoni classique"
+      fr: "Part de pizza au pepperoni classique",
     },
-    tags: ["pizza", "pepperoni", "cheese", "italian", "spicy"]
+    tags: ["pizza", "pepperoni", "cheese", "italian", "spicy"],
   },
   {
     id: "taco-beef",
@@ -66,8 +66,8 @@ export const FAST_FOOD_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=400&h=400&fit=crop",
     description: {
       en: "Seasoned beef taco with toppings",
-      fr: "Taco au bœuf assaisonné avec garnitures"
+      fr: "Taco au bœuf assaisonné avec garnitures",
     },
-    tags: ["taco", "beef", "mexican", "spicy", "corn"]
-  }
+    tags: ["taco", "beef", "mexican", "spicy", "corn"],
+  },
 ]

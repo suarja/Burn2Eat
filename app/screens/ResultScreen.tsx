@@ -196,8 +196,6 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
         onDismiss={() => setShowDidntEatModal(false)}
         variant="success"
       />
-
- 
     </>
   )
 }

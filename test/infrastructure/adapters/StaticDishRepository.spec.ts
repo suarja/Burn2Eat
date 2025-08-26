@@ -1,7 +1,9 @@
 import { Dish } from "../../../src/domain/nutrition/Dish"
 import { DishRepository } from "../../../src/domain/nutrition/DishRepository"
 import { StaticDishRepository } from "../../../src/infrastructure/adapters/StaticDishRepository"
-import { FOODS_DATASET } from "../../../src/infrastructure/data"
+import { mergeAllFoodData } from "../../../src/infrastructure/data/utils/dataset-merger"
+
+const FOODS_DATASET = mergeAllFoodData().mergedData
 
 describe("StaticDishRepository (Integration)", () => {
   let repository: DishRepository

@@ -92,7 +92,6 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
           if (primaryActivity) {
             setSelectedActivity(primaryActivity)
           }
-
         } else {
           console.log("🆕 ProfileSetupScreen: No existing profile via DDD, using defaults")
           Toast.info(`🆕 Créons ton profil !`, "top", "add-circle", "Ionicons", false)

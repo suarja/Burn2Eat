@@ -32,7 +32,9 @@ export const createFoodDataTemplate = (): Partial<FoodData> => ({
 /**
  * Validates food data entry for completeness and consistency
  */
-export const validateFoodData = (food: Partial<FoodData>): { isValid: boolean; errors: string[] } => {
+export const validateFoodData = (
+  food: Partial<FoodData>,
+): { isValid: boolean; errors: string[] } => {
   const errors: string[] = []
 
   // Required field validation
@@ -40,7 +42,8 @@ export const validateFoodData = (food: Partial<FoodData>): { isValid: boolean; e
   if (!food.names?.en) errors.push("English name is required")
   if (!food.names?.fr) errors.push("French name is required")
   if (!food.calories || food.calories <= 0) errors.push("Valid calorie count is required")
-  if (!food.portionSize?.amount || food.portionSize.amount <= 0) errors.push("Valid portion amount is required")
+  if (!food.portionSize?.amount || food.portionSize.amount <= 0)
+    errors.push("Valid portion amount is required")
   if (!food.portionSize?.unit) errors.push("Portion unit is required")
   if (!food.category) errors.push("Category is required")
   if (!food.imageUrl) errors.push("Image URL is required")
@@ -70,31 +73,72 @@ export const validateFoodData = (food: Partial<FoodData>): { isValid: boolean; e
  */
 export const UNSPLASH_FOOD_SEARCH_TERMS = [
   // General terms
-  "food", "meal", "dish", "cuisine", "delicious",
-  
+  "food",
+  "meal",
+  "dish",
+  "cuisine",
+  "delicious",
+
   // Fast food
-  "burger", "pizza", "fries", "fast food", "sandwich",
-  
+  "burger",
+  "pizza",
+  "fries",
+  "fast food",
+  "sandwich",
+
   // Desserts
-  "cake", "dessert", "cookie", "ice cream", "chocolate", "sweet",
-  
+  "cake",
+  "dessert",
+  "cookie",
+  "ice cream",
+  "chocolate",
+  "sweet",
+
   // Beverages
-  "drink", "beverage", "coffee", "juice", "smoothie", "soda",
-  
+  "drink",
+  "beverage",
+  "coffee",
+  "juice",
+  "smoothie",
+  "soda",
+
   // Fruits
-  "fruit", "fresh", "apple", "banana", "berry", "citrus",
-  
+  "fruit",
+  "fresh",
+  "apple",
+  "banana",
+  "berry",
+  "citrus",
+
   // Snacks
-  "snack", "nuts", "chips", "healthy snack",
-  
+  "snack",
+  "nuts",
+  "chips",
+  "healthy snack",
+
   // Main course
-  "main dish", "dinner", "lunch", "plate", "grilled", "pasta", "rice",
-  
+  "main dish",
+  "dinner",
+  "lunch",
+  "plate",
+  "grilled",
+  "pasta",
+  "rice",
+
   // Breakfast
-  "breakfast", "cereal", "eggs", "pancakes", "toast", "morning meal",
-  
+  "breakfast",
+  "cereal",
+  "eggs",
+  "pancakes",
+  "toast",
+  "morning meal",
+
   // Healthy
-  "healthy", "salad", "vegetable", "whole grain", "lean protein"
+  "healthy",
+  "salad",
+  "vegetable",
+  "whole grain",
+  "lean protein",
 ]
 
 /**
@@ -111,19 +155,19 @@ export const EXAMPLE_FOOD_ENTRY: FoodData = {
   id: "grilled-chicken-breast",
   names: {
     en: "Grilled Chicken Breast",
-    fr: "Blanc de Poulet Grillé"
+    fr: "Blanc de Poulet Grillé",
   },
   calories: 185,
   portionSize: {
     amount: 100,
-    unit: "100g"
+    unit: "100g",
   },
   category: "main-course",
   imageUrl: "https://images.unsplash.com/photo-1532550907401-a500c9a57435?w=400&h=400&fit=crop",
   unsplashId: "1532550907401-a500c9a57435",
   description: {
     en: "Lean grilled chicken breast, high in protein",
-    fr: "Blanc de poulet grillé maigre, riche en protéines"
+    fr: "Blanc de poulet grillé maigre, riche en protéines",
   },
-  tags: ["chicken", "protein", "healthy", "grilled", "lean"]
+  tags: ["chicken", "protein", "healthy", "grilled", "lean"],
 }

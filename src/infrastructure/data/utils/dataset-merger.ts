@@ -1,10 +1,9 @@
 import { FoodData } from "../../types/FoodData"
-import { FOODS_DATASET } from "../foods-dataset"
-
 // Import all category additions
-import { MAIN_COURSE_ADDITIONS } from "../categories/main-course-additions"
 import { BREAKFAST_ADDITIONS } from "../categories/breakfast-additions"
 import { FAST_FOOD_ADDITIONS } from "../categories/fast-food-additions"
+import { MAIN_COURSE_ADDITIONS } from "../categories/main-course-additions"
+import { FOODS_DATASET } from "../foods-dataset"
 
 /**
  * Dataset Merger Utility
@@ -36,32 +35,32 @@ export const mergeAllFoodData = (): {
   const originalCount = FOODS_DATASET.length
   const allAdditions = CATEGORY_ADDITIONS.flat()
   const newItemsCount = allAdditions.length
-  
+
   // Check for duplicate IDs
   const allIds = new Set<string>()
   const duplicateIds: string[] = []
-  
+
   // Check original dataset IDs
-  FOODS_DATASET.forEach(food => {
+  FOODS_DATASET.forEach((food) => {
     if (allIds.has(food.id)) {
       duplicateIds.push(food.id)
     } else {
       allIds.add(food.id)
     }
   })
-  
+
   // Check addition IDs
-  allAdditions.forEach(food => {
+  allAdditions.forEach((food) => {
     if (allIds.has(food.id)) {
       duplicateIds.push(food.id)
     } else {
       allIds.add(food.id)
     }
   })
-  
+
   // Combine all data (duplicates will be handled by consumer)
   const mergedData = [...FOODS_DATASET, ...allAdditions]
-  
+
   return {
     mergedData,
     stats: {
@@ -69,7 +68,7 @@ export const mergeAllFoodData = (): {
       newItemsCount,
       totalCount: mergedData.length,
       duplicateIds,
-    }
+    },
   }
 }
 
@@ -78,11 +77,11 @@ export const mergeAllFoodData = (): {
  */
 export const getCategoryBreakdown = (foods: FoodData[] = mergeAllFoodData().mergedData) => {
   const categoryCount: Record<string, number> = {}
-  
-  foods.forEach(food => {
+
+  foods.forEach((food) => {
     categoryCount[food.category] = (categoryCount[food.category] || 0) + 1
   })
-  
+
   return categoryCount
 }
 
@@ -92,7 +91,7 @@ export const getCategoryBreakdown = (foods: FoodData[] = mergeAllFoodData().merg
 export const validateMergedDataset = (foods: FoodData[] = mergeAllFoodData().mergedData) => {
   const issues: string[] = []
   const ids = new Set<string>()
-  
+
   foods.forEach((food, index) => {
     // Check for duplicate IDs
     if (ids.has(food.id)) {
@@ -100,22 +99,23 @@ export const validateMergedDataset = (foods: FoodData[] = mergeAllFoodData().mer
     } else {
       ids.add(food.id)
     }
-    
+
     // Check for required fields
     if (!food.names?.en) issues.push(`Missing English name at index ${index}`)
     if (!food.names?.fr) issues.push(`Missing French name at index ${index}`)
     if (!food.calories || food.calories <= 0) issues.push(`Invalid calories at index ${index}`)
     if (!food.imageUrl) issues.push(`Missing image URL at index ${index}`)
-    
+
     // Check calorie ranges
-    if (food.calories > 2000) issues.push(`Unusually high calories (${food.calories}) for ${food.id}`)
+    if (food.calories > 2000)
+      issues.push(`Unusually high calories (${food.calories}) for ${food.id}`)
     if (food.calories < 1) issues.push(`Unusually low calories (${food.calories}) for ${food.id}`)
   })
-  
+
   return {
     isValid: issues.length === 0,
     issues,
-    totalItems: foods.length
+    totalItems: foods.length,
   }
 }
 
@@ -126,7 +126,7 @@ export const generateMergerReport = () => {
   const { mergedData, stats } = mergeAllFoodData()
   const categoryBreakdown = getCategoryBreakdown(mergedData)
   const validation = validateMergedDataset(mergedData)
-  
+
   return {
     stats,
     categoryBreakdown,
@@ -134,9 +134,10 @@ export const generateMergerReport = () => {
     summary: {
       message: `Successfully merged ${stats.newItemsCount} new items with ${stats.originalCount} existing items`,
       hasIssues: !validation.isValid || stats.duplicateIds.length > 0,
-      recommendedAction: validation.isValid && stats.duplicateIds.length === 0 
-        ? "Ready to update main dataset file" 
-        : "Fix validation issues before proceeding"
-    }
+      recommendedAction:
+        validation.isValid && stats.duplicateIds.length === 0
+          ? "Ready to update main dataset file"
+          : "Fix validation issues before proceeding",
+    },
   }
 }

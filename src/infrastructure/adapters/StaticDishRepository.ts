@@ -3,13 +3,7 @@ import { Dish } from "../../domain/nutrition/Dish"
 import { DishId } from "../../domain/nutrition/DishId"
 import { DishRepository } from "../../domain/nutrition/DishRepository"
 import { NutritionalInfo } from "../../domain/nutrition/NutritionalInfo"
-import {
-  getFoodById,
-  getFoodsByCategory,
-  searchFoodsByName,
-  FoodData,
-} from "../data"
-import { getAllFoods } from "../data/foods-dataset"
+import { FoodData } from "../data"
 import { mergeAllFoodData } from "../data/utils/dataset-merger"
 
 const FOODS_DATASET = mergeAllFoodData().mergedData
@@ -19,20 +13,24 @@ const FOODS_DATASET = mergeAllFoodData().mergedData
  */
 export class StaticDishRepository implements DishRepository {
   getAll(): Promise<Dish[]> {
-    const data = getAllFoods()
-
-    return Promise.resolve(data.map(this.toDomainDish))
+    return Promise.resolve(FOODS_DATASET.map(this.toDomainDish))
   }
 
   async findByName(query: string, limit?: number): Promise<Dish[]> {
-    const foodsData = searchFoodsByName(query)
+    const lowerQuery = query.toLowerCase()
+    const foodsData = FOODS_DATASET.filter(
+      (food) =>
+        food.names.en.toLowerCase().includes(lowerQuery) ||
+        food.names.fr.toLowerCase().includes(lowerQuery) ||
+        food.tags?.some((tag) => tag.toLowerCase().includes(lowerQuery)),
+    )
     const limitedFoods = limit ? foodsData.slice(0, limit) : foodsData
 
     return limitedFoods.map((foodData) => this.toDomainDish(foodData))
   }
 
   async findById(id: string): Promise<Dish | null> {
-    const foodData = getFoodById(id)
+    const foodData = FOODS_DATASET.find((food) => food.id === id)
 
     if (!foodData) {
       return null
@@ -50,7 +48,7 @@ export class StaticDishRepository implements DishRepository {
   }
 
   async findByCategory(category: string, limit?: number): Promise<Dish[]> {
-    const foodsData = getFoodsByCategory(category)
+    const foodsData = FOODS_DATASET.filter((food) => food.category === category)
     const limitedFoods = limit ? foodsData.slice(0, limit) : foodsData
 
     return limitedFoods.map((foodData) => this.toDomainDish(foodData))
@@ -64,7 +62,13 @@ export class StaticDishRepository implements DishRepository {
       minCalories?: number
     },
   ): Promise<Dish[]> {
-    let results = searchFoodsByName(query)
+    const lowerQuery = query.toLowerCase()
+    let results = FOODS_DATASET.filter(
+      (food) =>
+        food.names.en.toLowerCase().includes(lowerQuery) ||
+        food.names.fr.toLowerCase().includes(lowerQuery) ||
+        food.tags?.some((tag) => tag.toLowerCase().includes(lowerQuery)),
+    )
 
     // Apply filters
     if (filters) {
@@ -96,7 +100,7 @@ export class StaticDishRepository implements DishRepository {
     const nutrition = NutritionalInfo.perServing(calories)
 
     // Use the English name for the domain (could be configurable)
-    const name = foodData.names.fr
+    const name = foodData.names.en
 
     return Dish.create({
       dishId,

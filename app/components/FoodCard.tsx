@@ -31,7 +31,6 @@ export interface FoodCardProps {
   size?: "small" | "medium" | "large" | "result"
 }
 
-
 export const FoodCard: React.FC<FoodCardProps> = ({
   dish,
   onPress,
