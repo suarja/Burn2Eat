@@ -169,14 +169,17 @@ const $cardSizes: Record<string, ThemedStyle<ViewStyle>> = {
   small: ({ spacing }) => ({
     padding: spacing.xs,
     minHeight: 100,
+    maxHeight: 120, // Prevent overflow
   }),
   medium: ({ spacing }) => ({
     padding: spacing.sm,
     minHeight: 120,
+    maxHeight: 150, // Prevent overflow
   }),
   large: ({ spacing }) => ({
     padding: spacing.md,
     minHeight: 140,
+    maxHeight: 180, // Prevent overflow
   }),
 }
 
