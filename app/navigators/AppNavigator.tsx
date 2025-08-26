@@ -12,9 +12,7 @@ import {
 import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack"
 
 import Config from "@/config"
-import { useAuth } from "@/context/AuthContext" // @demo remove-current-line
 import { ErrorBoundary } from "@/screens/ErrorScreen/ErrorBoundary"
-import { LoginScreen } from "@/screens/LoginScreen" // @demo remove-current-line
 import { WelcomeScreen } from "@/screens/WelcomeScreen"
 import { ProfileSetupScreen } from "@/screens/ProfileSetupScreen"
 import { HomeScreen } from "@/screens/HomeScreen"
@@ -36,7 +34,6 @@ import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
  */
 export type AppStackParamList = {
   Welcome: undefined
-  Login: undefined // @demo remove-current-line
   Demo: NavigatorScreenParams<DemoTabParamList> // @demo remove-current-line
   // 🔥 Burn2Eat screens
   MainTabs: NavigatorScreenParams<MainTabParamList>
@@ -61,9 +58,6 @@ export type AppStackScreenProps<T extends keyof AppStackParamList> = NativeStack
 const Stack = createNativeStackNavigator<AppStackParamList>()
 
 const AppStack = () => {
-  // @demo remove-block-start
-  const { isAuthenticated } = useAuth()
-  // @demo remove-block-end
   const {
     theme: { colors },
   } = useAppTheme()
@@ -77,7 +71,7 @@ const AppStack = () => {
           backgroundColor: colors.background,
         },
       }}
-      initialRouteName={isAuthenticated ? "Welcome" : "Login"} // @demo remove-current-line
+      initialRouteName="Welcome"
     >
       {/* @demo remove-block-start */}
       {/* {isAuthenticated ? ( */}

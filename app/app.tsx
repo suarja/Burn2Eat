@@ -33,6 +33,7 @@ import { ThemeProvider } from "./theme/context"
 import { customFontsToLoad } from "./theme/typography"
 import { loadDateFnsLocale } from "./utils/formatDate"
 import * as storage from "./utils/storage"
+import ToastManager from "toastify-react-native"
 
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
 
@@ -110,6 +111,8 @@ export function App() {
               initialState={initialNavigationState}
               onStateChange={onNavigationStateChange}
             />
+            {/* Toast Manager pour les félicitations */}
+            <ToastManager />
           </ThemeProvider>
           {/* @demo remove-block-start */}
         </AuthProvider>

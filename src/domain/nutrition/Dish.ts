@@ -6,6 +6,7 @@ export interface DishConfig {
     dishId: DishId;
     name: string;
     nutrition: NutritionalInfo;
+    imageUrl?: string; // Optional URL to dish image (Unsplash, etc.)
 }
 
 /**
@@ -16,16 +17,17 @@ export class Dish {
     private constructor(
         private readonly id: DishId,
         private readonly name: string,
-        private readonly nutrition: NutritionalInfo
+        private readonly nutrition: NutritionalInfo,
+        private readonly imageUrl?: string
     ) {}
 
-    static create({ dishId, name, nutrition }: DishConfig): Dish {
+    static create({ dishId, name, nutrition, imageUrl }: DishConfig): Dish {
         // Domain validation could go here
         if (!name || name.trim() === '') {
             throw new Error('Dish name cannot be empty');
         }
         
-        return new Dish(dishId, name.trim(), nutrition);
+        return new Dish(dishId, name.trim(), nutrition, imageUrl);
     }
 
     /**
@@ -57,6 +59,20 @@ export class Dish {
     }
 
     /**
+     * Get image URL for this dish
+     */
+    public getImageUrl(): string | undefined {
+        return this.imageUrl;
+    }
+
+    /**
+     * Check if dish has an image
+     */
+    public hasImage(): boolean {
+        return this.imageUrl !== undefined && this.imageUrl.trim() !== '';
+    }
+
+    /**
      * Check if dish is high in calories (>400 kcal)
      * Domain business rule example
      */
@@ -72,7 +88,8 @@ export class Dish {
         return {
             dishId: this.id,
             name: this.name,
-            nutrition: this.nutrition
+            nutrition: this.nutrition,
+            imageUrl: this.imageUrl
         };
     }
 

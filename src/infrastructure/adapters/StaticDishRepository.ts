@@ -97,7 +97,8 @@ export class StaticDishRepository implements DishRepository {
     return Dish.create({ 
       dishId, 
       name, 
-      nutrition 
+      nutrition,
+      imageUrl: foodData.imageUrl // Map the image URL from infrastructure to domain
     });
   }
 

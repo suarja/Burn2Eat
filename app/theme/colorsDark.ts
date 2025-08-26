@@ -31,6 +31,14 @@ const palette = {
   angry100: "#F2D6CD",
   angry500: "#C03403",
 
+  // Success/celebration colors for MVP (dark theme variants)
+  success100: "#1A4C2A", 
+  success500: "#06FFA5", // Keep bright neon for celebrations
+
+  // Enhanced accent for gamification (dark theme variants)
+  gamification100: "#3D2F00",
+  gamification500: "#FFD23F", // Keep bright gold for badges/rewards
+
   overlay20: "rgba(25, 16, 21, 0.2)",
   overlay50: "rgba(25, 16, 21, 0.5)",
 } as const
@@ -47,4 +55,20 @@ export const colors = {
   separator: palette.neutral300,
   error: palette.angry500,
   errorBackground: palette.angry100,
+  /**
+   * Success messages and celebrations.
+   */
+  success: palette.success500,
+  /**
+   * Success background.
+   */
+  successBackground: palette.success100,
+  /**
+   * Gamification elements (badges, rewards, confetti).
+   */
+  gamification: palette.gamification500,
+  /**
+   * Gamification background.
+   */
+  gamificationBackground: palette.gamification100,
 } as const

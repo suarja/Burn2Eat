@@ -12,6 +12,7 @@ import { useAppTheme } from "@/theme/context"
 import { useFoodCatalog } from "@/hooks/useFoodData"
 import { CalculateEffortOutput } from "@/application/usecases"
 import { Dish } from "@/domain/nutrition/Dish"
+import { Toast } from "toastify-react-native"
 
 interface ResultScreenProps extends AppStackScreenProps<"Result"> {}
 
@@ -59,6 +60,51 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
     if (!effort) throw new Error("No errror calculated");
     setComputedEffort(effort)
 
+    // 🎉 Affichage des félicitations avec toast
+    showCelebrationToast(dish, effort)
+  }
+
+  const showCelebrationToast = (dish: Dish, effort: CalculateEffortOutput) => {
+    const primaryActivity = effort.effort.primary
+    const calories = dish.getCalories()
+    
+    // Messages de félicitations personnalisés selon les calories
+    if (calories < 200) {
+      Toast.success(
+        `🌟 Excellent choix !`,
+        'bottom',
+        'check-circle',
+        'Ionicons',
+        false
+      )
+    } else if (calories < 400) {
+      Toast.success(
+        `💪 Tu peux le faire !`,
+        'bottom', 
+        'trending-up',
+        'Ionicons',
+        false
+      )
+    } else {
+      Toast.success(
+        `🔥 Challenge accepté !`,
+        'bottom',
+        'flame',
+        'Ionicons', 
+        false
+      )
+    }
+
+    // Toast avec détails de l'effort après un délai
+    setTimeout(() => {
+      Toast.info(
+        `${primaryActivity.minutes} min de ${primaryActivity.activityLabel}`,
+        'bottom',
+        'fitness',
+        'Ionicons',
+        false
+      )
+    }, 1000)
   }
 
   const handleBack = () => {
@@ -70,8 +116,19 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
   }
 
   const handleAddToHistory = () => {
+    // Toast de confirmation d'ajout à l'historique
+    Toast.success(
+      `📚 Ajouté à l'historique !`,
+      'bottom',
+      'bookmark',
+      'Ionicons',
+      false
+    )
 
-    navigation.navigate("MainTabs", { screen: "Home" }) // Go back to home tabs
+    // Retourner à la page d'accueil après un délai
+    setTimeout(() => {
+      navigation.navigate("MainTabs", { screen: "Home" })
+    }, 1500)
   }
 
 

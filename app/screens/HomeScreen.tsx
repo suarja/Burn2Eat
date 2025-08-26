@@ -6,6 +6,7 @@ import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import { TextField } from "@/components/TextField"
 import { Icon } from "@/components/Icon"
+import { FoodCard } from "@/components/FoodCard"
 import type { MainTabScreenProps } from "@/navigators/MainTabNavigator"
 import type { ThemedStyle } from "@/theme/types"
 import { useAppTheme } from "@/theme/context"
@@ -77,22 +78,18 @@ if (loading || !catalog) return (
         <Text preset="bold" style={themed($sectionTitle)}>
           {searchResults.length > 0 ? `Résultats (${searchResults.length})` : 'Populaires:'}
         </Text>
-        <ScrollView  style={themed($foodScroll)}>
-        <View style={themed($foodGrid)}>
-          {(searchResults.length > 0 ? searchResults : catalog).map((food, index) => (
-            <Button
-              key={food.getId().toString()}
-              preset="default" 
-              style={themed($foodCard)}
-              onPress={() => handleFoodSelect(food)}
-            >
-              <View style={themed($foodCardContent)}>
-                <Text preset="bold" style={themed($foodName)}>{food.getName()}</Text>
-                <Text style={themed($foodCalories)}>{food.getCalories()} kcal</Text>
-              </View>
-            </Button>
-          ))}
-        </View>
+        <ScrollView style={themed($foodScroll)}>
+          <View style={themed($foodGrid)}>
+            {(searchResults.length > 0 ? searchResults : catalog).map((dish) => (
+              <FoodCard
+                key={dish.getId().toString()}
+                dish={dish}
+                onPress={() => handleFoodSelect(dish)}
+                style={themed($foodCardWrapper)}
+                size="medium"
+              />
+            ))}
+          </View>
         </ScrollView>
         {/* Scanner Placeholder */}
         <Button
@@ -173,32 +170,9 @@ height: SCREEN_HEIGHT / 2,
 marginVertical: spacing.md
 })
 
-const $foodCard: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+const $foodCardWrapper: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   width: "48%",
-  marginBottom: spacing.md,
-  padding: spacing.sm,
-  backgroundColor: colors.palette.neutral200,
-  borderRadius: 8,
-})
-
-const $foodCardContent: ThemedStyle<ViewStyle> = ({}) => ({
-  alignItems: "center",
-})
-
-const $foodEmoji: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  fontSize: 32,
-  marginBottom: spacing.xxs,
-})
-
-const $foodName: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
-  fontSize: 14,
-  color: colors.text,
-  marginBottom: spacing.xxxs,
-})
-
-const $foodCalories: ThemedStyle<TextStyle> = ({ colors }) => ({
-  fontSize: 12,
-  color: colors.textDim,
+  marginHorizontal: "1%",
 })
 
 const $scannerButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
