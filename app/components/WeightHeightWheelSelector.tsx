@@ -12,7 +12,7 @@ export interface WeightHeightWheelSelectorProps {
   /**
    * Current weight in kilograms
    */
-  weight: number
+  weight: number 
   /**
    * Current height in centimeters
    */

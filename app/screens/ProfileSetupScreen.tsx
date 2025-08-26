@@ -1,4 +1,4 @@
-import React, { FC } from "react"
+import React, { FC, useEffect } from "react"
 import { View, ViewStyle, TextStyle } from "react-native"
 
 import { Button } from "@/components/Button"
@@ -28,6 +28,7 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
   const [loading, setLoading] = React.useState(false)
   const [isInitialLoad, setIsInitialLoad] = React.useState(true)
 
+
   const handleSave = async () => {
     if (!selectedActivity) return
     
@@ -56,6 +57,7 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
   // Load existing profile on mount
   React.useEffect(() => {
     const loadProfile = async () => {
+      setLoading(true)
       console.log("🚀 ProfileSetupScreen: Starting to load profile...")
       try {
         const existingProfile = await UserProfileService.getProfile()
@@ -72,6 +74,7 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
       } catch (error) {
         console.warn("❌ ProfileSetupScreen: Failed to load existing profile:", error)
       } finally {
+        setLoading(false)
         setIsInitialLoad(false)
       }
     }

@@ -50,7 +50,7 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
 
   const handleAddToHistory = () => {
     console.log("Adding to history:", food.name)
-    navigation.navigate("MainTabs", { screen: "HomeTab" }) // Go back to home tabs
+    navigation.navigate("MainTabs", { screen: "Home" }) // Go back to home tabs
   }
 
   return (

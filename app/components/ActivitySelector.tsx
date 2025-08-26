@@ -6,7 +6,6 @@ import type { ThemedStyle } from "@/theme/types"
 
 import { Button } from "./Button"
 import { Text } from "./Text"
-import { Card } from "./Card"
 
 export interface Activity {
   key: string
@@ -98,11 +97,11 @@ export const ActivitySelector: React.FC<ActivitySelectorProps> = ({
         Activité préférée:
       </Text>
       
-      <Card style={themed($selectorCard)}>
+      <View style={themed($selectorCard)}>
         {renderActivityGroup("Intensité faible (1-3 MET)", lightActivities)}
         {renderActivityGroup("Intensité modérée (3-6 MET)", moderateActivities)}
         {renderActivityGroup("Intensité élevée (6+ MET)", vigorousActivities)}
-      </Card>
+      </View>
     </View>
   )
 }
