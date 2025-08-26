@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useEffect, useState } from "react"
 import { ImageStyle, TextStyle, View, ViewStyle } from "react-native"
 
 import { Button } from "@/components/Button"
@@ -9,6 +9,7 @@ import type { ThemedStyle } from "@/theme/types"
 import { useAppTheme } from "@/theme/context"
 import { $styles } from "@/theme/styles"
 import { useSafeAreaInsetsStyle } from "@/utils/useSafeAreaInsetsStyle"
+import { useUserProfile } from "@/hooks/useUserProfile"
 
 interface WelcomeScreenProps extends AppStackScreenProps<"Welcome"> {}
 
@@ -17,9 +18,36 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(
 ) {
   const { themed } = useAppTheme()
   const { navigation } = _props
+  const { loadCurrentProfile } = useUserProfile()
+  
+  const [hasExistingProfile, setHasExistingProfile] = useState<boolean | null>(null)
+  const [isCheckingProfile, setIsCheckingProfile] = useState(true)
+
+  // Check for existing profile on component mount
+  useEffect(() => {
+    const checkExistingProfile = async () => {
+      try {
+        const result = await loadCurrentProfile()
+        if (result.success && result.userProfile) {
+          setHasExistingProfile(true)
+          // If user has a profile, redirect directly to Home
+          navigation.replace("MainTabs", { screen: "Home" })
+        } else {
+          setHasExistingProfile(false)
+        }
+      } catch (error) {
+        console.warn("Failed to check existing profile:", error)
+        setHasExistingProfile(false)
+      } finally {
+        setIsCheckingProfile(false)
+      }
+    }
+
+    checkExistingProfile()
+  }, [loadCurrentProfile, navigation])
 
   function handleStartOnboarding() {
-    navigation.navigate("MainTabs", { screen: "Profile" })
+    navigation.navigate("Profile")
   }
 
   function handleGuestMode() {
@@ -29,7 +57,29 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(
 
   function handleCreateProfile() {
     // Same as start onboarding - go to profile setup
-    navigation.navigate("MainTabs", { screen: "Profile" })
+    navigation.navigate("Profile")
+  }
+
+  // Show loading state while checking profile
+  if (isCheckingProfile) {
+    return (
+      <Screen preset="fixed" contentContainerStyle={$styles.flex1}>
+        <View style={themed($loadingContainer)}>
+          <Text preset="heading" style={themed($loadingText)}>
+            🔥 Burn2Eat
+          </Text>
+          <Text style={themed($loadingSubtext)}>
+            Chargement...
+          </Text>
+        </View>
+      </Screen>
+    )
+  }
+
+  // If user has existing profile, they shouldn't see this screen
+  // (they should be redirected to Home)
+  if (hasExistingProfile) {
+    return null
   }
 
   const $bottomContainerInsets = useSafeAreaInsetsStyle(["bottom"])
@@ -136,4 +186,25 @@ const $secondaryActions: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 const $secondaryButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   flex: 1,
   marginHorizontal: spacing.xs,
+})
+
+const $loadingContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  flex: 1,
+  justifyContent: "center",
+  alignItems: "center",
+  paddingHorizontal: spacing.lg,
+  backgroundColor: colors.background,
+})
+
+const $loadingText: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
+  fontSize: 28,
+  textAlign: "center",
+  marginBottom: spacing.md,
+  color: colors.palette.primary500,
+})
+
+const $loadingSubtext: ThemedStyle<TextStyle> = ({ colors }) => ({
+  textAlign: "center",
+  color: colors.textDim,
+  fontSize: 16,
 })
