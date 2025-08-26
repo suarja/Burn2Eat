@@ -11,6 +11,7 @@ import type { UserHealthInfoRepository } from "../../src/domain/physiology/UserH
 import type { ActivityCatalog } from "../../src/domain/physiology/ActivityCatalog"
 import type { DishRepository } from "../../src/domain/nutrition/DishRepository"
 import type { EffortPolicy } from "../../src/domain/effort/EffortPolicy"
+import { GetFoodCatalogUseCase } from "@/application/usecases/food/GetFoodCatalogUseCase"
 
 /**
  * Singleton dependency injection container for DDD architecture
@@ -28,6 +29,7 @@ export class Dependencies {
   private static _getUserUseCase: GetUserProfileUseCase | null = null
   private static _updateUserUseCase: UpdateUserProfileUseCase | null = null
   private static _calculateEffortUseCase: CalculateEffortUseCase | null = null
+  private static _getFoodCatalogUseCase: GetFoodCatalogUseCase | null = null
 
   /**
    * Initialize all dependencies (call once at app startup)
@@ -50,6 +52,7 @@ export class Dependencies {
       this._activityCatalog,
       this._effortPolicy
     )
+    this._getFoodCatalogUseCase = new GetFoodCatalogUseCase(this._dishRepository)
 
     console.log("✅ Dependencies: DDD architecture initialized successfully")
   }
@@ -124,6 +127,12 @@ export class Dependencies {
       throw new Error("Dependencies not initialized. Call Dependencies.initialize() first.")
     }
     return this._calculateEffortUseCase
+  }
+  static getFoodCatalogUseCase(): GetFoodCatalogUseCase {
+    if (!this._getFoodCatalogUseCase) {
+      throw new Error("Dependencies not initialized. Call Dependencies.initialize() first.")
+    }
+    return this._getFoodCatalogUseCase
   }
 }
 

@@ -1,4 +1,4 @@
-import React, { FC } from "react"
+import React, { FC, useEffect, useState } from "react"
 import { View, ViewStyle } from "react-native"
 
 import { Button } from "@/components/Button"
@@ -9,35 +9,58 @@ import { Card } from "@/components/Card"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
 import type { ThemedStyle } from "@/theme/types"
 import { useAppTheme } from "@/theme/context"
+import { useFoodCatalog } from "@/hooks/useFoodData"
+import { CalculateEffortOutput } from "@/application/usecases"
+import { Dish } from "@/domain/nutrition/Dish"
 
 interface ResultScreenProps extends AppStackScreenProps<"Result"> {}
 
 export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) {
   const { navigation, route } = props
   const { themed } = useAppTheme()
+
+  const [dish, setDish] = useState<Dish | null>(null)
+  const [computedEffort, setComputedEffort] = useState<CalculateEffortOutput | null>(null)
   
   // Get food ID from navigation params
   const { foodId } = route.params
 
-  // Mock data - later will come from use cases
-  const mockFoodData = {
-    pizza: { name: "Pizza Reine", emoji: "🍕", calories: 450 },
-    burger: { name: "Burger Classique", emoji: "🍔", calories: 540 },
-    frites: { name: "Frites", emoji: "🍟", calories: 365 },
-    soda: { name: "Soda", emoji: "🥤", calories: 150 },
-    glace: { name: "Glace Vanille", emoji: "🍦", calories: 280 },
-    salade: { name: "Salade Verte", emoji: "🥗", calories: 120 },
-  }
+  console.log("Food id param", foodId)
+  const {
+    data: {catalog},
+    actions: {
+      calculateEffort,
+      findDish
+    }
+  } = useFoodCatalog()
 
-  const food = mockFoodData[foodId as keyof typeof mockFoodData] || mockFoodData.pizza
 
-  // Mock effort calculations (later from EffortCalculator)
-  const effortData = {
-    primary: { activity: "course", time: Math.round(food.calories / 10), emoji: "🏃‍♂️" },
-    alternatives: [
-      { activity: "marche", time: Math.round(food.calories / 6), emoji: "🚶" },
-      { activity: "crossfit", time: Math.round(food.calories / 18), emoji: "💪" },
-    ]
+
+  useEffect(() => {
+    const getDish = () => {
+      const dish = findDish(JSON.parse(JSON.stringify(foodId)).value)
+      console.log("got dish", dish)
+      if (!dish) return
+      setDish(dish)
+    }
+
+    getDish()
+  }, [ foodId, findDish])
+
+  useEffect(() => {
+    if (!dish) return
+    getCalculatedEffort()
+
+  }, [ foodId, dish])
+
+
+  const getCalculatedEffort = async () => {
+    if (!dish) return
+    console.log("about to effort", dish.getId().toString())
+    const effort  = await calculateEffort(dish.getId().toString())
+    if (!effort) throw new Error("No errror calculated");
+    setComputedEffort(effort)
+
   }
 
   const handleBack = () => {
@@ -49,14 +72,32 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
   }
 
   const handleAddToHistory = () => {
-    console.log("Adding to history:", food.name)
+
     navigation.navigate("MainTabs", { screen: "Home" }) // Go back to home tabs
   }
+
+
+  if (!dish) return (
+    <View style={themed($contentContainer)} >
+      <Text>
+
+      No dish
+      </Text>
+    </View>
+  )
+  if (!computedEffort) return (
+    <View>
+      <Text>
+
+No effort
+</Text>
+    </View>
+  )
 
   return (
     <Screen preset="scroll" style={themed($screenContainer)}>
       <Header 
-        title={food.name}
+        title={dish.getName()}
         leftIcon="back"
         onLeftPress={handleBack}
       />
@@ -65,8 +106,8 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
         {/* Food Info Card */}
         <Card
           style={themed($foodCard)}
-          heading={`${food.emoji} ${food.name}`}
-          content={`${food.calories} kcal par portion`}
+          heading={`${dish.getName()}`}
+          content={`${dish.getCalories()} kcal par portion`}
           footer="Informations nutritionnelles"
         />
 
@@ -78,11 +119,11 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
           ContentComponent={
             <View style={themed($effortContent)}>
               <Text style={themed($effortItem)}>
-                {effortData.primary.emoji} {effortData.primary.time} min de {effortData.primary.activity}
+                {computedEffort.effort.primary.minutes} min de {computedEffort.effort.primary.activityLabel}
               </Text>
-              {effortData.alternatives.map((alt, index) => (
+              {computedEffort.effort.alternatives.map((alt, index) => (
                 <Text key={index} style={themed($effortItem)}>
-                  {alt.emoji} {alt.time} min de {alt.activity}
+                 {alt.minutes} min de {alt.activityLabel}
                 </Text>
               ))}
             </View>

@@ -303,6 +303,11 @@ export const FOODS_DATASET: FoodData[] = [
 export const getFoodCount = (): number => FOODS_DATASET.length;
 
 /**
+ * Get all foods in dataset
+ */
+export const getAllFoods = (): FoodData[] => FOODS_DATASET;
+
+/**
  * Get foods by category
  */
 export const getFoodsByCategory = (category: string): FoodData[] => {

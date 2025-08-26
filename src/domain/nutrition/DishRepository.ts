@@ -34,4 +34,6 @@ export interface DishRepository {
     maxCalories?: number;
     minCalories?: number;
   }): Promise<Dish[]>;
+
+  getAll() :Promise<Dish[]> 
 }

@@ -10,12 +10,18 @@ import {
   searchFoodsByName,
   FoodData
 } from "../data";
+import { getAllFoods } from "../data/foods-dataset";
 
 /**
  * Infrastructure adapter that implements DishRepository using static food dataset
  * Translates between infrastructure FoodData and domain Dish entities
  */
 export class StaticDishRepository implements DishRepository {
+  getAll(): Promise<Dish[]> {
+   const data = getAllFoods()
+
+   return Promise.resolve(data.map(this.toDomainDish))
+  }
   
   async findByName(query: string, limit?: number): Promise<Dish[]> {
     const foodsData = searchFoodsByName(query);
@@ -86,7 +92,7 @@ export class StaticDishRepository implements DishRepository {
     const nutrition = NutritionalInfo.perServing(calories);
     
     // Use the English name for the domain (could be configurable)
-    const name = foodData.names.en;
+    const name = foodData.names.fr;
     
     return Dish.create({ 
       dishId, 

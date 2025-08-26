@@ -1,4 +1,4 @@
-import React, { FC } from "react"
+import React, { FC, useEffect, useState } from "react"
 import { View, ViewStyle, TextStyle, ScrollView, Dimensions } from "react-native"
 
 import { Button } from "@/components/Button"
@@ -11,6 +11,8 @@ import type { ThemedStyle } from "@/theme/types"
 import { useAppTheme } from "@/theme/context"
 import { $styles } from "@/theme/styles"
 import { FoodDataService, type FoodItem } from "@/services/FoodDataService"
+import { Dish } from "@/domain/nutrition/Dish"
+import { useFoodCatalog } from "@/hooks/useFoodData"
 
 interface HomeScreenProps extends MainTabScreenProps<"Home"> {}
 
@@ -18,25 +20,29 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
   const { navigation } = props
   const { themed } = useAppTheme()
   
-  const [searchText, setSearchText] = React.useState("")
-  const [searchResults, setSearchResults] = React.useState<FoodItem[]>([])
-  const [popularFoods] = React.useState(() => FoodDataService.getAllFoods())
+  const [searchText, setSearchText] = useState("")
+  const [searchResults, setSearchResults] = useState<Dish[] >([])
+  const [popularFoods, setPopularFoods] = useState<Dish[] | null>()
 
-  const handleFoodSelect = (food: FoodItem) => {
-    console.log("Selected food:", food.name)
+  const {
+    data: {catalog
+      , loading
+    }
+  } = useFoodCatalog()
+
+  const handleFoodSelect = (food: Dish) => {
+    console.log("Selected food:", food.getName())
     // @ts-ignore - Navigation types complex with nested navigators
-    navigation.navigate("Result", { foodId: food.id })
+    navigation.navigate("Result", { foodId: food.getId() })
   }
 
-  // Handle search input
-  React.useEffect(() => {
-    if (searchText.trim().length >= 2) {
-      const results = FoodDataService.searchFoods(searchText)
-      setSearchResults(results)
-    } else {
-      setSearchResults([])
-    }
-  }, [searchText])
+if (loading || !catalog) return (
+  <View>
+    <Text>
+    Empty Catalog
+    </Text>
+  </View>
+)
 
   return (
     <Screen preset="scroll" style={themed($screenContainer)}>
@@ -64,17 +70,16 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
         </Text>
         <ScrollView  style={themed($foodScroll)}>
         <View style={themed($foodGrid)}>
-          {(searchResults.length > 0 ? searchResults : popularFoods).map((food, index) => (
+          {(searchResults.length > 0 ? searchResults : catalog).map((food, index) => (
             <Button
-              key={food.id}
-              preset="default"
+              key={food.getId().toString()}
+              preset="default" 
               style={themed($foodCard)}
               onPress={() => handleFoodSelect(food)}
             >
               <View style={themed($foodCardContent)}>
-                <Text style={themed($foodEmoji)}>{food.emoji}</Text>
-                <Text preset="bold" style={themed($foodName)}>{food.name}</Text>
-                <Text style={themed($foodCalories)}>{food.calories} kcal</Text>
+                <Text preset="bold" style={themed($foodName)}>{food.getName()}</Text>
+                <Text style={themed($foodCalories)}>{food.getCalories()} kcal</Text>
               </View>
             </Button>
           ))}
