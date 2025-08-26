@@ -1,5 +1,5 @@
 import React, { FC } from "react"
-import { View, ViewStyle, TextStyle } from "react-native"
+import { View, ViewStyle, TextStyle, ScrollView, Dimensions } from "react-native"
 
 import { Button } from "@/components/Button"
 import { Screen } from "@/components/Screen"
@@ -62,7 +62,7 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
         <Text preset="bold" style={themed($sectionTitle)}>
           {searchResults.length > 0 ? `Résultats (${searchResults.length})` : 'Populaires:'}
         </Text>
-
+        <ScrollView  style={themed($foodScroll)}>
         <View style={themed($foodGrid)}>
           {(searchResults.length > 0 ? searchResults : popularFoods).map((food, index) => (
             <Button
@@ -79,7 +79,7 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
             </Button>
           ))}
         </View>
-
+        </ScrollView>
         {/* Scanner Placeholder */}
         <Button
           preset="default"
@@ -146,12 +146,17 @@ const $sectionTitle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   fontSize: 18,
   marginBottom: spacing.md,
 })
+const { height: SCREEN_HEIGHT } = Dimensions.get("window")
 
 const $foodGrid: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   flexDirection: "row",
   flexWrap: "wrap",
   justifyContent: "space-between",
   marginBottom: spacing.xl,
+})
+const $foodScroll: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+height: SCREEN_HEIGHT / 2,
+marginVertical: spacing.md
 })
 
 const $foodCard: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
