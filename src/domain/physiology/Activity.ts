@@ -87,4 +87,6 @@ export class Activity {
   equals(other: Activity): boolean {
     return this.key === other.key;
   }
+
+  
 }

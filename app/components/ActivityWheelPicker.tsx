@@ -6,6 +6,8 @@ import type { ThemedStyle } from "@/theme/types"
 
 import { Text } from "./Text"
 import { colors } from "@/theme/colors"
+import { Dependencies } from "@/services/Dependencies"
+import { useActivityCatalog } from "@/hooks/useActivityCatalog"
 
 const ITEM_HEIGHT = 60
 const { width: SCREEN_WIDTH } = Dimensions.get("window")
@@ -13,9 +15,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window")
 export interface ActivityOption {
   key: string
   name: string
-  emoji: string
   met: number
-  category: 'light' | 'moderate' | 'vigorous'
 }
 
 export interface ActivityWheelPickerProps {
@@ -41,22 +41,6 @@ export interface ActivityWheelPickerProps {
   height?: number
 }
 
-// Activities data - matches the structure from ActivitySelector
-const ACTIVITIES: ActivityOption[] = [
-  // Light activities (1-3 MET)
-  { key: 'walking_slow', name: 'Marche lente', emoji: '🚶‍♀️', met: 2.5, category: 'light' },
-  { key: 'yoga', name: 'Yoga', emoji: '🧘‍♀️', met: 2.5, category: 'light' },
-  
-  // Moderate activities (3-6 MET)
-  { key: 'walking_brisk', name: 'Marche rapide', emoji: '🚶‍♂️', met: 3.5, category: 'moderate' },
-  { key: 'dancing', name: 'Danse', emoji: '💃', met: 4.0, category: 'moderate' },
-  { key: 'cycling_leisure', name: 'Vélo loisir', emoji: '🚴‍♀️', met: 5.8, category: 'moderate' },
-  
-  // Vigorous activities (6+ MET)
-  { key: 'jogging', name: 'Course', emoji: '🏃‍♂️', met: 7.0, category: 'vigorous' },
-  { key: 'swimming', name: 'Natation', emoji: '🏊‍♀️', met: 8.0, category: 'vigorous' },
-  { key: 'crossfit', name: 'CrossFit', emoji: '💪', met: 10.0, category: 'vigorous' },
-]
 
 /**
  * Internal ActivityWheel component for scrollable activity selection
@@ -180,17 +164,23 @@ export const ActivityWheelPicker: React.FC<ActivityWheelPickerProps> = ({
 }) => {
   const { themed } = useAppTheme()
 
+  const {
+    data: {catalog}
+  } = useActivityCatalog()
+
+  console.log({catalog})
+
   // Find current activity index
   const currentActivityIndex = selectedActivity 
-    ? ACTIVITIES.findIndex(activity => activity.key === selectedActivity)
-    : ACTIVITIES.findIndex(activity => activity.key === 'jogging') // Default to jogging
+    ? catalog?.findIndex(activity => activity.key === selectedActivity)
+    : catalog?.findIndex(activity => activity.key === 'jogging') // Default to jogging
 
   const validIndex = currentActivityIndex >= 0 ? currentActivityIndex : 0
 
   // Handle activity change - WheelPicker expects numeric values
   const handleActivityChange = (newIndex: number) => {
-    if (newIndex >= 0 && newIndex < ACTIVITIES.length) {
-      const selectedActivityData = ACTIVITIES[newIndex]
+    if (newIndex >= 0 && newIndex < catalog.length) {
+      const selectedActivityData = catalog[newIndex]
       console.log(`🎯 ActivityWheelPicker: Activity changed to ${selectedActivityData.name} (${selectedActivityData.key})`)
       onActivitySelect(selectedActivityData.key)
     }
@@ -208,7 +198,7 @@ export const ActivityWheelPicker: React.FC<ActivityWheelPickerProps> = ({
         </Text>
         
         <ActivityWheel
-          activities={ACTIVITIES}
+          activities={catalog}
           selectedIndex={validIndex}
           onChange={handleActivityChange}
           disabled={disabled}

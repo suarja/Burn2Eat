@@ -3,6 +3,8 @@
  * Centralized access to activities datasets and utilities
  */
 
+import { ACTIVITIES_DATASET } from './activities-dataset';
+
 // Main dataset export
 export { 
   ACTIVITIES_DATASET,
