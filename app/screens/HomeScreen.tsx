@@ -36,6 +36,15 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
     navigation.navigate("Result", { foodId: food.getId() })
   }
 
+  useEffect(() => {
+    if (!catalog ) return
+    if (searchText=== "" ) {
+      setSearchResults([])
+      return
+    }
+    setSearchResults(catalog.filter(dish => dish.getName().toString().includes(searchText)))
+  }, [searchText])
+
 if (loading || !catalog) return (
   <View>
     <Text>

@@ -39,7 +39,6 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
   useEffect(() => {
     const getDish = () => {
       const dish = findDish(JSON.parse(JSON.stringify(foodId)).value)
-      console.log("got dish", dish)
       if (!dish) return
       setDish(dish)
     }
@@ -56,7 +55,6 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
 
   const getCalculatedEffort = async () => {
     if (!dish) return
-    console.log("about to effort", dish.getId().toString())
     const effort  = await calculateEffort(dish.getId().toString())
     if (!effort) throw new Error("No errror calculated");
     setComputedEffort(effort)
