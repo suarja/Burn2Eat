@@ -1,9 +1,13 @@
 import { FoodData } from "../../types/FoodData"
-// Import all category additions
-import { BREAKFAST_ADDITIONS } from "../categories/breakfast-additions"
-import { FAST_FOOD_ADDITIONS } from "../categories/fast-food-additions"
-import { MAIN_COURSE_ADDITIONS } from "../categories/main-course-additions"
 import { FOODS_DATASET } from "../foods-dataset"
+// Import all category additions
+import { BEVERAGE_ADDITIONS } from "../categories/beverage-additions"
+import { BREAKFAST_ADDITIONS } from "../categories/breakfast-additions"
+import { DESSERT_ADDITIONS } from "../categories/dessert-additions"
+import { FAST_FOOD_ADDITIONS } from "../categories/fast-food-additions"
+import { FRUIT_ADDITIONS } from "../categories/fruit-additions"
+import { MAIN_COURSE_ADDITIONS } from "../categories/main-course-additions"
+import { SNACK_ADDITIONS } from "../categories/snack-additions"
 
 /**
  * Dataset Merger Utility
@@ -14,9 +18,13 @@ import { FOODS_DATASET } from "../foods-dataset"
  * All category addition arrays
  */
 const CATEGORY_ADDITIONS: FoodData[][] = [
-  MAIN_COURSE_ADDITIONS,
+  BEVERAGE_ADDITIONS,
   BREAKFAST_ADDITIONS,
+  DESSERT_ADDITIONS,
   FAST_FOOD_ADDITIONS,
+  FRUIT_ADDITIONS,
+  MAIN_COURSE_ADDITIONS,
+  SNACK_ADDITIONS,
 ]
 
 /**

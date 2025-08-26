@@ -2,22 +2,22 @@
 
 This document tracks all food items in the Burn2Eat app dataset, their organization, and expansion progress.
 
-## ✅ COMPLETED EXPANSION - Current Dataset Overview
+## ✅ MAJOR EXPANSION COMPLETED - Current Dataset Overview
 
 **Original Items**: 22 food items  
-**New Items Added**: 15 food items  
-**Total Items**: 37 food items (68% increase)  
+**New Items Added**: 46 food items  
+**Total Items**: 68 food items (309% increase!)  
 **Last Updated**: August 26, 2025  
-**Status**: ✅ Modular expansion system implemented  
+**Status**: ✅ Comprehensive food database with popular items  
 
 ### Files Structure
 - **Main File**: `src/infrastructure/data/foods-dataset.ts` (original 22 items)
-- **Addition Files**: `src/infrastructure/data/categories/` (new 15 items)
+- **Addition Files**: `src/infrastructure/data/categories/` (new 46 items in 7 files)
 - **Utils**: `src/infrastructure/data/utils/` (templates & merger)
 
 ## Categories and Current Items
 
-### Fast Food (10 items: 5 original + 5 new)
+### Fast Food (14 items: 5 original + 9 new)
 
 #### Original Items (foods-dataset.ts)
 - **burger-classic**: Classic Burger - 540 cal/piece
@@ -32,8 +32,12 @@ This document tracks all food items in the Burn2Eat app dataset, their organizat
 - **chicken-wrap**: Chicken Wrap - 380 cal/piece
 - **pepperoni-pizza**: Pepperoni Pizza - 380 cal/slice
 - **taco-beef**: Beef Taco - 220 cal/piece
+- **mcdonalds-big-mac**: Big Mac - 550 cal/piece
+- **subway-sandwich**: Subway Sandwich - 320 cal/piece
+- **kfc-fried-chicken**: KFC Fried Chicken - 320 cal/piece
+- **dominos-pizza**: Domino's Pizza - 290 cal/slice
 
-### Desserts (6 items: 5 original + 1 new)
+### Desserts (11 items: 5 original + 6 new)
 
 #### Original Items (foods-dataset.ts)
 - **chocolate-cake**: Chocolate Cake - 410 cal/slice
@@ -42,32 +46,62 @@ This document tracks all food items in the Burn2Eat app dataset, their organizat
 - **chocolate-cookies**: Chocolate Cookies - 160 cal/2 pieces
 - **strawberry-cupcake**: Strawberry Cupcake - 300 cal/piece
 
-#### ✅ New Additions (breakfast-additions.ts using dessert category)
+#### ✅ New Additions (breakfast-additions.ts + dessert-additions.ts)
 - **pancakes-stack**: Pancake Stack - 520 cal/3 pieces
+- **oreo-cookies**: Oreo Cookies - 140 cal/3 pieces
+- **ben-jerry-ice-cream**: Ben & Jerry's Ice Cream - 250 cal/100g
+- **chocolate-brownie**: Chocolate Brownie - 365 cal/piece
+- **apple-pie**: Apple Pie - 320 cal/slice
+- **cheesecake-slice**: Cheesecake - 400 cal/slice
 
-### Beverages (3 items)
+### Beverages (9 items: 3 original + 6 new)
+
+#### Original Items (foods-dataset.ts)
 - **coca-cola**: Coca Cola - 140 cal/330ml can
 - **orange-juice**: Orange Juice - 110 cal/250ml cup
 - **coffee-latte**: Coffee Latte - 180 cal/cup
 
-### Snacks (4 items: 3 original + 1 new)
+#### ✅ New Additions (beverage-additions.ts)
+- **starbucks-coffee**: Starbucks Coffee - 5 cal/cup
+- **green-tea**: Green Tea - 2 cal/cup
+- **red-bull-energy**: Red Bull Energy Drink - 110 cal/250ml can
+- **apple-juice**: Apple Juice - 115 cal/250ml cup
+- **protein-shake**: Protein Shake - 150 cal/250ml cup
+- **pepsi-cola**: Pepsi Cola - 150 cal/330ml can
+
+### Snacks (10 items: 3 original + 7 new)
 
 #### Original Items (foods-dataset.ts)
 - **potato-chips**: Potato Chips - 150 cal/28g
 - **chocolate-bar**: Chocolate Bar - 235 cal/43g
 - **mixed-nuts**: Mixed Nuts - 170 cal/28g
 
-#### ✅ New Additions (breakfast-additions.ts using snack category)
+#### ✅ New Additions (breakfast-additions.ts + snack-additions.ts)
 - **greek-yogurt**: Greek Yogurt - 130 cal/cup
+- **granola-bar**: Granola Bar - 140 cal/piece
+- **cottage-cheese**: Cottage Cheese - 110 cal/100g
+- **trail-mix**: Trail Mix - 180 cal/30g
+- **protein-bar**: Protein Bar - 200 cal/piece
+- **rice-cakes**: Rice Cakes - 70 cal/2 pieces
+- **string-cheese**: String Cheese - 80 cal/piece
 
-### Fruits (5 items)
+### Fruits (10 items: 5 original + 5 new)
+
+#### Original Items (foods-dataset.ts)
 - **apple-red**: Red Apple - 95 cal/piece
 - **banana**: Banana - 105 cal/piece
 - **orange**: Orange - 65 cal/piece
 - **strawberries**: Strawberries - 50 cal/150g
 - **avocado**: Avocado - 160 cal/piece
 
-### Main Course (8 items: 0 original + 8 new)
+#### ✅ New Additions (fruit-additions.ts)
+- **blueberries**: Blueberries - 85 cal/150g cup
+- **grapes-green**: Green Grapes - 90 cal/150g cup
+- **mango**: Mango - 135 cal/piece
+- **pineapple**: Pineapple - 85 cal/150g cup
+- **watermelon**: Watermelon - 45 cal/150g cup
+
+### Main Course (14 items: 0 original + 14 new)
 
 #### ✅ New Additions (main-course-additions.ts + breakfast items using main-course category)
 - **grilled-chicken-breast**: Grilled Chicken Breast - 185 cal/100g
@@ -78,17 +112,24 @@ This document tracks all food items in the Burn2Eat app dataset, their organizat
 - **scrambled-eggs**: Scrambled Eggs - 155 cal/2 pieces
 - **oatmeal-bowl**: Oatmeal Bowl - 150 cal/cup
 - **avocado-toast**: Avocado Toast - 280 cal/2 slices
+- **white-rice**: White Rice - 130 cal/100g
+- **spaghetti-marinara**: Spaghetti Marinara - 220 cal/cup
+- **chicken-breast-grilled**: Grilled Chicken Breast - 165 cal/100g
+- **brown-rice**: Brown Rice - 110 cal/100g
+- **tuna-sandwich**: Tuna Sandwich - 280 cal/piece
 
 ## Updated Calorie Range Analysis
 
 | Category | Items Count | Min Calories | Max Calories | Avg Calories |
 |----------|------------|-------------|-------------|-------------|
-| Fast Food | 10 | 220 | 740 | 426 |
-| Desserts | 6 | 160 | 520 | 282 |
-| Beverages | 3 | 110 | 180 | 143 |
-| Snacks | 4 | 130 | 235 | 171 |
-| Fruits | 5 | 50 | 160 | 95 |
-| Main Course | 8 | 150 | 450 | 249 |
+| Fast Food | 14 | 220 | 740 | 395 |
+| Desserts | 11 | 140 | 520 | 312 |
+| Beverages | 9 | 2 | 180 | 103 |
+| Snacks | 10 | 70 | 235 | 144 |
+| Fruits | 10 | 45 | 160 | 95 |
+| Main Course | 14 | 110 | 450 | 203 |
+
+**Total Dataset**: 68 food items across 6 categories
 
 ## Portion Size Patterns
 
@@ -154,11 +195,34 @@ src/infrastructure/data/
 - [x] Document existing dataset
 - [x] Create modular file structure  
 - [x] Add 5+ breakfast items (5 items added)
-- [x] Add 5+ main course items (8 items total)
-- [x] Add fast food expansions (5 new items)
+- [x] Add 10+ main course items (14 items total)
+- [x] Add fast food expansions (9 new items)
+- [x] Add popular beverages (6 new items)
+- [x] Add common snacks (7 new items)
+- [x] Add popular desserts (6 new items)
+- [x] Add fresh fruits (5 new items)
 - [x] Create template and validation system
 - [x] Build dataset merger utility
 - [x] Update tracking documentation
+
+## 🚀 Popular Foods Added Based on Research
+
+### Most Commonly Tracked Foods
+- **Rice** (white & brown) - staple carbohydrate
+- **Chicken breast** - lean protein favorite
+- **Pasta** (marinara & carbonara) - comfort food classics
+- **Eggs** - versatile protein source
+- **Popular fast food brands** (McDonald's, KFC, Subway, Domino's)
+
+### Health & Fitness Trends
+- **Protein items**: protein shakes, bars, cottage cheese, Greek yogurt
+- **Low-calorie options**: green tea, rice cakes, watermelon
+- **Antioxidant-rich foods**: blueberries, green tea
+- **Whole grains**: brown rice, oatmeal
+
+### Brand Recognition
+- **Starbucks coffee**, **Red Bull**, **Pepsi**, **Oreo cookies**
+- **Ben & Jerry's ice cream** - premium brand recognition
 
 ## 🚀 How to Add New Food Items
 

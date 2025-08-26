@@ -47,7 +47,7 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
   return (
     <Screen preset="fixed" safeAreaEdges={["top"]} style={themed($screenContainer)}>
       <FlatList<Dish>
-        contentContainerStyle={themed([$styles.container, $listContentContainer])}
+        contentContainerStyle={themed([ $listContentContainer])}
         data={displayData}
         numColumns={2}
         keyExtractor={(item) => item.getId().toString()}
@@ -113,9 +113,9 @@ const $searchContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   alignItems: "center",
   backgroundColor: colors.palette.neutral200,
   borderRadius: 12,
-  marginTop: spacing.xxl,
+  marginTop: spacing.md,
   paddingHorizontal: spacing.md,
-  marginBottom: spacing.xl,
+  marginBottom: spacing.sm,
   height: 50,
 })
 
@@ -143,8 +143,6 @@ const $searchInput: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
 
 const $listContentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   paddingHorizontal: spacing.lg,
-  paddingTop: spacing.lg,
-  paddingBottom: spacing.lg,
 })
 
 const $sectionTitle: ThemedStyle<TextStyle> = ({ spacing }) => ({
