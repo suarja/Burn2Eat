@@ -79,9 +79,9 @@ export const FAST_FOOD_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1553979459-d2229ba7433a?w=400&h=400&fit=crop",
     description: {
       en: "McDonald's signature Big Mac burger",
-      fr: "Burger Big Mac signature de McDonald's"
+      fr: "Burger Big Mac signature de McDonald's",
     },
-    tags: ["burger", "mcdonalds", "big-mac", "fast-food", "iconic"]
+    tags: ["burger", "mcdonalds", "big-mac", "fast-food", "iconic"],
   },
   {
     id: "subway-sandwich",
@@ -92,9 +92,9 @@ export const FAST_FOOD_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1555072956-7758afb20e8f?w=400&h=400&fit=crop",
     description: {
       en: "6-inch turkey and ham submarine sandwich",
-      fr: "Sandwich sous-marin de 6 pouces dinde et jambon"
+      fr: "Sandwich sous-marin de 6 pouces dinde et jambon",
     },
-    tags: ["sandwich", "subway", "turkey", "ham", "healthy-fast-food"]
+    tags: ["sandwich", "subway", "turkey", "ham", "healthy-fast-food"],
   },
   {
     id: "kfc-fried-chicken",
@@ -105,9 +105,9 @@ export const FAST_FOOD_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=400&h=400&fit=crop",
     description: {
       en: "Kentucky Fried Chicken original recipe piece",
-      fr: "Pièce de poulet frit KFC recette originale"
+      fr: "Pièce de poulet frit KFC recette originale",
     },
-    tags: ["chicken", "kfc", "fried", "crispy", "southern"]
+    tags: ["chicken", "kfc", "fried", "crispy", "southern"],
   },
   {
     id: "dominos-pizza",
@@ -118,8 +118,8 @@ export const FAST_FOOD_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=400&fit=crop",
     description: {
       en: "Domino's medium cheese pizza slice",
-      fr: "Part de pizza au fromage moyenne Domino's"
+      fr: "Part de pizza au fromage moyenne Domino's",
     },
-    tags: ["pizza", "dominos", "cheese", "delivery", "italian"]
-  }
+    tags: ["pizza", "dominos", "cheese", "delivery", "italian"],
+  },
 ]

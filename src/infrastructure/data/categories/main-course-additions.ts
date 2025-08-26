@@ -80,9 +80,9 @@ export const MAIN_COURSE_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=400&fit=crop",
     description: {
       en: "Cooked white jasmine rice",
-      fr: "Riz jasmin blanc cuit"
+      fr: "Riz jasmin blanc cuit",
     },
-    tags: ["rice", "white", "staple", "carbs", "asian"]
+    tags: ["rice", "white", "staple", "carbs", "asian"],
   },
   {
     id: "spaghetti-marinara",
@@ -93,9 +93,9 @@ export const MAIN_COURSE_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1563379091339-03246963d96c?w=400&h=400&fit=crop",
     description: {
       en: "Classic spaghetti with marinara sauce",
-      fr: "Spaghetti classique avec sauce marinara"
+      fr: "Spaghetti classique avec sauce marinara",
     },
-    tags: ["pasta", "spaghetti", "marinara", "italian", "tomato"]
+    tags: ["pasta", "spaghetti", "marinara", "italian", "tomato"],
   },
   {
     id: "chicken-breast-grilled",
@@ -106,9 +106,9 @@ export const MAIN_COURSE_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1532550907401-a500c9a57435?w=400&h=400&fit=crop",
     description: {
       en: "Lean grilled chicken breast without skin",
-      fr: "Poitrine de poulet grillée maigre sans peau"
+      fr: "Poitrine de poulet grillée maigre sans peau",
     },
-    tags: ["chicken", "grilled", "lean", "protein", "healthy"]
+    tags: ["chicken", "grilled", "lean", "protein", "healthy"],
   },
   {
     id: "brown-rice",
@@ -119,9 +119,9 @@ export const MAIN_COURSE_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=400&fit=crop",
     description: {
       en: "Nutritious brown rice with fiber",
-      fr: "Riz brun nutritif avec fibres"
+      fr: "Riz brun nutritif avec fibres",
     },
-    tags: ["rice", "brown", "whole-grain", "fiber", "healthy"]
+    tags: ["rice", "brown", "whole-grain", "fiber", "healthy"],
   },
   {
     id: "tuna-sandwich",
@@ -132,8 +132,8 @@ export const MAIN_COURSE_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1539252554453-80ab65ce3586?w=400&h=400&fit=crop",
     description: {
       en: "Tuna salad sandwich on whole wheat bread",
-      fr: "Sandwich à la salade de thon sur pain complet"
+      fr: "Sandwich à la salade de thon sur pain complet",
     },
-    tags: ["sandwich", "tuna", "fish", "protein", "lunch"]
-  }
+    tags: ["sandwich", "tuna", "fish", "protein", "lunch"],
+  },
 ]

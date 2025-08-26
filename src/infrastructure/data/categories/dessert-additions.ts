@@ -14,9 +14,9 @@ export const DESSERT_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=400&h=400&fit=crop",
     description: {
       en: "Classic Oreo chocolate sandwich cookies",
-      fr: "Biscuits sandwich au chocolat Oreo classiques"
+      fr: "Biscuits sandwich au chocolat Oreo classiques",
     },
-    tags: ["cookies", "oreo", "chocolate", "cream", "classic"]
+    tags: ["cookies", "oreo", "chocolate", "cream", "classic"],
   },
   {
     id: "ben-jerry-ice-cream",
@@ -27,9 +27,9 @@ export const DESSERT_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1567206563064-6f60f40a2b57?w=400&h=400&fit=crop",
     description: {
       en: "Premium Ben & Jerry's ice cream",
-      fr: "Crème glacée premium Ben & Jerry's"
+      fr: "Crème glacée premium Ben & Jerry's",
     },
-    tags: ["ice-cream", "ben-jerry", "premium", "cold", "creamy"]
+    tags: ["ice-cream", "ben-jerry", "premium", "cold", "creamy"],
   },
   {
     id: "chocolate-brownie",
@@ -40,9 +40,9 @@ export const DESSERT_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=400&h=400&fit=crop",
     description: {
       en: "Rich and fudgy chocolate brownie",
-      fr: "Brownie au chocolat riche et fondant"
+      fr: "Brownie au chocolat riche et fondant",
     },
-    tags: ["brownie", "chocolate", "fudgy", "rich", "baked"]
+    tags: ["brownie", "chocolate", "fudgy", "rich", "baked"],
   },
   {
     id: "apple-pie",
@@ -53,9 +53,9 @@ export const DESSERT_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1535920527002-b35e96722406?w=400&h=400&fit=crop",
     description: {
       en: "Classic American apple pie slice",
-      fr: "Part de tarte aux pommes américaine classique"
+      fr: "Part de tarte aux pommes américaine classique",
     },
-    tags: ["pie", "apple", "american", "crust", "classic"]
+    tags: ["pie", "apple", "american", "crust", "classic"],
   },
   {
     id: "cheesecake-slice",
@@ -66,8 +66,8 @@ export const DESSERT_ADDITIONS: FoodData[] = [
     imageUrl: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=400&h=400&fit=crop",
     description: {
       en: "Creamy New York style cheesecake",
-      fr: "Gâteau au fromage crémeux style New York"
+      fr: "Gâteau au fromage crémeux style New York",
     },
-    tags: ["cheesecake", "cream", "rich", "new-york", "dessert"]
-  }
+    tags: ["cheesecake", "cream", "rich", "new-york", "dessert"],
+  },
 ]

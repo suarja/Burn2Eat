@@ -1,5 +1,4 @@
 import { FoodData } from "../../types/FoodData"
-import { FOODS_DATASET } from "../foods-dataset"
 // Import all category additions
 import { BEVERAGE_ADDITIONS } from "../categories/beverage-additions"
 import { BREAKFAST_ADDITIONS } from "../categories/breakfast-additions"
@@ -8,6 +7,7 @@ import { FAST_FOOD_ADDITIONS } from "../categories/fast-food-additions"
 import { FRUIT_ADDITIONS } from "../categories/fruit-additions"
 import { MAIN_COURSE_ADDITIONS } from "../categories/main-course-additions"
 import { SNACK_ADDITIONS } from "../categories/snack-additions"
+import { FOODS_DATASET } from "../foods-dataset"
 
 /**
  * Dataset Merger Utility
