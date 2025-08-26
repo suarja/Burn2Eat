@@ -4,14 +4,15 @@ import { DishId } from "../../domain/nutrition/DishId"
 import { DishRepository } from "../../domain/nutrition/DishRepository"
 import { NutritionalInfo } from "../../domain/nutrition/NutritionalInfo"
 import {
-  FOODS_DATASET,
   getFoodById,
   getFoodsByCategory,
   searchFoodsByName,
   FoodData,
 } from "../data"
 import { getAllFoods } from "../data/foods-dataset"
+import { mergeAllFoodData } from "../data/utils/dataset-merger"
 
+const FOODS_DATASET = mergeAllFoodData().mergedData
 /**
  * Infrastructure adapter that implements DishRepository using static food dataset
  * Translates between infrastructure FoodData and domain Dish entities

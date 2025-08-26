@@ -16,7 +16,6 @@ import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 export type MainTabParamList = {
   Home: undefined
   Profile: undefined
-  DebugTab: undefined
   // HistoryTab: undefined // Will add later
 }
 
@@ -82,7 +81,7 @@ export function MainTabNavigator() {
         }}
       />
 
-      <Tab.Screen
+      {/* <Tab.Screen
         name="DebugTab"
         component={DemoDebugScreen}
         options={{
@@ -95,7 +94,7 @@ export function MainTabNavigator() {
             />
           ),
         }}
-      />
+      /> */}
     </Tab.Navigator>
   )
 }
