@@ -428,13 +428,16 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
 
             <View style={themed($choiceButtons)}>
               <Button
+                preset="default"
+                style={themed($eatButton)}
                 onPress={() => handleDecisionMade("eat")}
               >
                 😋 Oui, je mange !
               </Button>
 
               <Button
-                preset="reversed"
+                preset="filled"
+                style={themed($skipButton)}
                 onPress={() => handleDecisionMade("skip")}
               >
                 💪 Non, je passe
@@ -443,12 +446,12 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
           </View>
 
           {/* Quantity Selector - At the end for advanced users */}
-          <QuantitySelector
+          {/* <QuantitySelector
             quantity={selectedQuantity}
             onQuantityChange={setSelectedQuantity}
             suggestedServing={suggestedServing}
             initiallyCollapsed={true}
-          />
+          /> */}
         </View>
       </Screen>
 
@@ -581,14 +584,16 @@ const $choiceButtons: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 })
 
 const $eatButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  backgroundColor: colors.tint,
-  marginBottom: spacing.sm,
-})
-
-const $skipButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   backgroundColor: colors.palette.neutral100,
   borderColor: colors.tint,
   borderWidth: 1,
+})
+
+const $skipButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  backgroundColor: colors.tint,
+  marginBottom: spacing.sm,
+
+
 })
 
 const $loadingText: ThemedStyle<ViewStyle> = ({ spacing, colors, typography }) => ({

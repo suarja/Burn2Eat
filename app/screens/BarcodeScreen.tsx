@@ -179,7 +179,7 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
           )}
 
           {/* Action Buttons */}
-          <View style={themed($buttonContainer)}>
+          {/* <View style={themed($buttonContainer)}>
             <Button
               preset="default"
               onPress={() => navigation.goBack()}
@@ -196,7 +196,6 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
               Recherche manuelle
             </Button>
 
-            {/* Debug button for development */}
             {__DEV__ && (
               <Button
                 preset="default"
@@ -209,7 +208,8 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
                 Debug Reset
               </Button>
             )}
-          </View>
+          </View> */}
+          
         </View>
       </View>
     </View>

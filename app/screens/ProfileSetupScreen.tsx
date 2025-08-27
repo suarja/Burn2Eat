@@ -184,6 +184,12 @@ const $section: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginBottom: spacing.sm, // Reduced from xl to lg
 })
 
+const $mainButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  backgroundColor: colors.palette.primary500,
+  paddingVertical: spacing.lg,
+  borderRadius: 16,
+})
+
 const $sectionTitle: ThemedStyle<TextStyle> = ({ spacing, colors, typography }) => ({
   fontSize: 18,
   fontFamily: typography.primary.bold,
