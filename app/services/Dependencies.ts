@@ -1,6 +1,7 @@
 import { GetFoodCatalogUseCase } from "@/application/usecases/food/GetFoodCatalogUseCase"
 
 import { CalculateEffortUseCase } from "../../src/application/usecases/CalculateEffortUseCase"
+import { CalculatePortionUseCase } from "../../src/application/usecases/CalculatePortionUseCase"
 import { CreateUserProfileUseCase } from "../../src/application/usecases/CreateUserProfileUseCase"
 import { GetUserProfileUseCase } from "../../src/application/usecases/GetUserProfileUseCase"
 import { ScanBarcodeUseCase } from "../../src/application/usecases/ScanBarcodeUseCase"
@@ -32,6 +33,7 @@ export class Dependencies {
   private static _getUserUseCase: GetUserProfileUseCase | null = null
   private static _updateUserUseCase: UpdateUserProfileUseCase | null = null
   private static _calculateEffortUseCase: CalculateEffortUseCase | null = null
+  private static _calculatePortionUseCase: CalculatePortionUseCase | null = null
   private static _getFoodCatalogUseCase: GetFoodCatalogUseCase | null = null
   private static _scanBarcodeUseCase: ScanBarcodeUseCase | null = null
 
@@ -57,6 +59,7 @@ export class Dependencies {
       this._activityCatalog,
       this._effortPolicy,
     )
+    this._calculatePortionUseCase = new CalculatePortionUseCase(this._dishRepository)
     this._getFoodCatalogUseCase = new GetFoodCatalogUseCase(this._dishRepository)
     this._scanBarcodeUseCase = new ScanBarcodeUseCase(this._openFoodFactsRepository)
 
@@ -76,6 +79,7 @@ export class Dependencies {
     this._getUserUseCase = null
     this._updateUserUseCase = null
     this._calculateEffortUseCase = null
+    this._calculatePortionUseCase = null
     this._getFoodCatalogUseCase = null
     this._scanBarcodeUseCase = null
   }
@@ -137,6 +141,14 @@ export class Dependencies {
     }
     return this._calculateEffortUseCase
   }
+
+  static calculatePortionUseCase(): CalculatePortionUseCase {
+    if (!this._calculatePortionUseCase) {
+      throw new Error("Dependencies not initialized. Call Dependencies.initialize() first.")
+    }
+    return this._calculatePortionUseCase
+  }
+
   static getFoodCatalogUseCase(): GetFoodCatalogUseCase {
     if (!this._getFoodCatalogUseCase) {
       throw new Error("Dependencies not initialized. Call Dependencies.initialize() first.")
