@@ -24,6 +24,16 @@ import { MainTabNavigator, MainTabParamList } from "./MainTabNavigator"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 
 /**
+ * Simplified dish object for navigation params (from barcode scanning)
+ */
+export interface SimpleDish {
+  id: string
+  name: string
+  calories: number
+  description?: string | null
+}
+
+/**
  * This type allows TypeScript to know what routes are defined in this navigator
  * as well as what properties (if any) they might take when navigating to them.
  *
@@ -39,7 +49,7 @@ export type AppStackParamList = {
   MainTabs: NavigatorScreenParams<MainTabParamList>
   Profile: undefined
   Home: undefined
-  Result: { foodId: string }
+  Result: { foodId?: string; dish?: SimpleDish }
   Barcode: undefined
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }

@@ -40,6 +40,23 @@ export const useFoodCatalog = () => {
     })
   }
 
+  /**
+   * Calculate effort for a dish object directly (for barcode scanned dishes)
+   * This bypasses the local database lookup
+   */
+  const calculateEffortForDish = (dish: Dish) => {
+    if (!profile) return
+    return calculateEffortUseCase.executeWithDish({
+      dish: dish,
+      user: UserHealthInfo.create(
+        profile.sex,
+        profile.weight as Kilograms,
+        profile.height as Centimeters,
+        profile.preferredActivityKeys,
+      ),
+    })
+  }
+
   const findDish = useCallback(
     (dishId: string) => {
       if (!catalog) return null
@@ -58,6 +75,7 @@ export const useFoodCatalog = () => {
     data: { catalog, loading: loading || profileLoading, profile },
     actions: {
       calculateEffort,
+      calculateEffortForDish,
       findDish,
     },
   }

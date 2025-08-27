@@ -10,9 +10,12 @@ import { FoodCard } from "@/components/FoodCard"
 import { Header } from "@/components/Header"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
+import { Kilocalories } from "@/domain/common/UnitTypes"
 import { Dish } from "@/domain/nutrition/Dish"
+import { DishId } from "@/domain/nutrition/DishId"
+import { NutritionalInfo } from "@/domain/nutrition/NutritionalInfo"
 import { useFoodCatalog } from "@/hooks/useFoodData"
-import type { AppStackScreenProps } from "@/navigators/AppNavigator"
+import type { AppStackScreenProps, SimpleDish } from "@/navigators/AppNavigator"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 
@@ -31,35 +34,90 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
   const [showDidntEatModal, setShowDidntEatModal] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
 
-  // Get food ID from navigation params
-  const { foodId } = route.params
+  // Get params from navigation - either foodId OR dish object
+  const { foodId, dish: simpleDish } = route.params
 
-  console.log("Food id param", foodId)
+  console.log("Result params:", { foodId, dish: simpleDish })
+
   const {
     data: { catalog },
-    actions: { calculateEffort, findDish },
+    actions: { calculateEffort, calculateEffortForDish, findDish },
   } = useFoodCatalog()
+
+  /**
+   * Convert SimpleDish from barcode scanning to full Dish domain object
+   */
+  const convertSimpleDishToDish = (simpleDish: SimpleDish): Dish => {
+    return Dish.create({
+      dishId: DishId.from(simpleDish.id),
+      name: simpleDish.name,
+      nutrition: NutritionalInfo.perServing(simpleDish.calories as Kilocalories),
+      imageUrl: undefined, // OpenFoodFacts images not handled yet
+    })
+  }
 
   useEffect(() => {
     const getDish = () => {
-      const dish = findDish(JSON.parse(JSON.stringify(foodId)).value)
-      if (!dish) return
-      setDish(dish)
+      // Case 1: Dish object provided directly (from barcode scanning)
+      if (simpleDish) {
+        console.log("✅ Using dish object directly from barcode scan:", simpleDish.name)
+        const domainDish = convertSimpleDishToDish(simpleDish)
+        setDish(domainDish)
+        return
+      }
+
+      // Case 2: Search by foodId in local database (from manual search)
+      if (foodId) {
+        console.log("🔍 Searching dish by foodId in local database:", foodId)
+        const dish = findDish(JSON.parse(JSON.stringify(foodId)).value)
+        if (!dish) {
+          console.log("❌ Dish not found in local database for foodId:", foodId)
+          return
+        }
+        console.log("✅ Found dish in local database:", dish.getName())
+        setDish(dish)
+        return
+      }
+
+      console.log("⚠️ No dish object or foodId provided")
     }
 
     getDish()
-  }, [foodId, findDish])
+  }, [foodId, simpleDish, findDish])
 
   useEffect(() => {
     if (!dish) return
     getCalculatedEffort()
-  }, [foodId, dish])
+  }, [dish])
 
   const getCalculatedEffort = async () => {
     if (!dish) return
-    const effort = await calculateEffort(dish.getId().toString())
-    if (!effort) throw new Error("No error calculated")
-    setComputedEffort(effort)
+    
+    try {
+      let effort
+      
+      // Use different calculation method based on source
+      if (simpleDish) {
+        // For barcode scanned dishes, use direct dish calculation
+        console.log("🧮 Calculating effort for barcode scanned dish:", dish.getName())
+        effort = await calculateEffortForDish(dish)
+      } else {
+        // For local database dishes, use ID-based calculation  
+        console.log("🧮 Calculating effort for local database dish:", dish.getName())
+        effort = await calculateEffort(dish.getId().toString())
+      }
+      
+      if (!effort) {
+        console.log("❌ No effort calculated for dish:", dish.getName())
+        throw new Error("No effort calculated")
+      }
+      
+      console.log("✅ Effort calculated successfully:", effort.effort.primary.minutes, "min")
+      setComputedEffort(effort)
+    } catch (error) {
+      console.error("❌ Error calculating effort:", error)
+      throw error
+    }
   }
 
   const handleBack = () => {
@@ -92,8 +150,18 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
   if (!dish)
     return (
       <Screen preset="fixed" style={themed($screenContainer)}>
+        <Header title="Erreur" leftIcon="back" onLeftPress={handleBack} />
         <View style={themed($contentContainer)}>
-          <Text style={themed($loadingText)}>Plat non trouvé...</Text>
+          <Text style={themed($loadingText)}>
+            {simpleDish
+              ? "Erreur lors du traitement du produit scanné..."
+              : foodId
+                ? "Produit non trouvé dans la base de données..."
+                : "Aucune donnée de produit fournie..."}
+          </Text>
+          <Button preset="default" style={themed($retryButton)} onPress={handleBack}>
+            Retour
+          </Button>
         </View>
       </Screen>
     )
@@ -101,8 +169,33 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
   if (!computedEffort)
     return (
       <Screen preset="fixed" style={themed($screenContainer)}>
+        <Header title="Calcul d'Effort" leftIcon="back" onLeftPress={handleBack} />
         <View style={themed($contentContainer)}>
-          <Text style={themed($loadingText)}>Calcul en cours...</Text>
+          {/* Show dish info while calculating */}
+          {dish && (
+            <View style={themed($loadingDishContainer)}>
+              <FoodCard
+                dish={dish}
+                onPress={() => {}} // No action needed
+                size="result"
+              />
+            </View>
+          )}
+          
+          <View style={themed($loadingContainer)}>
+            <Text style={themed($loadingTitle)}>⚡ Calcul en cours...</Text>
+            <Text style={themed($loadingSubtitle)}>
+              Calcul de l'effort nécessaire pour brûler {dish?.getCalories()} kcal
+            </Text>
+            
+            <Button 
+              preset="default" 
+              style={themed($cancelButton)} 
+              onPress={handleBack}
+            >
+              Annuler
+            </Button>
+          </View>
         </View>
       </Screen>
     )
@@ -302,4 +395,50 @@ const $loadingText: ThemedStyle<ViewStyle> = ({ spacing, colors, typography }) =
   color: colors.textDim,
   textAlign: "center",
   marginTop: spacing.xl,
+})
+
+const $retryButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  backgroundColor: colors.palette.neutral100,
+  borderColor: colors.tint,
+  borderWidth: 1,
+  marginTop: spacing.lg,
+  alignSelf: "center",
+  minWidth: 120,
+})
+
+const $loadingDishContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  alignItems: "center",
+  marginBottom: spacing.xl,
+  width: "75%",
+  alignSelf: "center",
+})
+
+const $loadingContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  backgroundColor: colors.palette.neutral100,
+  borderRadius: 12,
+  padding: spacing.xl,
+  alignItems: "center",
+})
+
+const $loadingTitle: ThemedStyle<ViewStyle> = ({ spacing, colors, typography }) => ({
+  fontSize: 20,
+  fontFamily: typography.primary.bold,
+  color: colors.text,
+  textAlign: "center",
+  marginBottom: spacing.sm,
+})
+
+const $loadingSubtitle: ThemedStyle<ViewStyle> = ({ spacing, colors, typography }) => ({
+  fontSize: 16,
+  fontFamily: typography.primary.medium,
+  color: colors.textDim,
+  textAlign: "center",
+  marginBottom: spacing.xl,
+})
+
+const $cancelButton: ThemedStyle<ViewStyle> = ({ colors }) => ({
+  backgroundColor: colors.palette.neutral100,
+  borderColor: colors.tint,
+  borderWidth: 1,
+  minWidth: 120,
 })

@@ -2,7 +2,7 @@ import { FC, useEffect } from "react"
 import { useState } from "react"
 import { ViewStyle, ActivityIndicator } from "react-native"
 import { View } from "react-native"
-import { CameraView, CameraType, useCameraPermissions, BarcodeScanningResult } from "expo-camera"
+import { CameraView, CameraType, useCameraPermissions, BarcodeScanningResult,  } from "expo-camera"
 
 import { Button } from "@/components/Button"
 import { Screen } from "@/components/Screen"
@@ -10,8 +10,8 @@ import { Text } from "@/components/Text"
 import { useBarcodeScanning } from "@/hooks/useBarcodeScanning"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
 import { useAppTheme } from "@/theme/context"
-import type { ThemedStyle } from "@/theme/types"
 import { $styles } from "@/theme/styles"
+import type { ThemedStyle } from "@/theme/types"
 import { typography } from "@/theme/typography"
 
 interface BarcodeScreenProps extends AppStackScreenProps<"Barcode"> {}
@@ -21,8 +21,15 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
   const [permission, requestPermission] = useCameraPermissions()
   const { themed } = useAppTheme()
 
-  const { isScanning, isLoading, error, scannedBarcode, handleBarcodeScanned, startScanning, resetScanning } =
-    useBarcodeScanning()
+  const {
+    isScanning,
+    isLoading,
+    error,
+    scannedBarcode,
+    handleBarcodeScanned,
+    startScanning,
+    resetScanning,
+  } = useBarcodeScanning()
 
   // Start scanning when component mounts
   useEffect(() => {
@@ -36,6 +43,8 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
     return <View />
   }
 
+
+
   if (!permission.granted) {
     // Camera permissions are not granted yet.
     return (
@@ -45,12 +54,17 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
             <Text style={themed($permissionText)}>📷</Text>
             <Text style={themed($permissionTitle)}>Accès à la caméra requis</Text>
             <Text style={themed($permissionMessage)}>
-              Pour scanner les codes-barres des aliments, nous avons besoin d'accéder à votre caméra.
+              Pour scanner les codes-barres des aliments, nous avons besoin d'accéder à votre
+              caméra.
             </Text>
             <Button preset="filled" onPress={requestPermission} style={themed($permissionButton)}>
               Autoriser la caméra
             </Button>
-            <Button preset="default" onPress={() => navigation.goBack()} style={themed($backButton)}>
+            <Button
+              preset="default"
+              onPress={() => navigation.goBack()}
+              style={themed($backButton)}
+            >
               Retour
             </Button>
           </View>
@@ -78,6 +92,7 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
         barcodeScannerSettings={{
           barcodeTypes: ["ean13", "ean8", "upc_a", "code128"],
         }}
+        
         onBarcodeScanned={isScanning ? onBarcodeScanned : undefined}
       />
 
@@ -96,16 +111,22 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
 
       {/* Top Safe Area with instruction */}
       <View style={themed($topSafeArea)}>
-        <Text style={{  fontSize: 16,
-  fontFamily: typography.primary.medium,
-  color: "white", // White text on dark background
-  textAlign: "center",
-  textShadowColor: "rgba(0, 0, 0, 0.8)",
-  textShadowOffset: { width: 1, height: 1 },
-  textShadowRadius: 3,}}>
-          {error ? `❌ ${error}` : isScanning
-            ? "📱 Positionnez le code-barres dans le cadre"
-            : "⏳ Scanning en cours..."}
+        <Text
+          style={{
+            fontSize: 16,
+            fontFamily: typography.primary.medium,
+            color: "white", // White text on dark background
+            textAlign: "center",
+            textShadowColor: "rgba(0, 0, 0, 0.8)",
+            textShadowOffset: { width: 1, height: 1 },
+            textShadowRadius: 3,
+          }}
+        >
+          {error
+            ? `❌ ${error}`
+            : isScanning
+              ? "📱 Positionnez le code-barres dans le cadre"
+              : "⏳ Scanning en cours..."}
         </Text>
       </View>
 
@@ -117,12 +138,12 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
               <Button preset="filled" onPress={handleRetry} style={themed($retryButton)}>
                 Réessayer
               </Button>
-              <Button 
-                preset="default" 
+              <Button
+                preset="default"
                 onPress={() => {
-                  console.log('🔧 Force reset triggered')
+                  console.log("🔧 Force reset triggered")
                   resetScanning()
-                }} 
+                }}
                 style={themed($resetButton)}
               >
                 Reset
@@ -132,7 +153,11 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
 
           {/* Action Buttons */}
           <View style={themed($buttonContainer)}>
-            <Button preset="default" onPress={() => navigation.goBack()} style={themed($backButton)}>
+            <Button
+              preset="default"
+              onPress={() => navigation.goBack()}
+              style={themed($backButton)}
+            >
               Retour
             </Button>
 
@@ -143,13 +168,13 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
             >
               Recherche manuelle
             </Button>
-            
+
             {/* Debug button for development */}
             {__DEV__ && (
               <Button
                 preset="default"
                 onPress={() => {
-                  console.log('🔧 Debug Info:', { isScanning, isLoading, error, scannedBarcode })
+                  console.log("🔧 Debug Info:", { isScanning, isLoading, error, scannedBarcode })
                   handleRetry()
                 }}
                 style={themed($debugButton)}
@@ -336,7 +361,6 @@ const $instructionContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginBottom: spacing.md,
 })
 
-
 const $buttonContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   flexDirection: "row",
   justifyContent: "space-between",
@@ -434,5 +458,3 @@ const $headerContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   minHeight: 50,
   justifyContent: "center",
 })
-
-

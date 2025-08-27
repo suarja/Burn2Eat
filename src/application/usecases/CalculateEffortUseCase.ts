@@ -39,8 +39,28 @@ export class CalculateEffortUseCase {
       throw new Error(`Dish not found: ${input.dishId}`)
     }
 
+    return this.calculateForDish(dish, input.user)
+  }
+
+  /**
+   * Calculate effort breakdown for a dish object directly (for barcode scanned dishes)
+   * This bypasses the repository lookup
+   */
+  async executeWithDish(input: CalculateEffortWithDishInput): Promise<CalculateEffortOutput> {
+    // Validate input
+    if (!input.dish || !input.user) {
+      throw new Error("Dish object and user information are required")
+    }
+
+    return this.calculateForDish(input.dish, input.user)
+  }
+
+  /**
+   * Common calculation logic for both ID-based and dish-object-based calculations
+   */
+  private calculateForDish(dish: any, user: any): CalculateEffortOutput {
     // Create effort request
-    const request = EffortRequest.of(dish, input.user)
+    const request = EffortRequest.of(dish, user)
 
     // Calculate effort breakdown
     const breakdown = this.effortCalculator.calculateEffort(request)
@@ -53,8 +73,8 @@ export class CalculateEffortUseCase {
         calories: dish.getCalories(),
       },
       user: {
-        weight: input.user.getWeight(),
-        primaryActivity: input.user.getPrimaryActivityKey(),
+        weight: user.getWeight(),
+        primaryActivity: user.getPrimaryActivityKey(),
       },
       effort: {
         primary: {
@@ -261,6 +281,14 @@ export class CalculateEffortUseCase {
  */
 export interface CalculateEffortInput {
   dishId: string
+  user: UserHealthInfo
+}
+
+/**
+ * Input data for effort calculation with dish object (for barcode scanning)
+ */
+export interface CalculateEffortWithDishInput {
+  dish: any // Using any to avoid circular import with Dish type
   user: UserHealthInfo
 }
 

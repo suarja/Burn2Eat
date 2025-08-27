@@ -27,7 +27,7 @@
   "ios": {
     "icon": "./assets/images/app-icon-ios.png",
     "supportsTablet": true,
-    "bundleIdentifier": "com.burn2eat"
+    "bundleIdentifier": "com.burn2eat.app"
   },
   "web": {
     "favicon": "./assets/images/app-icon-web-favicon.png",

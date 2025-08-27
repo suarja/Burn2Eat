@@ -41,7 +41,7 @@ export const useBarcodeScanning = () => {
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current)
         }
-        
+
         timeoutRef.current = setTimeout(() => {
           console.log("⏰ Scan timeout - resetting")
           setError("Délai d'attente dépassé")
@@ -53,14 +53,17 @@ export const useBarcodeScanning = () => {
           barcode,
         })
 
-        console.log("📋 ScanBarcodeUseCase result:", { success: result.success, hasDish: !!result.dish })
+        console.log("📋 ScanBarcodeUseCase result:", {
+          success: result.success,
+          hasDish: !!result.dish,
+        })
 
         if (result.success && result.dish) {
           console.log("✅ Product found:", result.dish.name)
 
-          // Navigate to ResultScreen with the found dish
+          // Navigate to ResultScreen with the dish object directly
           navigation.navigate("Result", {
-            foodId: JSON.stringify({ value: result.dish.id }),
+            dish: result.dish, // Pass the dish object directly instead of foodId
           })
         } else {
           // Product not found
@@ -107,6 +110,7 @@ export const useBarcodeScanning = () => {
           timeoutRef.current = null
         }
         setIsLoading(false)
+        setIsScanning(false)
       }
     },
     [isLoading, scannedBarcode, scanBarcodeUseCase, navigation],
@@ -114,13 +118,13 @@ export const useBarcodeScanning = () => {
 
   const resetScanning = useCallback(() => {
     console.log("🔄 Resetting scanning state")
-    
+
     // Clear any existing timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
       timeoutRef.current = null
     }
-    
+
     setScannedBarcode(null)
     setIsLoading(false)
     setError(null)
