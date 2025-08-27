@@ -158,7 +158,7 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
       </View>
 
       {/* Bottom Controls with safe area */}
-      <View style={themed($bottomSafeArea)}>
+      {/* <View style={themed($bottomSafeArea)}>
         <View style={themed($controlsWrapper)}>
           {error && (
             <View style={themed($errorButtonContainer)}>
@@ -178,8 +178,7 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
             </View>
           )}
 
-          {/* Action Buttons */}
-          {/* <View style={themed($buttonContainer)}>
+          <View style={themed($buttonContainer)}>
             <Button
               preset="default"
               onPress={() => navigation.goBack()}
@@ -208,10 +207,10 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
                 Debug Reset
               </Button>
             )}
-          </View> */}
+          </View>
           
         </View>
-      </View>
+      </View> */}
     </View>
   )
 }
