@@ -328,8 +328,8 @@ export const searchFoodsByName = (query: string): FoodData[] => {
   const lowerQuery = query.toLowerCase()
   return FOODS_DATASET.filter(
     (food) =>
-      food.names.en.toLowerCase().includes(lowerQuery) ||
       food.names.fr.toLowerCase().includes(lowerQuery) ||
+      food.names.en.toLowerCase().includes(lowerQuery) ||
       food.tags?.some((tag) => tag.toLowerCase().includes(lowerQuery)),
   )
 }

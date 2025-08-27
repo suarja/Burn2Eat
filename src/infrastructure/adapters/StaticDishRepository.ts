@@ -20,8 +20,8 @@ export class StaticDishRepository implements DishRepository {
     const lowerQuery = query.toLowerCase()
     const foodsData = FOODS_DATASET.filter(
       (food) =>
-        food.names.en.toLowerCase().includes(lowerQuery) ||
         food.names.fr.toLowerCase().includes(lowerQuery) ||
+        food.names.en.toLowerCase().includes(lowerQuery) ||
         food.tags?.some((tag) => tag.toLowerCase().includes(lowerQuery)),
     )
     const limitedFoods = limit ? foodsData.slice(0, limit) : foodsData
@@ -104,7 +104,7 @@ export class StaticDishRepository implements DishRepository {
     const nutrition = NutritionalInfo.perServing(calories)
 
     // Use the English name for the domain (could be configurable)
-    const name = foodData.names.en
+    const name = foodData.names.fr
 
     return Dish.create({
       dishId,

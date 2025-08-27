@@ -57,8 +57,8 @@ export const searchActivitiesByName = (query: string): ActivityData[] => {
   const lowerQuery = query.toLowerCase()
   return ACTIVITIES_DATASET.filter(
     (activity) =>
-      activity.names.en.toLowerCase().includes(lowerQuery) ||
       activity.names.fr.toLowerCase().includes(lowerQuery) ||
+      activity.names.en.toLowerCase().includes(lowerQuery) ||
       activity.tags?.some((tag) => tag.toLowerCase().includes(lowerQuery)),
   )
 }
