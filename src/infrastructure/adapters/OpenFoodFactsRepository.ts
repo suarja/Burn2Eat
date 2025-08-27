@@ -90,4 +90,14 @@ export class OpenFoodFactsRepository implements DishRepository {
       "getAll not available in OpenFoodFactsRepository. Use StaticDishRepository instead.",
     )
   }
+
+  /**
+   * Get available categories with metadata
+   */
+  async getCategories(): Promise<import("../../domain/nutrition/DishRepository").CategoryInfo[]> {
+    // Not applicable for OpenFoodFacts (external API)
+    throw new Error(
+      "getCategories not available in OpenFoodFactsRepository. Use StaticDishRepository instead.",
+    )
+  }
 }

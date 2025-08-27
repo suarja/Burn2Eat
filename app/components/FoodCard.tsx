@@ -1,11 +1,11 @@
 import React from "react"
-import { View, ViewStyle, TextStyle, TouchableOpacity, Dimensions } from "react-native"
+import { View, ViewStyle, TextStyle, TouchableOpacity } from "react-native"
+import { Image } from "expo-image"
 
 import type { Dish } from "@/domain/nutrition/Dish"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 
-import { AutoImage } from "./AutoImage"
 import { Text } from "./Text"
 
 export interface FoodCardProps {
@@ -99,9 +99,16 @@ export const FoodCard: React.FC<FoodCardProps> = ({
       {/* Image/Emoji Section */}
       <View style={themed($imageContainer)}>
         {dish.hasImage() ? (
-          <AutoImage
+          <Image
             source={{ uri: dish.getImageUrl()! }}
             style={[themed($image), imageSizeStyle]}
+            contentFit="cover"
+            transition={200}
+            placeholder={getFoodEmoji(dish.getName())}
+            cachePolicy="memory-disk"
+            recyclingKey={dish.getId().toString()}
+            priority="high"
+            allowDownscaling={true}
           />
         ) : (
           <View style={[themed($emojiContainer), imageSizeStyle]}>

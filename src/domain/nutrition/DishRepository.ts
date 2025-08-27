@@ -1,6 +1,17 @@
 import { Dish } from "./Dish"
 
 /**
+ * Category information with metadata
+ */
+export interface CategoryInfo {
+  id: string
+  name: string
+  icon: string
+  count: number
+  description?: string
+}
+
+/**
  * Domain port for accessing dish data
  * This is an interface that will be implemented by infrastructure adapters
  */
@@ -23,8 +34,16 @@ export interface DishRepository {
 
   /**
    * Find dishes by category (if applicable)
+   * @param category - The category to filter by
+   * @param limit - Maximum number of dishes to return
+   * @param page - Page number for pagination (0-based)
    */
-  findByCategory?(category: string, limit?: number): Promise<Dish[]>
+  findByCategory?(category: string, limit?: number, page?: number): Promise<Dish[]>
+
+  /**
+   * Get available categories with metadata
+   */
+  getCategories(): Promise<CategoryInfo[]>
 
   /**
    * Search dishes by tags or keywords

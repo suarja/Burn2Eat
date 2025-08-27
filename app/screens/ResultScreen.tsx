@@ -339,7 +339,7 @@ const $suggestedServingSection: ThemedStyle<ViewStyle> = ({ spacing, colors }) =
 const $suggestedServingText: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
   fontSize: 14,
   fontFamily: typography.primary.medium,
-  color: colors.tint,
+  color: "black",
   textAlign: "center",
 })
 
