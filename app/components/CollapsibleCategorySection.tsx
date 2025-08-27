@@ -1,18 +1,27 @@
 import React, { useState } from "react"
-import { View, ViewStyle, TouchableOpacity, LayoutAnimation, Platform, UIManager } from "react-native"
+import {
+  View,
+  ViewStyle,
+  TouchableOpacity,
+  LayoutAnimation,
+  Platform,
+  UIManager,
+} from "react-native"
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   interpolate,
 } from "react-native-reanimated"
-import { Text } from "./Text"
-import { FoodCard } from "./FoodCard"
-import { LoadMoreButton } from "./LoadMoreButton"
+
 import { Dish } from "@/domain/nutrition/Dish"
 import { CategoryInfo } from "@/domain/nutrition/DishRepository"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
+
+import { FoodCard } from "./FoodCard"
+import { LoadMoreButton } from "./LoadMoreButton"
+import { Text } from "./Text"
 
 // Enable LayoutAnimation on Android
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -75,10 +84,10 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
   numColumns = 2,
 }) => {
   const { themed } = useAppTheme()
-  
+
   // Animation for chevron rotation
   const rotateAnim = useSharedValue(0)
-  
+
   React.useEffect(() => {
     rotateAnim.value = withTiming(isExpanded ? 1 : 0, { duration: 300 })
   }, [isExpanded, rotateAnim])
@@ -133,7 +142,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
               ))}
           </View>
         ))}
-        
+
         {hasMore && (
           <View style={themed($loadMoreContainer)}>
             <LoadMoreButton
@@ -150,11 +159,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
   return (
     <View style={[themed($container), style]}>
       {/* Header */}
-      <TouchableOpacity
-        style={themed($header)}
-        onPress={handleToggle}
-        activeOpacity={0.7}
-      >
+      <TouchableOpacity style={themed($header)} onPress={handleToggle} activeOpacity={0.7}>
         <View style={themed($headerContent)}>
           <View style={themed($categoryInfo)}>
             <Text style={themed($categoryIcon)}>{category.icon}</Text>
@@ -167,12 +172,12 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
               </Text>
             </View>
           </View>
-          
+
           <Animated.View style={[themed($chevron), animatedChevronStyle]}>
             <Text style={themed($chevronText)}>▼</Text>
           </Animated.View>
         </View>
-        
+
         {category.description && !isExpanded && (
           <Text style={themed($categoryDescription)} numberOfLines={1}>
             {category.description}
@@ -181,11 +186,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
       </TouchableOpacity>
 
       {/* Collapsible Content */}
-      {isExpanded && (
-        <View style={themed($content)}>
-          {renderDishGrid()}
-        </View>
-      )}
+      {isExpanded && <View style={themed($content)}>{renderDishGrid()}</View>}
     </View>
   )
 }

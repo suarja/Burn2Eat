@@ -1,5 +1,5 @@
-import { CategoryInfo, DishRepository } from "@/domain/nutrition/DishRepository"
 import { Dish } from "@/domain/nutrition/Dish"
+import { CategoryInfo, DishRepository } from "@/domain/nutrition/DishRepository"
 
 export interface GetFoodCatalogRequest {
   category?: string
@@ -24,11 +24,9 @@ export class GetFoodCatalogUseCase {
     }
 
     if (request.category) {
-      return this.dishRepository.findByCategory?.(
-        request.category,
-        request.limit,
-        request.page
-      ) || []
+      return (
+        this.dishRepository.findByCategory?.(request.category, request.limit, request.page) || []
+      )
     }
 
     return this.dishRepository.getAll()
@@ -39,10 +37,6 @@ export class GetFoodCatalogUseCase {
   }
 
   async getByCategoryPaginated(request: GetFoodCatalogByCategory): Promise<Dish[]> {
-    return this.dishRepository.findByCategory?.(
-      request.category,
-      request.limit,
-      request.page
-    ) || []
+    return this.dishRepository.findByCategory?.(request.category, request.limit, request.page) || []
   }
 }

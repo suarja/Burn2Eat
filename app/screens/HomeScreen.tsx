@@ -15,7 +15,11 @@ import { CollapsibleCategorySection } from "@/components/CollapsibleCategorySect
 import { FoodCard } from "@/components/FoodCard"
 import { Icon } from "@/components/Icon"
 import { Screen } from "@/components/Screen"
-import { SkeletonLoader, FoodCardSkeleton, CategorySectionSkeleton } from "@/components/SkeletonLoader"
+import {
+  SkeletonLoader,
+  FoodCardSkeleton,
+  CategorySectionSkeleton,
+} from "@/components/SkeletonLoader"
 import { StickySearchBar } from "@/components/StickySearchBar"
 import { Text } from "@/components/Text"
 import { TextField } from "@/components/TextField"
@@ -70,11 +74,7 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
       keyExtractor={(item) => item.getId().toString()}
       renderItem={({ item }) => (
         <View style={themed($searchResultCard)}>
-          <FoodCard
-            dish={item}
-            onPress={() => handleFoodSelect(item)}
-            size="medium"
-          />
+          <FoodCard dish={item} onPress={() => handleFoodSelect(item)} size="medium" />
         </View>
       )}
       ListEmptyComponent={
@@ -115,7 +115,7 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
 
   const renderCategorySection = ({ item: category }: { item: any }) => {
     const data = categoryData.get(category.id)
-    
+
     return (
       <CollapsibleCategorySection
         category={category}
@@ -137,11 +137,7 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
     <Screen preset="scroll" safeAreaEdges={["top"]} style={themed($screenContainer)}>
       {/* Search Bar */}
       <View style={themed($searchContainer)}>
-        <Icon
-          icon="view"
-          size={20}
-          containerStyle={themed($searchIcon)}
-        />
+        <Icon icon="view" size={20} containerStyle={themed($searchIcon)} />
         <TextField
           value={searchText}
           onChangeText={actions.setSearchText}
@@ -160,7 +156,7 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
           <Text preset="bold" style={themed($sectionTitle)}>
             Catégories ({categories.length})
           </Text>
-          
+
           {categories.map((category) => (
             <CollapsibleCategorySection
               key={category.id}

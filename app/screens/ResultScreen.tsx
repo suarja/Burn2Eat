@@ -1,4 +1,4 @@
-import { FC, useEffect, useState, useCallback } from "react"
+import { FC, useEffect, useState } from "react"
 import { View, ViewStyle, TextStyle } from "react-native"
 
 import { CalculateEffortOutput } from "@/application/usecases"
@@ -14,11 +14,164 @@ import { Dish } from "@/domain/nutrition/Dish"
 import { DishId } from "@/domain/nutrition/DishId"
 import { NutritionalInfo } from "@/domain/nutrition/NutritionalInfo"
 import { useFoodCatalog } from "@/hooks/useFoodData"
+import { getFoodById } from "@/infrastructure/data"
 import type { AppStackScreenProps, SimpleDish } from "@/navigators/AppNavigator"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 
 interface ResultScreenProps extends AppStackScreenProps<"Result"> {}
+
+/**
+ * Extract serving size from local food data using the food ID
+ */
+const extractServingSizeFromLocalDish = (foodId: string): string => {
+  const foodData = getFoodById(foodId)
+  if (!foodData) {
+    console.warn(`Food data not found for ID: ${foodId}`)
+    return "100g"
+  }
+
+  const { amount, unit } = foodData.portionSize
+
+  // Convert portion size to human-readable string
+  if (unit === "100g") {
+    return `${amount * 100}g`
+  } else if (unit === "piece") {
+    return amount === 1 ? "1 pièce" : `${amount} pièces`
+  } else if (unit === "slice") {
+    return amount === 1 ? "1 tranche" : `${amount} tranches`
+  } else if (unit === "cup") {
+    return amount === 1 ? "1 tasse" : `${amount} tasses`
+  } else if (unit === "serving") {
+    return amount === 1 ? "1 portion" : `${amount} portions`
+  } else if (unit === "bottle") {
+    return amount === 1 ? "1 bouteille" : `${amount} bouteilles`
+  } else if (unit === "can") {
+    return amount === 1 ? "1 canette" : `${amount} canettes`
+  }
+
+  return `${amount} ${unit}`
+}
+
+/**
+ * Parse serving size string to grams for quantity selector
+ * Examples: "21.5g" -> 21.5, "1 slice" -> 50, "100 ml" -> 100
+ */
+const parseServingSizeToGrams = (servingSize: string): Grams => {
+  if (!servingSize) return 100 as Grams
+
+  // Clean and normalize the string
+  const normalized = servingSize.toLowerCase().trim()
+
+  // Extract numeric value
+  const numMatch = normalized.match(/(\d+(?:\.\d+)?|\d+(?:,\d+)?)/)
+  const numValue = numMatch ? parseFloat(numMatch[1].replace(",", ".")) : 100
+
+  // If it already contains 'g' or 'gram', use the value directly
+  if (normalized.includes("g")) {
+    return Math.max(1, numValue) as Grams
+  }
+
+  // Convert common serving units to estimated grams
+  if (
+    normalized.includes("slice") ||
+    normalized.includes("part") ||
+    normalized.includes("tranche")
+  ) {
+    return Math.max(30, numValue * 30) as Grams // 1 slice ≈ 30g
+  }
+
+  if (normalized.includes("piece") || normalized.includes("pièce") || normalized.includes("unit")) {
+    return Math.max(20, numValue * 20) as Grams // 1 piece ≈ 20g
+  }
+
+  if (normalized.includes("ml") || normalized.includes("l")) {
+    return Math.max(1, numValue) as Grams // 1ml ≈ 1g for most foods
+  }
+
+  if (normalized.includes("cup") || normalized.includes("tasse")) {
+    return Math.max(200, numValue * 200) as Grams // 1 cup ≈ 200g
+  }
+
+  if (normalized.includes("portion") || normalized.includes("serving")) {
+    return Math.max(150, numValue * 150) as Grams // 1 serving ≈ 150g
+  }
+
+  if (normalized.includes("bottle") || normalized.includes("bouteille")) {
+    return Math.max(330, numValue * 330) as Grams // 1 bottle ≈ 330ml ≈ 330g
+  }
+
+  if (normalized.includes("can") || normalized.includes("canette")) {
+    return Math.max(250, numValue * 250) as Grams // 1 can ≈ 250ml ≈ 250g
+  }
+
+  // Default: assume the number is already in grams or use 100g
+  return Math.max(1, numValue) as Grams
+}
+
+/**
+ * Determine display context for food item based on serving size and food type
+ * Returns appropriate quantity text for the FoodCard display
+ */
+const getDisplayContext = (
+  servingSize: string,
+  selectedQuantity: Grams,
+): { quantityText: string; isPerProduct: boolean } => {
+  const normalized = servingSize.toLowerCase().trim()
+
+  // Items that should show "per product" (whole unit consumption)
+  const isWholeProductConsumption =
+    normalized.includes("piece") ||
+    normalized.includes("pièce") ||
+    normalized.includes("slice") ||
+    normalized.includes("tranche") ||
+    normalized.includes("bottle") ||
+    normalized.includes("bouteille") ||
+    normalized.includes("can") ||
+    normalized.includes("canette") ||
+    normalized.includes("serving") ||
+    normalized.includes("portion")
+
+  if (isWholeProductConsumption) {
+    // For whole products, show "pour X pièce(s)/tranche(s)" based on quantity
+    const estimatedGramsPerUnit = parseServingSizeToGrams(servingSize)
+    const estimatedUnits = Math.round(selectedQuantity / estimatedGramsPerUnit)
+
+    if (normalized.includes("slice") || normalized.includes("tranche")) {
+      return {
+        quantityText: estimatedUnits === 1 ? "pour 1 tranche" : `pour ${estimatedUnits} tranches`,
+        isPerProduct: true,
+      }
+    } else if (normalized.includes("piece") || normalized.includes("pièce")) {
+      return {
+        quantityText: estimatedUnits === 1 ? "pour 1 pièce" : `pour ${estimatedUnits} pièces`,
+        isPerProduct: true,
+      }
+    } else if (normalized.includes("bottle") || normalized.includes("bouteille")) {
+      return {
+        quantityText:
+          estimatedUnits === 1 ? "pour 1 bouteille" : `pour ${estimatedUnits} bouteilles`,
+        isPerProduct: true,
+      }
+    } else if (normalized.includes("can") || normalized.includes("canette")) {
+      return {
+        quantityText: estimatedUnits === 1 ? "pour 1 canette" : `pour ${estimatedUnits} canettes`,
+        isPerProduct: true,
+      }
+    } else {
+      return {
+        quantityText: estimatedUnits === 1 ? "pour 1 portion" : `pour ${estimatedUnits} portions`,
+        isPerProduct: true,
+      }
+    }
+  }
+
+  // Items measured in grams/weight show "per portion"
+  return {
+    quantityText: `pour ${selectedQuantity}g`,
+    isPerProduct: false,
+  }
+}
 
 export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) {
   const { navigation, route } = props
@@ -39,7 +192,6 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
   // Get params from navigation - either foodId OR dish object
   const { foodId, dish: simpleDish } = route.params
 
-  console.log("Result params:", { foodId, dish: simpleDish })
 
   const {
     actions: { calculateEffortForDish, findDish },
@@ -64,8 +216,15 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
         console.log("✅ Using dish object directly from barcode scan:", simpleDish.name)
         const domainDish = convertSimpleDishToDish(simpleDish)
         setDish(domainDish)
-        // TODO: Extract actual serving size from OpenFoodFacts
-        setSuggestedServing("21.5g")
+
+        // Use actual serving size from OpenFoodFacts or default to 100g
+        const actualServingSize = simpleDish.servingSize || "100g"
+        console.log("📏 Using serving size from OpenFoodFacts:", actualServingSize)
+        setSuggestedServing(actualServingSize)
+
+        // Parse serving size to set initial quantity
+        const parsedQuantity = parseServingSizeToGrams(actualServingSize)
+        setSelectedQuantity(parsedQuantity)
         return
       }
 
@@ -79,6 +238,13 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
         }
         console.log("✅ Found dish in local database:", dish.getName())
         setDish(dish)
+
+        // Extract serving size from local food data
+        const localServingSize = extractServingSizeFromLocalDish(
+          JSON.parse(JSON.stringify(foodId)).value,
+        )
+        setSuggestedServing(localServingSize)
+        setSelectedQuantity(parseServingSizeToGrams(localServingSize))
         return
       }
 
@@ -216,7 +382,7 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
               onPress={() => {}} // No action needed in result view
               size="result"
               displayCalories={actualCalories}
-              quantityText={`pour ${selectedQuantity}g`}
+              quantityText={getDisplayContext(suggestedServing, selectedQuantity).quantityText}
             />
           </View>
 

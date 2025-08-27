@@ -8,10 +8,12 @@ import Animated, {
   interpolate,
 } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { TextField } from "./TextField"
-import { Icon } from "./Icon"
+
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
+
+import { Icon } from "./Icon"
+import { TextField } from "./TextField"
 
 export interface StickySearchBarProps {
   /**
@@ -60,16 +62,16 @@ export const StickySearchBar: React.FC<StickySearchBarProps> = ({
 }) => {
   const { themed, theme } = useAppTheme()
   const insets = useSafeAreaInsets()
-  
+
   // Animation for blur and elevation
   const blurIntensity = useSharedValue(0)
   const elevation = useSharedValue(0)
-  
+
   useEffect(() => {
     if (isSticky) {
       const intensity = Math.min(scrollOffset / 50, 1) * 20 // Max blur of 20
       const elevationValue = Math.min(scrollOffset / 20, 1) * 8 // Max elevation of 8
-      
+
       blurIntensity.value = withTiming(intensity, { duration: 200 })
       elevation.value = withTiming(elevationValue, { duration: 200 })
     } else {
@@ -140,9 +142,7 @@ export const StickySearchBar: React.FC<StickySearchBarProps> = ({
     // Android fallback without blur
     return (
       <Animated.View style={containerStyle}>
-        <View style={themed($androidStickyBackground)}>
-          {SearchContent}
-        </View>
+        <View style={themed($androidStickyBackground)}>{SearchContent}</View>
       </Animated.View>
     )
   }

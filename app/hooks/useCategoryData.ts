@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, useMemo, useRef } from "react"
 
 import { Dish } from "@/domain/nutrition/Dish"
 import { CategoryInfo } from "@/domain/nutrition/DishRepository"
+
 import { Dependencies } from "../services/Dependencies"
 
 export interface CategoryDishData {
@@ -48,18 +49,18 @@ export const useCategoryData = (): UseCategoryDataReturn => {
 
   // Debounced search to improve performance
   const searchTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
-  
+
   useEffect(() => {
     // Clear previous timeout
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current)
     }
-    
+
     // Set new timeout for debounced search
     searchTimeoutRef.current = setTimeout(() => {
       handleSearch()
     }, 300) // 300ms debounce
-    
+
     return () => {
       if (searchTimeoutRef.current) {
         clearTimeout(searchTimeoutRef.current)
@@ -73,7 +74,7 @@ export const useCategoryData = (): UseCategoryDataReturn => {
       console.log("🔧 Loading categories...")
       const categoriesData = await getFoodCatalogUseCase.getCategories()
       console.log("🔧 Categories loaded:", categoriesData.length, categoriesData)
-      
+
       // If no categories, add a fallback test category
       if (categoriesData.length === 0) {
         console.log("⚠️ No categories found, using fallback")
@@ -83,8 +84,8 @@ export const useCategoryData = (): UseCategoryDataReturn => {
             name: "Fast Food",
             icon: "🍔",
             count: 10,
-            description: "Test category"
-          }
+            description: "Test category",
+          },
         ])
       } else {
         setCategories(categoriesData)
@@ -98,8 +99,8 @@ export const useCategoryData = (): UseCategoryDataReturn => {
           name: "Fast Food",
           icon: "🍔",
           count: 10,
-          description: "Test category"
-        }
+          description: "Test category",
+        },
       ])
     } finally {
       setIsLoadingCategories(false)
@@ -118,7 +119,7 @@ export const useCategoryData = (): UseCategoryDataReturn => {
       // Use the existing catalog and filter locally for now
       const allDishes = await getFoodCatalogUseCase.execute()
       const filtered = allDishes.filter((dish) =>
-        dish.getName().toLowerCase().includes(searchText.toLowerCase())
+        dish.getName().toLowerCase().includes(searchText.toLowerCase()),
       )
       setSearchResults(filtered)
     } catch (error) {
@@ -143,7 +144,7 @@ export const useCategoryData = (): UseCategoryDataReturn => {
         return []
       }
     },
-    [getFoodCatalogUseCase]
+    [getFoodCatalogUseCase],
   )
 
   const handleSetExpandedCategory = useCallback(
@@ -184,7 +185,7 @@ export const useCategoryData = (): UseCategoryDataReturn => {
         })
       }
     },
-    [categoryData, categories, loadDishesForCategory]
+    [categoryData, categories, loadDishesForCategory],
   )
 
   const loadMoreForCategory = useCallback(
@@ -222,7 +223,7 @@ export const useCategoryData = (): UseCategoryDataReturn => {
         return newMap
       })
     },
-    [categoryData, loadDishesForCategory]
+    [categoryData, loadDishesForCategory],
   )
 
   const refreshCategory = useCallback(
@@ -259,7 +260,7 @@ export const useCategoryData = (): UseCategoryDataReturn => {
         return newMap
       })
     },
-    [loadDishesForCategory]
+    [loadDishesForCategory],
   )
 
   const actions = useMemo(
@@ -269,7 +270,7 @@ export const useCategoryData = (): UseCategoryDataReturn => {
       loadMoreForCategory,
       refreshCategory,
     }),
-    [handleSetExpandedCategory, loadMoreForCategory, refreshCategory]
+    [handleSetExpandedCategory, loadMoreForCategory, refreshCategory],
   )
 
   return {

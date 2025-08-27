@@ -29,7 +29,7 @@ export interface QuantitySelectorProps {
    * Optional styling
    */
   style?: ViewStyle
-  
+
   /**
    * Whether the selector starts collapsed
    */
@@ -41,7 +41,13 @@ export interface QuantitySelectorProps {
  * Includes quick-action buttons and manual input
  */
 export const QuantitySelector: FC<QuantitySelectorProps> = function QuantitySelector(props) {
-  const { quantity, onQuantityChange, suggestedServing, style: $styleOverride, initiallyCollapsed = true } = props
+  const {
+    quantity,
+    onQuantityChange,
+    suggestedServing,
+    style: $styleOverride,
+    initiallyCollapsed = true,
+  } = props
   const { themed } = useAppTheme()
 
   const [inputValue, setInputValue] = useState(quantity.toString())
@@ -93,7 +99,7 @@ export const QuantitySelector: FC<QuantitySelectorProps> = function QuantitySele
       >
         {isExpanded ? "⚙️ Réduire" : `⚙️ Ajuster (${quantity}g)`}
       </Button>
-      
+
       {isExpanded && (
         <>
           {/* Quick action buttons */}
@@ -109,7 +115,7 @@ export const QuantitySelector: FC<QuantitySelectorProps> = function QuantitySele
               </Button>
             ))}
           </View>
-          
+
           {/* Manual input */}
           <View style={themed($inputContainer)}>
             <TextField
@@ -122,12 +128,10 @@ export const QuantitySelector: FC<QuantitySelectorProps> = function QuantitySele
             />
             <Text style={themed($unitLabel)}>grammes</Text>
           </View>
-          
+
           {/* Info text */}
           {suggestedServing && (
-            <Text style={themed($infoText)}>
-              💡 Portion suggérée: {suggestedServing}
-            </Text>
+            <Text style={themed($infoText)}>💡 Portion suggérée: {suggestedServing}</Text>
           )}
         </>
       )}

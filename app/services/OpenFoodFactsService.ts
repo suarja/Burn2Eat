@@ -29,6 +29,16 @@ export class OpenFoodFactsService {
    * Find product by barcode and return as Dish domain object
    */
   async findProductByBarcode(barcode: string): Promise<Dish | null> {
+    const result = await this.findProductWithMetadata(barcode)
+    return result?.dish || null
+  }
+
+  /**
+   * Find product by barcode and return both Dish and metadata (including serving size)
+   */
+  async findProductWithMetadata(
+    barcode: string,
+  ): Promise<{ dish: Dish; servingSize?: string } | null> {
     try {
       const response: ApiResponse<OpenFoodFactsResponse> = await this.apisauce.get(
         `product/${barcode}`,
@@ -53,7 +63,15 @@ export class OpenFoodFactsService {
       }
 
       // Transform OpenFoodFacts data to Dish
-      return this.transformToDish(response.data.product, barcode)
+      const dish = this.transformToDish(response.data.product, barcode)
+      if (!dish) return null
+
+      const servingSize = response.data.product.serving_size
+
+      return {
+        dish,
+        servingSize: servingSize || undefined,
+      }
     } catch (error) {
       console.error("Error fetching from OpenFoodFacts:", error)
       return null

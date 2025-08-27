@@ -63,5 +63,11 @@ export interface DishRepository {
    */
   findByBarcode?(barcode: string): Promise<Dish | null>
 
+  /**
+   * Find dish by barcode with additional metadata (including serving size)
+   * Returns null if product not found in external database
+   */
+  findByBarcodeWithMetadata?(barcode: string): Promise<{ dish: Dish; servingSize?: string } | null>
+
   getAll(): Promise<Dish[]>
 }

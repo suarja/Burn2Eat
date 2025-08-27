@@ -1,8 +1,10 @@
 import React from "react"
 import { View, ViewStyle, TouchableOpacity, ActivityIndicator } from "react-native"
-import { Text } from "./Text"
+
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
+
+import { Text } from "./Text"
 
 export interface LoadMoreButtonProps {
   /**
@@ -35,7 +37,7 @@ export const LoadMoreButton: React.FC<LoadMoreButtonProps> = ({
   style,
 }) => {
   const { themed, theme } = useAppTheme()
-  
+
   const handlePress = () => {
     if (!isLoading && !disabled) {
       onPress()
@@ -44,11 +46,7 @@ export const LoadMoreButton: React.FC<LoadMoreButtonProps> = ({
 
   return (
     <TouchableOpacity
-      style={[
-        themed($container),
-        (isLoading || disabled) && themed($disabledContainer),
-        style,
-      ]}
+      style={[themed($container), (isLoading || disabled) && themed($disabledContainer), style]}
       onPress={handlePress}
       disabled={isLoading || disabled}
       activeOpacity={0.7}
@@ -56,11 +54,7 @@ export const LoadMoreButton: React.FC<LoadMoreButtonProps> = ({
       <View style={themed($content)}>
         {isLoading ? (
           <>
-            <ActivityIndicator
-              size="small"
-              color={theme.colors.textDim}
-              style={themed($spinner)}
-            />
+            <ActivityIndicator size="small" color={theme.colors.textDim} style={themed($spinner)} />
             <Text style={themed($loadingText)}>Chargement...</Text>
           </>
         ) : (

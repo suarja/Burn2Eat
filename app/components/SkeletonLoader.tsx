@@ -7,6 +7,7 @@ import Animated, {
   withTiming,
   interpolate,
 } from "react-native-reanimated"
+
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 
@@ -36,15 +37,11 @@ export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
   style,
 }) => {
   const { themed, theme } = useAppTheme()
-  
+
   const shimmerValue = useSharedValue(0)
-  
+
   React.useEffect(() => {
-    shimmerValue.value = withRepeat(
-      withTiming(1, { duration: 1500 }),
-      -1,
-      false
-    )
+    shimmerValue.value = withRepeat(withTiming(1, { duration: 1500 }), -1, false)
   }, [shimmerValue])
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -56,13 +53,7 @@ export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
 
   return (
     <View style={[themed($container), { width, height, borderRadius }, style]}>
-      <Animated.View
-        style={[
-          themed($shimmer),
-          { borderRadius },
-          animatedStyle,
-        ]}
-      />
+      <Animated.View style={[themed($shimmer), { borderRadius }, animatedStyle]} />
     </View>
   )
 }
@@ -74,7 +65,7 @@ export const FoodCardSkeleton: React.FC<{ size?: "small" | "medium" | "large" }>
   size = "medium",
 }) => {
   const { themed } = useAppTheme()
-  
+
   const imageSize = size === "small" ? 40 : size === "medium" ? 50 : 60
   const cardHeight = size === "small" ? 100 : size === "medium" ? 120 : 140
 
@@ -82,26 +73,13 @@ export const FoodCardSkeleton: React.FC<{ size?: "small" | "medium" | "large" }>
     <View style={[themed($cardContainer), { height: cardHeight }]}>
       {/* Image Skeleton */}
       <View style={themed($imageSection)}>
-        <SkeletonLoader
-          width={imageSize}
-          height={imageSize}
-          borderRadius={8}
-        />
+        <SkeletonLoader width={imageSize} height={imageSize} borderRadius={8} />
       </View>
-      
+
       {/* Text Skeletons */}
       <View style={themed($textSection)}>
-        <SkeletonLoader
-          width="80%"
-          height={14}
-          borderRadius={2}
-          style={themed($titleSkeleton)}
-        />
-        <SkeletonLoader
-          width="60%"
-          height={12}
-          borderRadius={2}
-        />
+        <SkeletonLoader width="80%" height={14} borderRadius={2} style={themed($titleSkeleton)} />
+        <SkeletonLoader width="60%" height={12} borderRadius={2} />
       </View>
     </View>
   )

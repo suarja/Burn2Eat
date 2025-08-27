@@ -82,6 +82,20 @@ export class OpenFoodFactsRepository implements DishRepository {
   }
 
   /**
+   * Find dish by barcode with metadata (including serving size)
+   */
+  async findByBarcodeWithMetadata(
+    barcode: string,
+  ): Promise<{ dish: Dish; servingSize?: string } | null> {
+    try {
+      return await openFoodFactsService.findProductWithMetadata(barcode)
+    } catch (error) {
+      console.error("Error in OpenFoodFactsRepository.findByBarcodeWithMetadata:", error)
+      return null
+    }
+  }
+
+  /**
    * Get all dishes
    */
   async getAll(): Promise<Dish[]> {

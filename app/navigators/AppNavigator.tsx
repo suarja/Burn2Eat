@@ -31,6 +31,7 @@ export interface SimpleDish {
   name: string
   calories: number
   description?: string | null
+  servingSize?: string | null
 }
 
 /**

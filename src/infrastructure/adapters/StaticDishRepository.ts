@@ -49,7 +49,7 @@ export class StaticDishRepository implements DishRepository {
 
   async findByCategory(category: string, limit?: number, page: number = 0): Promise<Dish[]> {
     const foodsData = FOODS_DATASET.filter((food) => food.category === category)
-    
+
     // Apply pagination
     const startIndex = page * (limit || foodsData.length)
     const endIndex = limit ? startIndex + limit : foodsData.length
@@ -128,7 +128,7 @@ export class StaticDishRepository implements DishRepository {
    */
   async getCategories(): Promise<CategoryInfo[]> {
     const categoryMap = new Map<string, number>()
-    
+
     // Count dishes per category
     FOODS_DATASET.forEach((food) => {
       categoryMap.set(food.category, (categoryMap.get(food.category) || 0) + 1)
@@ -138,38 +138,38 @@ export class StaticDishRepository implements DishRepository {
       "fast-food": {
         icon: "🍔",
         name: "Fast Food",
-        description: "Burgers, pizzas, frites et autres plats rapides"
+        description: "Burgers, pizzas, frites et autres plats rapides",
       },
       "dessert": {
         icon: "🧁",
         name: "Desserts",
-        description: "Gâteaux, glaces, chocolats et sucreries"
+        description: "Gâteaux, glaces, chocolats et sucreries",
       },
       "beverage": {
         icon: "🥤",
         name: "Boissons",
-        description: "Sodas, jus, café et autres boissons"
+        description: "Sodas, jus, café et autres boissons",
       },
       "snack": {
         icon: "🍿",
         name: "Collations",
-        description: "Chips, noix, barres et en-cas"
+        description: "Chips, noix, barres et en-cas",
       },
       "fruit": {
         icon: "🍎",
         name: "Fruits",
-        description: "Fruits frais et secs"
+        description: "Fruits frais et secs",
       },
       "main-course": {
         icon: "🍽️",
         name: "Plats Principaux",
-        description: "Viandes, poissons, pâtes et plats complets"
+        description: "Viandes, poissons, pâtes et plats complets",
       },
       "breakfast": {
         icon: "🥐",
         name: "Petit-déjeuner",
-        description: "Céréales, pains, œufs et produits matinaux"
-      }
+        description: "Céréales, pains, œufs et produits matinaux",
+      },
     }
 
     return Array.from(categoryMap.entries()).map(([categoryId, count]) => ({
@@ -177,7 +177,7 @@ export class StaticDishRepository implements DishRepository {
       name: categoryIconMap[categoryId]?.name || categoryId,
       icon: categoryIconMap[categoryId]?.icon || "🍽️",
       count,
-      description: categoryIconMap[categoryId]?.description
+      description: categoryIconMap[categoryId]?.description,
     }))
   }
 

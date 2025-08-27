@@ -24,10 +24,10 @@ export class ScanBarcodeUseCase {
       throw new Error("Invalid barcode format")
     }
 
-    // Get product from external database via repository
-    const dish = await this.dishRepository.findByBarcode?.(barcode)
+    // Get product from external database via repository with metadata
+    const result = await this.dishRepository.findByBarcodeWithMetadata?.(barcode)
 
-    if (!dish) {
+    if (!result || !result.dish) {
       return {
         success: false,
         error: "PRODUCT_NOT_FOUND",
@@ -37,6 +37,8 @@ export class ScanBarcodeUseCase {
       }
     }
 
+    const { dish, servingSize } = result
+
     return {
       success: true,
       barcode,
@@ -45,6 +47,7 @@ export class ScanBarcodeUseCase {
         name: dish.getName(),
         calories: dish.getCalories(),
         description: null, // Description not available in current Dish domain model
+        servingSize: servingSize || null,
       },
     }
   }
@@ -87,6 +90,7 @@ export interface ScanBarcodeOutput {
     name: string
     calories: number
     description?: string | null
+    servingSize?: string | null
   } | null
   error?: ScanBarcodeError
   message?: string
