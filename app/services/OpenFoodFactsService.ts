@@ -1,6 +1,6 @@
 import { ApisauceInstance, create, ApiResponse } from "apisauce"
 
-import { Kilocalories, Kilograms } from "@/domain/common/UnitTypes"
+import { Kilocalories } from "@/domain/common/UnitTypes"
 import { Dish } from "@/domain/nutrition/Dish"
 import { DishId } from "@/domain/nutrition/DishId"
 import { NutritionalInfo } from "@/domain/nutrition/NutritionalInfo"
@@ -72,39 +72,49 @@ export class OpenFoodFactsService {
         product.product_name_en ||
         "Produit inconnu"
 
-        console.log({product})
+      console.log({ product })
 
-      // Extract calories per 100g
+      // Extract calories per 100g (always use per 100g for consistent calculation)
       let caloriesPer100g = product.nutriments?.["energy-kcal_100g"]
-      let caloriesPerPortion = product.nutriments?.["energy-kcal_per_portion"]
       if (!caloriesPer100g && product.nutriments) {
         // Try alternative fields
         const energyKcal = product.nutriments["energy-kcal"]
         const energyKj = product.nutriments["energy-kj_100g"]
 
         if (energyKcal) {
+          // Assume energyKcal is per 100g if no specific per 100g value
           caloriesPer100g = energyKcal
         } else if (energyKj) {
           caloriesPer100g = energyKj / 4.184 // Convert kJ to kcal
-        } 
-
+        }
       }
 
-      if ((!caloriesPer100g || caloriesPer100g <= 0) && !caloriesPerPortion) {
+      if (!caloriesPer100g || caloriesPer100g <= 0) {
         console.warn(`No calorie information for product: ${barcode}`)
         return null
       }
 
-      // Create domain objects
+      // Create domain objects using per100g method
       const dishId = DishId.from(`openfoodfacts-${barcode}`)
-      const nutritionalInfo = NutritionalInfo.perServing( (caloriesPerPortion || caloriesPer100g) as Kilocalories  )
+      const nutritionalInfo = NutritionalInfo.per100g(caloriesPer100g as Kilocalories)
 
-      return Dish.create({
+      // Extract suggested serving size for UI display
+      const servingSize = product.serving_size || undefined
+
+      const dish = Dish.create({
         dishId,
         name,
         nutrition: nutritionalInfo,
         imageUrl: product.image_url,
       })
+
+      // Store serving size as metadata (we'll extend Dish later if needed)
+      if (servingSize) {
+        console.log(`📏 Suggested serving size for ${name}: ${servingSize}`)
+        // For now, just log it - we'll use it in the UI component
+      }
+
+      return dish
     } catch (error) {
       console.error("Error transforming OpenFoodFacts data to Dish:", error)
       return null

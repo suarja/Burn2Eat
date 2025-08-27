@@ -1,16 +1,15 @@
-import React, { FC, useEffect, useState } from "react"
-import { View, ViewStyle } from "react-native"
-import { Toast } from "toastify-react-native"
+import { FC, useEffect, useState, useCallback } from "react"
+import { View, ViewStyle, TextStyle } from "react-native"
 
 import { CalculateEffortOutput } from "@/application/usecases"
 import { Button } from "@/components/Button"
-import { Card } from "@/components/Card"
 import { ChoiceModal } from "@/components/ChoiceModal"
 import { FoodCard } from "@/components/FoodCard"
 import { Header } from "@/components/Header"
+import { QuantitySelector } from "@/components/QuantitySelector"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
-import { Kilocalories } from "@/domain/common/UnitTypes"
+import { Kilocalories, Grams } from "@/domain/common/UnitTypes"
 import { Dish } from "@/domain/nutrition/Dish"
 import { DishId } from "@/domain/nutrition/DishId"
 import { NutritionalInfo } from "@/domain/nutrition/NutritionalInfo"
@@ -28,11 +27,13 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
   const [dish, setDish] = useState<Dish | null>(null)
   const [computedEffort, setComputedEffort] = useState<CalculateEffortOutput | null>(null)
 
+  // Quantity and calories states
+  const [selectedQuantity, setSelectedQuantity] = useState<Grams>(100 as Grams)
+  const [actualCalories, setActualCalories] = useState<Kilocalories>(0 as Kilocalories)
+
   // User choice states
-  const [userChoice, setUserChoice] = useState<"eat" | "skip" | null>(null)
   const [showAteItModal, setShowAteItModal] = useState(false)
   const [showDidntEatModal, setShowDidntEatModal] = useState(false)
-  const [showConfetti, setShowConfetti] = useState(false)
 
   // Get params from navigation - either foodId OR dish object
   const { foodId, dish: simpleDish } = route.params
@@ -40,8 +41,7 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
   console.log("Result params:", { foodId, dish: simpleDish })
 
   const {
-    data: { catalog },
-    actions: { calculateEffort, calculateEffortForDish, findDish },
+    actions: { calculateEffortForDish, findDish },
   } = useFoodCatalog()
 
   /**
@@ -85,54 +85,59 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
     getDish()
   }, [foodId, simpleDish, findDish])
 
+  // Calculate actual calories when dish or quantity changes
+  useEffect(() => {
+    if (!dish) return
+    const calories = dish.getNutrition().calculateCaloriesForQuantity(selectedQuantity)
+    setActualCalories(calories)
+  }, [dish, selectedQuantity])
+
   useEffect(() => {
     if (!dish) return
     getCalculatedEffort()
-  }, [dish])
+  }, [dish, selectedQuantity, actualCalories, calculateEffortForDish])
 
-  const getCalculatedEffort = async () => {
-    if (!dish) return
-    
+  const getCalculatedEffort = useCallback(async () => {
+    if (!dish || !actualCalories) return
+
     try {
-      let effort
-      
-      // Use different calculation method based on source
-      if (simpleDish) {
-        // For barcode scanned dishes, use direct dish calculation
-        console.log("🧮 Calculating effort for barcode scanned dish:", dish.getName())
-        effort = await calculateEffortForDish(dish)
-      } else {
-        // For local database dishes, use ID-based calculation  
-        console.log("🧮 Calculating effort for local database dish:", dish.getName())
-        effort = await calculateEffort(dish.getId().toString())
-      }
-      
+      // Create a temporary dish with adjusted calories for effort calculation
+      const adjustedNutrition = NutritionalInfo.perServing(actualCalories)
+      const adjustedDish = Dish.create({
+        dishId: dish.getId(),
+        name: dish.getName(),
+        nutrition: adjustedNutrition,
+        imageUrl: dish.getImageUrl(),
+      })
+
+      // Always use calculateEffortForDish since we have adjusted calories
+      console.log(
+        `🧮 Calculating effort for ${selectedQuantity}g of ${dish.getName()} (${actualCalories} kcal)`,
+      )
+      const effort = await calculateEffortForDish(adjustedDish)
+
       if (!effort) {
         console.log("❌ No effort calculated for dish:", dish.getName())
         throw new Error("No effort calculated")
       }
-      
+
       console.log("✅ Effort calculated successfully:", effort.effort.primary.minutes, "min")
       setComputedEffort(effort)
     } catch (error) {
       console.error("❌ Error calculating effort:", error)
       throw error
     }
-  }
+  }, [dish, actualCalories, selectedQuantity, calculateEffortForDish])
 
   const handleBack = () => {
     navigation.goBack()
   }
 
   const handleDecisionMade = (decision: "eat" | "skip") => {
-    setUserChoice(decision)
-
     if (decision === "eat") {
       setShowAteItModal(true)
     } else {
       setShowDidntEatModal(true)
-      // Déclencher les confettis pour la félicitation
-      setShowConfetti(true)
     }
   }
 
@@ -143,7 +148,6 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
 
   const handleDidntEatConfirm = () => {
     setShowDidntEatModal(false)
-    setShowConfetti(false)
     navigation.navigate("MainTabs", { screen: "Home" })
   }
 
@@ -181,18 +185,15 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
               />
             </View>
           )}
-          
+
           <View style={themed($loadingContainer)}>
             <Text style={themed($loadingTitle)}>⚡ Calcul en cours...</Text>
             <Text style={themed($loadingSubtitle)}>
-              Calcul de l'effort nécessaire pour brûler {dish?.getCalories()} kcal
+              Calcul de l'effort nécessaire pour brûler {Math.round(actualCalories)} kcal (
+              {selectedQuantity}g)
             </Text>
-            
-            <Button 
-              preset="default" 
-              style={themed($cancelButton)} 
-              onPress={handleBack}
-            >
+
+            <Button preset="default" style={themed($cancelButton)} onPress={handleBack}>
               Annuler
             </Button>
           </View>
@@ -215,9 +216,23 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
             />
           </View>
 
+          {/* Quantity Selector */}
+          <QuantitySelector
+            quantity={selectedQuantity}
+            onQuantityChange={setSelectedQuantity}
+            suggestedServing="21.5g" // TODO: Extract from OpenFoodFacts data
+          />
+
+          {/* Calories Display */}
+          <View style={themed($caloriesSection)}>
+            <Text style={themed($caloriesText)}>
+              🔥 {Math.round(actualCalories)} kcal pour {selectedQuantity}g
+            </Text>
+          </View>
+
           {/* Effort Results - Simplified without Card wrapper */}
           <View style={themed($effortSection)}>
-            <Text style={themed($sectionTitle)}>🔥 Effort nécessaire</Text>
+            <Text style={themed($sectionTitle)}>⚡ Effort nécessaire</Text>
 
             <View style={themed($effortContent)}>
               <Text style={themed($primaryEffort)}>
@@ -308,6 +323,21 @@ const $foodCardContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   alignSelf: "center",
 })
 
+const $caloriesSection: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  backgroundColor: colors.palette.accent100,
+  borderRadius: 8,
+  padding: spacing.sm,
+  marginBottom: spacing.md,
+  alignItems: "center",
+})
+
+const $caloriesText: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
+  fontSize: 18,
+  fontFamily: typography.primary.bold,
+  color: colors.tint,
+  textAlign: "center",
+})
+
 const $effortSection: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   backgroundColor: colors.palette.neutral100,
   borderRadius: 12,
@@ -315,7 +345,7 @@ const $effortSection: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   marginBottom: spacing.lg, // Reduced spacing
 })
 
-const $sectionTitle: ThemedStyle<ViewStyle> = ({ spacing, colors, typography }) => ({
+const $sectionTitle: ThemedStyle<ViewStyle> = ({ colors, typography, spacing }) => ({
   fontSize: 18,
   fontFamily: typography.primary.bold,
   color: colors.text,
@@ -366,7 +396,7 @@ const $decisionSection: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginTop: spacing.md,
 })
 
-const $questionText: ThemedStyle<ViewStyle> = ({ spacing, colors, typography }) => ({
+const $questionText: ThemedStyle<ViewStyle> = ({ colors, typography, spacing }) => ({
   fontSize: 18,
   fontFamily: typography.primary.medium,
   color: colors.text,
@@ -428,7 +458,7 @@ const $loadingTitle: ThemedStyle<ViewStyle> = ({ spacing, colors, typography }) 
   marginBottom: spacing.sm,
 })
 
-const $loadingSubtitle: ThemedStyle<ViewStyle> = ({ spacing, colors, typography }) => ({
+const $loadingSubtitle: ThemedStyle<ViewStyle> = ({ colors, typography, spacing }) => ({
   fontSize: 16,
   fontFamily: typography.primary.medium,
   color: colors.textDim,

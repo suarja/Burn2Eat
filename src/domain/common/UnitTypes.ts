@@ -3,6 +3,7 @@ export type Kilocalories = number & { readonly __brand: "kcal" }
 export type Kilograms = number & { readonly __brand: "kg" }
 export type Centimeters = number & { readonly __brand: "cm" }
 export type Minutes = number & { readonly __brand: "min" }
+export type Grams = number & { readonly __brand: "g" }
 
 // /domain/common/DomainError.ts
 export abstract class DomainError extends Error {

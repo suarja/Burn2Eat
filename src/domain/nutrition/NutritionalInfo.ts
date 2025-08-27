@@ -1,26 +1,35 @@
-import { Kilocalories } from "../common/UnitTypes"
+import { Kilocalories, Grams } from "../common/UnitTypes"
 
 /**
  * Pure domain entity for nutritional information
+ * Stores nutritional data per 100g for consistent calculation
  * No dependencies on infrastructure types
  */
 export class NutritionalInfo {
   private constructor(
-    private readonly calories: Kilocalories,
+    private readonly caloriesPer100g: Kilocalories,
     private readonly protein?: number,
     private readonly carbs?: number,
     private readonly fat?: number,
   ) {}
 
   /**
+   * Create nutritional info from calories per 100g
+   */
+  static per100g(calories: Kilocalories): NutritionalInfo {
+    return new NutritionalInfo(calories)
+  }
+
+  /**
    * Create nutritional info for a standard serving
+   * @deprecated Use per100g() and calculateCaloriesForQuantity() instead
    */
   static perServing(calories: Kilocalories): NutritionalInfo {
     return new NutritionalInfo(calories)
   }
 
   /**
-   * Create nutritional info with full macronutrient breakdown
+   * Create nutritional info with full macronutrient breakdown (per 100g)
    */
   static withMacros(
     calories: Kilocalories,
@@ -32,10 +41,25 @@ export class NutritionalInfo {
   }
 
   /**
-   * Get calories per serving
+   * Calculate calories for a specific quantity in grams
+   */
+  public calculateCaloriesForQuantity(grams: Grams): Kilocalories {
+    return ((this.caloriesPer100g * grams) / 100) as Kilocalories
+  }
+
+  /**
+   * Get calories per 100g
+   */
+  public getCaloriesPer100g(): Kilocalories {
+    return this.caloriesPer100g
+  }
+
+  /**
+   * Get calories per serving (for backward compatibility)
+   * @deprecated Use calculateCaloriesForQuantity() with specific grams instead
    */
   public getCalories(): Kilocalories {
-    return this.calories
+    return this.caloriesPer100g
   }
 
   /**

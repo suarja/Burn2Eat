@@ -14,11 +14,11 @@ export const useFoodCatalog = () => {
   const getDishUseCase = Dependencies.getFoodCatalogUseCase()
   const { loading: profileLoading, profile } = useCurrentProfile()
   const calculateEffortUseCase = Dependencies.calculateEffortUseCase()
-  
+
   // Use ref to get current profile value
   const profileRef = useRef(profile)
   const profileLoadingRef = useRef(profileLoading)
-  
+
   useEffect(() => {
     profileRef.current = profile
     profileLoadingRef.current = profileLoading
@@ -55,32 +55,32 @@ export const useFoodCatalog = () => {
    */
   const calculateEffortForDish = async (dish: Dish) => {
     console.log("🔧 calculateEffortForDish called with:", dish.getName())
-    
+
     // Wait for profile to be available if still loading
     let currentProfile = profileRef.current
     let currentLoading = profileLoadingRef.current
-    
+
     if (currentLoading || !currentProfile) {
       console.log("⏳ Profile still loading, waiting...")
       // Simple retry mechanism with timeout
       let retries = 0
       const maxRetries = 50 // 5 seconds maximum wait
-      
+
       while ((!currentProfile || currentLoading) && retries < maxRetries) {
-        await new Promise(resolve => setTimeout(resolve, 100))
+        await new Promise((resolve) => setTimeout(resolve, 100))
         currentProfile = profileRef.current
         currentLoading = profileLoadingRef.current
         retries++
       }
     }
-    
+
     if (!currentProfile) {
       console.log("❌ No profile available for effort calculation after waiting")
       return null
     }
-    
+
     console.log("✅ Profile available, proceeding with calculation")
-    
+
     try {
       const result = await calculateEffortUseCase.executeWithDish({
         dish: dish,
@@ -91,7 +91,7 @@ export const useFoodCatalog = () => {
           currentProfile.preferredActivityKeys,
         ),
       })
-      
+
       console.log("🔧 executeWithDish result:", result)
       return result
     } catch (error) {

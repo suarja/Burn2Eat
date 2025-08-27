@@ -2,8 +2,8 @@ import React, { FC, useCallback, useEffect, useRef } from "react"
 import { useState } from "react"
 import { ViewStyle, TextStyle, ActivityIndicator } from "react-native"
 import { View } from "react-native"
-import { useFocusEffect } from "@react-navigation/native"
 import { CameraView, CameraType, useCameraPermissions, BarcodeScanningResult } from "expo-camera"
+import { useFocusEffect } from "@react-navigation/native"
 
 import { Button } from "@/components/Button"
 import { Screen } from "@/components/Screen"
@@ -36,7 +36,7 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
 
   // Handle camera lifecycle with focus/blur - mount/unmount approach
   useFocusEffect(
-   useCallback(() => {
+    useCallback(() => {
       // Screen is focused - mount camera and start scanning
       if (permission?.granted) {
         setShouldShowCamera(true)
@@ -59,15 +59,13 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
         setShouldShowCamera(false)
         resetScanning()
       }
-    }, [permission?.granted, startScanning, resetScanning])
+    }, [permission?.granted, startScanning, resetScanning]),
   )
 
   if (!permission) {
     // Camera permissions are still loading.
     return <View />
   }
-
-
 
   if (!permission.granted) {
     return (
