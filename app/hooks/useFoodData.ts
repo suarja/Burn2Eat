@@ -45,16 +45,32 @@ export const useFoodCatalog = () => {
    * This bypasses the local database lookup
    */
   const calculateEffortForDish = (dish: Dish) => {
-    if (!profile) return
-    return calculateEffortUseCase.executeWithDish({
-      dish: dish,
-      user: UserHealthInfo.create(
-        profile.sex,
-        profile.weight as Kilograms,
-        profile.height as Centimeters,
-        profile.preferredActivityKeys,
-      ),
-    })
+    console.log("🔧 calculateEffortForDish called with:", dish.getName())
+    
+    if (!profile) {
+      console.log("❌ No profile available for effort calculation")
+      return Promise.resolve(null)
+    }
+    
+    console.log("✅ Profile available, proceeding with calculation")
+    
+    try {
+      const result = calculateEffortUseCase.executeWithDish({
+        dish: dish,
+        user: UserHealthInfo.create(
+          profile.sex,
+          profile.weight as Kilograms,
+          profile.height as Centimeters,
+          profile.preferredActivityKeys,
+        ),
+      })
+      
+      console.log("🔧 executeWithDish result:", result)
+      return result
+    } catch (error) {
+      console.error("❌ Error in calculateEffortForDish:", error)
+      return Promise.resolve(null)
+    }
   }
 
   const findDish = useCallback(

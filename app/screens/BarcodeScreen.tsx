@@ -1,8 +1,9 @@
-import { FC, useEffect } from "react"
+import React, { FC, useEffect, useRef } from "react"
 import { useState } from "react"
-import { ViewStyle, ActivityIndicator } from "react-native"
+import { ViewStyle, TextStyle, ActivityIndicator } from "react-native"
 import { View } from "react-native"
-import { CameraView, CameraType, useCameraPermissions, BarcodeScanningResult,  } from "expo-camera"
+import { useFocusEffect } from "@react-navigation/native"
+import { CameraView, CameraType, useCameraPermissions, BarcodeScanningResult } from "expo-camera"
 
 import { Button } from "@/components/Button"
 import { Screen } from "@/components/Screen"
@@ -19,6 +20,8 @@ interface BarcodeScreenProps extends AppStackScreenProps<"Barcode"> {}
 export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
   const [facing, setFacing] = useState<CameraType>("back")
   const [permission, requestPermission] = useCameraPermissions()
+  const [shouldShowCamera, setShouldShowCamera] = useState(false)
+  const cameraRef = useRef<CameraView>(null)
   const { themed } = useAppTheme()
 
   const {
@@ -31,12 +34,35 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
     resetScanning,
   } = useBarcodeScanning()
 
-  // Start scanning when component mounts
-  useEffect(() => {
-    if (permission?.granted) {
-      startScanning()
-    }
-  }, [permission?.granted, startScanning])
+  // Handle camera lifecycle with focus/blur - mount/unmount approach
+  useFocusEffect(
+    React.useCallback(() => {
+      // Screen is focused - mount camera and start scanning
+      if (permission?.granted) {
+        console.log("🎥 Mounting camera (screen focused)")
+        setShouldShowCamera(true)
+        // Small delay to ensure camera is mounted before scanning
+        const timeoutId = setTimeout(() => {
+          startScanning()
+        }, 100)
+
+        // Cleanup timeout if component unmounts quickly
+        return () => {
+          clearTimeout(timeoutId)
+          console.log("🎥 Unmounting camera (screen blurred)")
+          setShouldShowCamera(false)
+          resetScanning()
+        }
+      }
+
+      // If no permission, ensure camera is not shown
+      return () => {
+        console.log("🎥 Unmounting camera (screen blurred)")
+        setShouldShowCamera(false)
+        resetScanning()
+      }
+    }, [permission?.granted, startScanning, resetScanning])
+  )
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -86,15 +112,21 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
   return (
     <View style={themed($mainContainer)}>
       {/* Camera takes the full screen */}
-      <CameraView
-        style={themed($fullScreenCamera)}
-        facing={facing}
-        barcodeScannerSettings={{
-          barcodeTypes: ["ean13", "ean8", "upc_a", "code128"],
-        }}
-        
-        onBarcodeScanned={isScanning ? onBarcodeScanned : undefined}
-      />
+      {shouldShowCamera ? (
+        <CameraView
+          ref={cameraRef}
+          style={themed($fullScreenCamera)}
+          facing={facing}
+          barcodeScannerSettings={{
+            barcodeTypes: ["ean13", "ean8", "upc_a", "code128"],
+          }}
+          onBarcodeScanned={isScanning ? onBarcodeScanned : undefined}
+        />
+      ) : (
+        <View style={themed($cameraLoadingContainer)}>
+          <Text style={themed($cameraLoadingText)}>📷 Activation de la caméra...</Text>
+        </View>
+      )}
 
       {/* Scanning Frame Overlay */}
       <View style={themed($scanningOverlay)}>
@@ -457,4 +489,22 @@ const $headerContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   paddingVertical: spacing.sm,
   minHeight: 50,
   justifyContent: "center",
+})
+
+const $cameraLoadingContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
+  position: "absolute",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: colors.palette.neutral900,
+  justifyContent: "center",
+  alignItems: "center",
+})
+
+const $cameraLoadingText: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
+  fontSize: 18,
+  fontFamily: typography.primary.medium,
+  color: colors.palette.neutral100,
+  textAlign: "center",
 })
