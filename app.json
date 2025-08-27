@@ -49,8 +49,7 @@
     [
       "expo-camera",
       {
-        "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
-        "photoPermission": "Allow $(PRODUCT_NAME) to access your camera",
+        "cameraPermission": "Pour scanner les codes-barres des aliments et calculer l'effort nécessaire pour les brûler",
         "microphonePermission": false
       }
     ],

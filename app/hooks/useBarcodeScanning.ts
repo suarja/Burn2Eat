@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react"
+import { useCallback, useState, useRef } from "react"
 import { Alert } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 
@@ -18,25 +18,42 @@ export const useBarcodeScanning = () => {
 
   const navigation = useNavigation<any>()
   const scanBarcodeUseCase = Dependencies.scanBarcodeUseCase()
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const handleBarcodeScanned = useCallback(
     async (barcode: string) => {
       // Prevent multiple scans
       if (isLoading || scannedBarcode === barcode) {
+        console.log("⚠️ Ignoring duplicate scan:", barcode)
         return
       }
 
+      console.log("🔍 Starting barcode scan:", barcode)
       setIsScanning(false)
       setScannedBarcode(barcode)
       setIsLoading(true)
       setError(null)
 
       try {
-        console.log("🔍 Scanning barcode:", barcode)
+        console.log("📡 Calling scanBarcodeUseCase with:", barcode)
+
+        // Set a timeout to prevent getting stuck
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+        }
+        
+        timeoutRef.current = setTimeout(() => {
+          console.log("⏰ Scan timeout - resetting")
+          setError("Délai d'attente dépassé")
+          setIsLoading(false)
+          setIsScanning(true)
+        }, 15000) // 15 second timeout
 
         const result: ScanBarcodeOutput = await scanBarcodeUseCase.execute({
           barcode,
         })
+
+        console.log("📋 ScanBarcodeUseCase result:", { success: result.success, hasDish: !!result.dish })
 
         if (result.success && result.dish) {
           console.log("✅ Product found:", result.dish.name)
@@ -84,6 +101,11 @@ export const useBarcodeScanning = () => {
           ],
         )
       } finally {
+        // Clear timeout on completion
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null
+        }
         setIsLoading(false)
       }
     },
@@ -91,6 +113,14 @@ export const useBarcodeScanning = () => {
   )
 
   const resetScanning = useCallback(() => {
+    console.log("🔄 Resetting scanning state")
+    
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+    
     setScannedBarcode(null)
     setIsLoading(false)
     setError(null)
@@ -98,6 +128,7 @@ export const useBarcodeScanning = () => {
   }, [])
 
   const startScanning = useCallback(() => {
+    console.log("▶️ Starting scanning")
     setIsScanning(true)
     setScannedBarcode(null)
     setError(null)
