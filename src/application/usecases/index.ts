@@ -20,3 +20,7 @@ export type {
   GetUserProfileOutput,
   UserProfileExistsOutput,
 } from "./GetUserProfileUseCase"
+
+// Barcode Scanning Use Case
+export { ScanBarcodeUseCase } from "./ScanBarcodeUseCase"
+export type { ScanBarcodeInput, ScanBarcodeOutput, ScanBarcodeError } from "./ScanBarcodeUseCase"

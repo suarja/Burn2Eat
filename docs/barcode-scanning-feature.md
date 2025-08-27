@@ -241,59 +241,105 @@ Add scanner button to food search:
 
 ---
 
+## 🔀 Approche d'Intégration Incrémentale
+
+### Cohabitation des Architectures
+L'implémentation du scan de barcode s'intègre harmonieusement dans l'architecture existante:
+
+**Architecture MVP actuelle:**
+- `FoodDataService` → données statiques locales
+- `HomeScreen` → recherche manuelle par nom
+- Navigation: `HomeScreen` → `ResultScreen`
+
+**Nouvelle architecture Barcode:**
+- `OpenFoodFactsService` → API externe temps réel
+- `BarcodeScreen` → scan caméra + sélection produit
+- Navigation: `BarcodeScreen` → `ProductSelectionScreen` → `ResultScreen`
+
+**Point de convergence:**
+Les deux flux se rejoignent au `ResultScreen` qui reçoit un objet `Dish` standardisé, permettant la cohabitation transparente des deux systèmes.
+
+### Stratégie d'Implémentation
+1. **Extension non-breaking**: Ajouter à `DishRepository` sans modifier l'existant
+2. **Services parallèles**: `OpenFoodFactsService` coexiste avec `FoodDataService`
+3. **Réutilisation**: `ResultScreen` et logique de calcul d'effort inchangés
+4. **Progressive Enhancement**: Nouvelle navigation optionnelle via onglet "Scan"
+
+### Flux Utilisateur Unifié
+
+```
+┌─────────────────┐    ┌──────────────────┐
+│   HomeScreen    │    │  BarcodeScreen   │
+│   (recherche    │    │   (scan caméra)  │
+│    manuelle)    │    │                  │
+└─────────┬───────┘    └────────┬─────────┘
+          │                     │
+          │                     ▼
+          │            ┌─────────────────┐
+          │            │ ProductSelection│
+          │            │     Screen      │
+          │            └────────┬────────┘
+          │                     │
+          ▼                     ▼
+┌─────────────────────────────────────────┐
+│             ResultScreen                │
+│      (calcul d'effort unifié)          │
+│     reçoit un objet Dish                │
+└─────────────────────────────────────────┘
+```
+
+---
+
 ## 🗺️ Implementation Roadmap
 
-### Phase 1: Technical Proof of Concept (Sprint 1) 
+### Phase 1: Architecture Foundation (Sprint 1) 
 **Duration**: 1 week  
-**Goal**: Validate expo-camera + OpenFoodFacts integration
+**Status**: 🔄 En cours
+**Goal**: Intégrer le scan de barcode dans l'architecture DDD existante
 
-**Tasks:**
-1. ✅ Install and configure expo-camera
-2. ✅ Create basic barcode scanning component
-3. ✅ Test OpenFoodFacts API with sample barcodes
-4. ✅ Validate barcode format compatibility
-5. ✅ Document technical findings
+**Analyse de l'existant:**
+- ✅ `DishRepository` interface définie dans `/src/domain/nutrition/`
+- ✅ `BarcodeScreen` basique existant avec expo-camera configuré
+- ✅ Navigation principale déjà configurée avec onglet "Scan"
+- ✅ `ResultScreen` peut déjà recevoir un `Dish` pour calcul d'effort
+- ✅ Services existants dans `app/services/` comme modèles
 
-**Deliverable**: Working camera scanning → API lookup demo
+**Tasks Phase 1:**
+1. 🔄 Étendre `DishRepository` avec méthode `findByBarcode(barcode: string)`
+2. ⏳ Créer `OpenFoodFactsService` dans `app/services/OpenFoodFactsService.ts`
+3. ⏳ Créer `ScanBarcodeUseCase` dans couche application
+4. ⏳ Créer types pour transformation OpenFoodFacts → Dish
+5. ⏳ Tests unitaires pour nouveaux composants domain
 
-### Phase 2: Domain Integration (Sprint 2)
+**Deliverable**: Architecture domaine étendue pour barcode
+
+### Phase 2: Implémentation Scanning (Sprint 2)
 **Duration**: 1.5 weeks  
-**Goal**: Integrate scanning with existing DDD architecture
+**Status**: ⏳ À venir
+**Goal**: Interface utilisateur complète pour scan → sélection → calcul
 
-**Tasks:**
-1. ✅ Extend `DishRepository` with barcode lookup
-2. ✅ Create `BarcodeScanner` domain interface
-3. ✅ Implement `ExpoBarcodeScanner` adapter  
-4. ✅ Create `ScanFoodUseCase`
-5. ✅ Add comprehensive domain tests
+**Tasks Phase 2:**
+1. ⏳ Améliorer `BarcodeScreen` avec détection barcode et overlay
+2. ⏳ Créer `ProductSelectionScreen` pour choix produits OpenFoodFacts
+3. ⏳ Intégrer flux: scan → API → sélection → transformation Dish → ResultScreen
+4. ⏳ Gestion d'erreurs (produit non trouvé, problème réseau)
+5. ⏳ Fallback vers recherche manuelle
 
-**Deliverable**: Fully tested domain integration
+**Deliverable**: Flux complet de scan fonctionnel
 
-### Phase 3: UI Implementation (Sprint 3)
+### Phase 3: Refactoring & Polish (Sprint 3)
 **Duration**: 1 week  
-**Goal**: Production-ready scanning interface
+**Status**: ⏳ À venir
+**Goal**: Code propre et experience utilisateur optimisée
 
-**Tasks:**
-1. ✅ Create `BarcodeScannerScreen`
-2. ✅ Build `BarcodeCamera` component with overlay
-3. ✅ Integrate with navigation stack
-4. ✅ Add error handling and fallbacks
-5. ✅ Implement haptic feedback
+**Tasks Phase 3:**
+1. ⏳ Refactorer `ResultScreen` avec custom hook `useEffortCalculation`
+2. ⏳ Optimisation performances (cache, lifecycle caméra)
+3. ⏳ Amélioration UX (feedback visuel, animations)
+4. ⏳ Tests d'intégration end-to-end
+5. ⏳ Documentation technique mise à jour
 
-**Deliverable**: Complete scanning user experience
-
-### Phase 4: Polish & Optimization (Sprint 4)
-**Duration**: 0.5 weeks  
-**Goal**: Performance optimization and testing
-
-**Tasks:**
-1. ✅ Add barcode history and caching
-2. ✅ Performance optimization (camera lifecycle)
-3. ✅ Accessibility improvements
-4. ✅ End-to-end testing on devices
-5. ✅ Documentation updates
-
-**Deliverable**: Production-ready feature
+**Deliverable**: Feature production-ready avec code maintenable
 
 ---
 

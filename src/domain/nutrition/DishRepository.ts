@@ -38,5 +38,11 @@ export interface DishRepository {
     },
   ): Promise<Dish[]>
 
+  /**
+   * Find dish by barcode (EAN13, EAN8, UPC_A)
+   * Returns null if product not found in external database
+   */
+  findByBarcode?(barcode: string): Promise<Dish | null>
+
   getAll(): Promise<Dish[]>
 }

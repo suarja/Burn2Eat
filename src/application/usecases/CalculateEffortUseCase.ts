@@ -2,7 +2,7 @@ import { EffortBreakdown } from "../../domain/effort/EffortBreakdown"
 import { EffortCalculator } from "../../domain/effort/EffortCalculator"
 import { EffortPolicy, EffortPolicyFactory } from "../../domain/effort/EffortPolicy"
 import { EffortRequest } from "../../domain/effort/EffortRequest"
-import { DishId } from "../../domain/nutrition/DishId"
+// DishId import removed as unused
 import { DishRepository } from "../../domain/nutrition/DishRepository"
 import { ActivityCatalog } from "../../domain/physiology/ActivityCatalog"
 import { UserHealthInfo } from "../../domain/physiology/UserHealthInfo"

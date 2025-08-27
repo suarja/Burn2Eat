@@ -47,6 +47,14 @@
       }
     ],
     [
+      "expo-camera",
+      {
+        "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+        "photoPermission": "Allow $(PRODUCT_NAME) to access your camera",
+        "microphonePermission": false
+      }
+    ],
+    [
       "react-native-edge-to-edge",
       {
         "android": {

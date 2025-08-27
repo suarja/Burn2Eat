@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { Icon } from "@/components/Icon"
 import { translate } from "@/i18n/translate"
+import { BarcodeScreen } from "@/screens/BarcodeScreen"
 import { DemoDebugScreen } from "@/screens/DemoDebugScreen"
 import { HomeScreen } from "@/screens/HomeScreen"
 import { ProfileSetupScreen } from "@/screens/ProfileSetupScreen"
@@ -12,7 +13,6 @@ import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
-import { BarcodeScreen } from "@/screens/BarcodeScreen"
 
 export type MainTabParamList = {
   Home: undefined

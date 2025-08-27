@@ -3,6 +3,7 @@ import { GetFoodCatalogUseCase } from "@/application/usecases/food/GetFoodCatalo
 import { CalculateEffortUseCase } from "../../src/application/usecases/CalculateEffortUseCase"
 import { CreateUserProfileUseCase } from "../../src/application/usecases/CreateUserProfileUseCase"
 import { GetUserProfileUseCase } from "../../src/application/usecases/GetUserProfileUseCase"
+import { ScanBarcodeUseCase } from "../../src/application/usecases/ScanBarcodeUseCase"
 import { UpdateUserProfileUseCase } from "../../src/application/usecases/UpdateUserProfileUseCase"
 import { StandardMETEffortPolicy } from "../../src/domain/effort/EffortPolicy"
 import type { EffortPolicy } from "../../src/domain/effort/EffortPolicy"
@@ -10,6 +11,7 @@ import type { DishRepository } from "../../src/domain/nutrition/DishRepository"
 import type { ActivityCatalog } from "../../src/domain/physiology/ActivityCatalog"
 import type { UserHealthInfoRepository } from "../../src/domain/physiology/UserHealthInfoRepository"
 import { MMKVUserHealthInfoRepository } from "../../src/infrastructure/adapters/MMKVUserHealthInfoRepository"
+import { OpenFoodFactsRepository } from "../../src/infrastructure/adapters/OpenFoodFactsRepository"
 import { StaticActivityCatalog } from "../../src/infrastructure/adapters/StaticActivityCatalog"
 import { StaticDishRepository } from "../../src/infrastructure/adapters/StaticDishRepository"
 
@@ -22,6 +24,7 @@ export class Dependencies {
   private static _userRepository: UserHealthInfoRepository | null = null
   private static _activityCatalog: ActivityCatalog | null = null
   private static _dishRepository: DishRepository | null = null
+  private static _openFoodFactsRepository: DishRepository | null = null
   private static _effortPolicy: EffortPolicy | null = null
 
   // Use Cases (Application Layer)
@@ -30,6 +33,7 @@ export class Dependencies {
   private static _updateUserUseCase: UpdateUserProfileUseCase | null = null
   private static _calculateEffortUseCase: CalculateEffortUseCase | null = null
   private static _getFoodCatalogUseCase: GetFoodCatalogUseCase | null = null
+  private static _scanBarcodeUseCase: ScanBarcodeUseCase | null = null
 
   /**
    * Initialize all dependencies (call once at app startup)
@@ -41,6 +45,7 @@ export class Dependencies {
     this._userRepository = new MMKVUserHealthInfoRepository()
     this._activityCatalog = new StaticActivityCatalog()
     this._dishRepository = new StaticDishRepository()
+    this._openFoodFactsRepository = new OpenFoodFactsRepository()
     this._effortPolicy = new StandardMETEffortPolicy()
 
     // Application Layer (Inject dependencies)
@@ -53,6 +58,7 @@ export class Dependencies {
       this._effortPolicy,
     )
     this._getFoodCatalogUseCase = new GetFoodCatalogUseCase(this._dishRepository)
+    this._scanBarcodeUseCase = new ScanBarcodeUseCase(this._openFoodFactsRepository)
 
     console.log("✅ Dependencies: DDD architecture initialized successfully")
   }
@@ -64,11 +70,14 @@ export class Dependencies {
     this._userRepository = null
     this._activityCatalog = null
     this._dishRepository = null
+    this._openFoodFactsRepository = null
     this._effortPolicy = null
     this._createUserUseCase = null
     this._getUserUseCase = null
     this._updateUserUseCase = null
     this._calculateEffortUseCase = null
+    this._getFoodCatalogUseCase = null
+    this._scanBarcodeUseCase = null
   }
 
   // Repository Getters
@@ -133,6 +142,20 @@ export class Dependencies {
       throw new Error("Dependencies not initialized. Call Dependencies.initialize() first.")
     }
     return this._getFoodCatalogUseCase
+  }
+
+  static scanBarcodeUseCase(): ScanBarcodeUseCase {
+    if (!this._scanBarcodeUseCase) {
+      throw new Error("Dependencies not initialized. Call Dependencies.initialize() first.")
+    }
+    return this._scanBarcodeUseCase
+  }
+
+  static openFoodFactsRepository(): DishRepository {
+    if (!this._openFoodFactsRepository) {
+      throw new Error("Dependencies not initialized. Call Dependencies.initialize() first.")
+    }
+    return this._openFoodFactsRepository
   }
 }
 
