@@ -1,189 +1,32 @@
 import { FC, useEffect, useState } from "react"
 import { View, ViewStyle, TextStyle } from "react-native"
 
-import { CalculateEffortOutput } from "@/application/usecases"
 import { Button } from "@/components/Button"
 import { ChoiceModal } from "@/components/ChoiceModal"
 import { FoodCard } from "@/components/FoodCard"
 import { Header } from "@/components/Header"
-import { QuantitySelector } from "@/components/QuantitySelector"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
-import { Kilocalories, Grams } from "@/domain/common/UnitTypes"
-import { Dish } from "@/domain/nutrition/Dish"
-import { DishId } from "@/domain/nutrition/DishId"
-import { NutritionalInfo } from "@/domain/nutrition/NutritionalInfo"
-import { useFoodCatalog } from "@/hooks/useFoodData"
-import { getFoodById } from "@/infrastructure/data"
-import type { AppStackScreenProps, SimpleDish } from "@/navigators/AppNavigator"
+import { useResultEffort } from "@/hooks/useResultEffort"
+import type { AppStackScreenProps } from "@/navigators/AppNavigator"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 
 interface ResultScreenProps extends AppStackScreenProps<"Result"> {}
 
 /**
- * Extract serving size from local food data using the food ID
+ * Refactored ResultScreen following DDD principles
+ * 
+ * ✅ Clean Architecture Benefits:
+ * - Business logic encapsulated in custom hooks
+ * - UI layer focuses only on presentation
+ * - Domain logic is testable independently
+ * - Clear separation of concerns
  */
-const extractServingSizeFromLocalDish = (foodId: string): string => {
-  const foodData = getFoodById(foodId)
-  if (!foodData) {
-    console.warn(`Food data not found for ID: ${foodId}`)
-    return "100g"
-  }
-
-  const { amount, unit } = foodData.portionSize
-
-  // Convert portion size to human-readable string
-  if (unit === "100g") {
-    return `${amount * 100}g`
-  } else if (unit === "piece") {
-    return amount === 1 ? "1 pièce" : `${amount} pièces`
-  } else if (unit === "slice") {
-    return amount === 1 ? "1 tranche" : `${amount} tranches`
-  } else if (unit === "cup") {
-    return amount === 1 ? "1 tasse" : `${amount} tasses`
-  } else if (unit === "serving") {
-    return amount === 1 ? "1 portion" : `${amount} portions`
-  } else if (unit === "bottle") {
-    return amount === 1 ? "1 bouteille" : `${amount} bouteilles`
-  } else if (unit === "can") {
-    return amount === 1 ? "1 canette" : `${amount} canettes`
-  }
-
-  return `${amount} ${unit}`
-}
-
-/**
- * Parse serving size string to grams for quantity selector
- * Examples: "21.5g" -> 21.5, "1 slice" -> 50, "100 ml" -> 100
- */
-const parseServingSizeToGrams = (servingSize: string): Grams => {
-  if (!servingSize) return 100 as Grams
-
-  // Clean and normalize the string
-  const normalized = servingSize.toLowerCase().trim()
-
-  // Extract numeric value
-  const numMatch = normalized.match(/(\d+(?:\.\d+)?|\d+(?:,\d+)?)/)
-  const numValue = numMatch ? parseFloat(numMatch[1].replace(",", ".")) : 100
-
-  // If it already contains 'g' or 'gram', use the value directly
-  if (normalized.includes("g")) {
-    return Math.max(1, numValue) as Grams
-  }
-
-  // Convert common serving units to estimated grams
-  if (
-    normalized.includes("slice") ||
-    normalized.includes("part") ||
-    normalized.includes("tranche")
-  ) {
-    return Math.max(30, numValue * 30) as Grams // 1 slice ≈ 30g
-  }
-
-  if (normalized.includes("piece") || normalized.includes("pièce") || normalized.includes("unit")) {
-    return Math.max(20, numValue * 20) as Grams // 1 piece ≈ 20g
-  }
-
-  if (normalized.includes("ml") || normalized.includes("l")) {
-    return Math.max(1, numValue) as Grams // 1ml ≈ 1g for most foods
-  }
-
-  if (normalized.includes("cup") || normalized.includes("tasse")) {
-    return Math.max(200, numValue * 200) as Grams // 1 cup ≈ 200g
-  }
-
-  if (normalized.includes("portion") || normalized.includes("serving")) {
-    return Math.max(150, numValue * 150) as Grams // 1 serving ≈ 150g
-  }
-
-  if (normalized.includes("bottle") || normalized.includes("bouteille")) {
-    return Math.max(330, numValue * 330) as Grams // 1 bottle ≈ 330ml ≈ 330g
-  }
-
-  if (normalized.includes("can") || normalized.includes("canette")) {
-    return Math.max(250, numValue * 250) as Grams // 1 can ≈ 250ml ≈ 250g
-  }
-
-  // Default: assume the number is already in grams or use 100g
-  return Math.max(1, numValue) as Grams
-}
-
-/**
- * Determine display context for food item based on serving size and food type
- * Returns appropriate quantity text for the FoodCard display
- */
-const getDisplayContext = (
-  servingSize: string,
-  selectedQuantity: Grams,
-): { quantityText: string; isPerProduct: boolean } => {
-  const normalized = servingSize.toLowerCase().trim()
-
-  // Items that should show "per product" (whole unit consumption)
-  const isWholeProductConsumption =
-    normalized.includes("piece") ||
-    normalized.includes("pièce") ||
-    normalized.includes("slice") ||
-    normalized.includes("tranche") ||
-    normalized.includes("bottle") ||
-    normalized.includes("bouteille") ||
-    normalized.includes("can") ||
-    normalized.includes("canette") ||
-    normalized.includes("serving") ||
-    normalized.includes("portion")
-
-  if (isWholeProductConsumption) {
-    // For whole products, show "pour X pièce(s)/tranche(s)" based on quantity
-    const estimatedGramsPerUnit = parseServingSizeToGrams(servingSize)
-    const estimatedUnits = Math.round(selectedQuantity / estimatedGramsPerUnit)
-
-    if (normalized.includes("slice") || normalized.includes("tranche")) {
-      return {
-        quantityText: estimatedUnits === 1 ? "pour 1 tranche" : `pour ${estimatedUnits} tranches`,
-        isPerProduct: true,
-      }
-    } else if (normalized.includes("piece") || normalized.includes("pièce")) {
-      return {
-        quantityText: estimatedUnits === 1 ? "pour 1 pièce" : `pour ${estimatedUnits} pièces`,
-        isPerProduct: true,
-      }
-    } else if (normalized.includes("bottle") || normalized.includes("bouteille")) {
-      return {
-        quantityText:
-          estimatedUnits === 1 ? "pour 1 bouteille" : `pour ${estimatedUnits} bouteilles`,
-        isPerProduct: true,
-      }
-    } else if (normalized.includes("can") || normalized.includes("canette")) {
-      return {
-        quantityText: estimatedUnits === 1 ? "pour 1 canette" : `pour ${estimatedUnits} canettes`,
-        isPerProduct: true,
-      }
-    } else {
-      return {
-        quantityText: estimatedUnits === 1 ? "pour 1 portion" : `pour ${estimatedUnits} portions`,
-        isPerProduct: true,
-      }
-    }
-  }
-
-  // Items measured in grams/weight show "per portion"
-  return {
-    quantityText: `pour ${selectedQuantity}g`,
-    isPerProduct: false,
-  }
-}
 
 export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) {
   const { navigation, route } = props
   const { themed } = useAppTheme()
-
-  const [dish, setDish] = useState<Dish | null>(null)
-  const [computedEffort, setComputedEffort] = useState<CalculateEffortOutput | null>(null)
-
-  // Quantity and calories states - Start with suggested serving
-  const [selectedQuantity, setSelectedQuantity] = useState<Grams>(21.5 as Grams)
-  const [actualCalories, setActualCalories] = useState<Kilocalories>(0 as Kilocalories)
-  const [suggestedServing, setSuggestedServing] = useState<string>("21.5g")
 
   // User choice states
   const [showAteItModal, setShowAteItModal] = useState(false)
@@ -192,114 +35,51 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
   // Get params from navigation - either foodId OR dish object
   const { foodId, dish: simpleDish } = route.params
 
-
+  // Use custom hook that encapsulates all business logic
   const {
-    actions: { calculateEffortForDish, findDish },
-  } = useFoodCatalog()
+    loading,
+    error,
+    isReady,
+    dish,
+    actualCalories,
+    selectedGrams,
+    displayContext,
+    effortResult,
+    primaryEffort,
+    alternativeEfforts,
+    suggestedServing,
+    quantityText,
+    primaryEffortMinutes,
+    primaryEffortActivity,
+    initializeFromFoodId,
+    initializeFromSimpleDish,
+    updateQuantity
+  } = useResultEffort()
 
   /**
-   * Convert SimpleDish from barcode scanning to full Dish domain object
+   * Initialize calculation based on route params
+   * This replaces the complex useEffect logic from the original
    */
-  const convertSimpleDishToDish = (simpleDish: SimpleDish): Dish => {
-    return Dish.create({
-      dishId: DishId.from(simpleDish.id),
-      name: simpleDish.name,
-      nutrition: NutritionalInfo.perServing(simpleDish.calories as Kilocalories),
-      imageUrl: undefined, // OpenFoodFacts images not handled yet
-    })
-  }
-
   useEffect(() => {
-    const getDish = () => {
-      // Case 1: Dish object provided directly (from barcode scanning)
-      if (simpleDish) {
-        console.log("✅ Using dish object directly from barcode scan:", simpleDish.name)
-        const domainDish = convertSimpleDishToDish(simpleDish)
-        setDish(domainDish)
-
-        // Use actual serving size from OpenFoodFacts or default to 100g
-        const actualServingSize = simpleDish.servingSize || "100g"
-        console.log("📏 Using serving size from OpenFoodFacts:", actualServingSize)
-        setSuggestedServing(actualServingSize)
-
-        // Parse serving size to set initial quantity
-        const parsedQuantity = parseServingSizeToGrams(actualServingSize)
-        setSelectedQuantity(parsedQuantity)
-        return
-      }
-
-      // Case 2: Search by foodId in local database (from manual search)
-      if (foodId) {
-        console.log("🔍 Searching dish by foodId in local database:", foodId)
-        const dish = findDish(JSON.parse(JSON.stringify(foodId)).value)
-        if (!dish) {
-          console.log("❌ Dish not found in local database for foodId:", foodId)
-          return
-        }
-        console.log("✅ Found dish in local database:", dish.getName())
-        setDish(dish)
-
-        // Extract serving size from local food data
-        const localServingSize = extractServingSizeFromLocalDish(
-          JSON.parse(JSON.stringify(foodId)).value,
-        )
-        setSuggestedServing(localServingSize)
-        setSelectedQuantity(parseServingSizeToGrams(localServingSize))
-        return
-      }
-
-      console.log("⚠️ No dish object or foodId provided")
-    }
-
-    getDish()
-  }, [foodId, simpleDish, findDish])
-
-  // Calculate actual calories when dish or quantity changes
-  useEffect(() => {
-    if (!dish) return
-    if (foodId) {
-      setActualCalories(dish.getCalories())
-      return
-    } 
-    const calories = dish.getNutrition().calculateCaloriesForQuantity(selectedQuantity)
-    setActualCalories(calories)
-  }, [dish, selectedQuantity])
-
-  useEffect(() => {
-    if (!dish || !actualCalories) return
-
-    const calculateEffort = async () => {
+    const initializeCalculation = async () => {
       try {
-        // Create a temporary dish with adjusted calories for effort calculation
-        const adjustedNutrition = NutritionalInfo.perServing(actualCalories)
-        const adjustedDish = Dish.create({
-          dishId: dish.getId(),
-          name: dish.getName(),
-          nutrition: adjustedNutrition,
-          imageUrl: dish.getImageUrl(),
-        })
-
-        // Always use calculateEffortForDish since we have adjusted calories
-        console.log(
-          `🧮 Calculating effort for ${selectedQuantity}g of ${dish.getName()} (${actualCalories} kcal)`,
-        )
-        const effort = await calculateEffortForDish(adjustedDish)
-
-        if (!effort) {
-          console.log("❌ No effort calculated for dish:", dish.getName())
-          throw new Error("No effort calculated")
+        if (simpleDish) {
+          console.log("✅ Using dish object directly from barcode scan:", simpleDish.name)
+          await initializeFromSimpleDish(simpleDish)
+        } else if (foodId) {
+          console.log("🔍 Searching dish by foodId in local database:", foodId)
+          await initializeFromFoodId(JSON.parse(JSON.stringify(foodId)).value)
+        } else {
+          console.log("⚠️ No dish object or foodId provided")
         }
-
-        console.log("✅ Effort calculated successfully:", effort.effort.primary.minutes, "min")
-        setComputedEffort(effort)
       } catch (error) {
-        console.error("❌ Error calculating effort:", error)
-        throw error
+        console.error("❌ Failed to initialize calculation:", error)
       }
     }
 
-    calculateEffort()
-  }, [dish, actualCalories, selectedQuantity])
+    initializeCalculation()
+  }, [foodId, simpleDish, initializeFromFoodId, initializeFromSimpleDish])
+
 
   const handleBack = () => {
     navigation.goBack()
@@ -323,7 +103,8 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
     navigation.navigate("MainTabs", { screen: "Home" })
   }
 
-  if (!dish)
+  // Error state
+  if (error) {
     return (
       <Screen preset="fixed" style={themed($screenContainer)}>
         <Header title="Erreur" leftIcon="back" onLeftPress={handleBack} />
@@ -335,14 +116,19 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
                 ? "Produit non trouvé dans la base de données..."
                 : "Aucune donnée de produit fournie..."}
           </Text>
+          <Text style={themed($errorText)}>
+            {error}
+          </Text>
           <Button preset="default" style={themed($retryButton)} onPress={handleBack}>
             Retour
           </Button>
         </View>
       </Screen>
     )
+  }
 
-  if (!computedEffort)
+  // Loading state
+  if (loading || !isReady) {
     return (
       <Screen preset="fixed" style={themed($screenContainer)}>
         <Header title="Calcul d'Effort" leftIcon="back" onLeftPress={handleBack} />
@@ -361,8 +147,8 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
           <View style={themed($loadingContainer)}>
             <Text style={themed($loadingTitle)}>⚡ Calcul en cours...</Text>
             <Text style={themed($loadingSubtitle)}>
-              Calcul de l'effort nécessaire pour brûler {Math.round(actualCalories)} kcal (
-              {selectedQuantity}g)
+              Calcul de l'effort nécessaire pour brûler {Math.round(actualCalories || 0)} kcal
+              {selectedGrams && ` (${selectedGrams}g)`}
             </Text>
 
             <Button preset="default" style={themed($cancelButton)} onPress={handleBack}>
@@ -372,6 +158,7 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
         </View>
       </Screen>
     )
+  }
 
   return (
     <>
@@ -382,11 +169,11 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
           {/* Food Card Display */}
           <View style={themed($foodCardContainer)}>
             <FoodCard
-              dish={dish}
+              dish={dish!}
               onPress={() => {}} 
               size="result"
-              displayCalories={actualCalories}
-              quantityText={getDisplayContext(suggestedServing, selectedQuantity).quantityText}
+              displayCalories={actualCalories || 0}
+              quantityText={quantityText || ""}
             />
           </View>
 
@@ -397,22 +184,22 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
             </Text>
           </View>
 
-          {/* Effort Results - Simplified without Card wrapper */}
+          {/* Effort Results */}
           <View style={themed($effortSection)}>
             <Text style={themed($sectionTitle)}>⚡ Effort nécessaire</Text>
 
             <View style={themed($effortContent)}>
               <Text style={themed($primaryEffort)}>
-                {computedEffort.effort.primary.minutes} min
+                {primaryEffortMinutes} min
               </Text>
               <Text style={themed($primaryActivity)}>
-                de {computedEffort.effort.primary.activityLabel}
+                de {primaryEffortActivity}
               </Text>
 
-              {computedEffort.effort.alternatives.length > 0 && (
+              {alternativeEfforts.length > 0 && (
                 <View style={themed($alternativesList)}>
                   <Text style={themed($alternativesTitle)}>Ou bien :</Text>
-                  {computedEffort.effort.alternatives.slice(0, 2).map((alt, index) => (
+                  {alternativeEfforts.slice(0, 2).map((alt, index) => (
                     <Text key={index} style={themed($alternativeItem)}>
                       • {alt.minutes} min de {alt.activityLabel}
                     </Text>
@@ -460,7 +247,7 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
         visible={showAteItModal}
         title="Tu l'as mangé ! 🍽️"
         content="N'oublie pas de faire ton sport maintenant !"
-        secondaryContent={`${computedEffort?.effort.primary.minutes} min de ${computedEffort?.effort.primary.activityLabel}`}
+        secondaryContent={`${primaryEffortMinutes} min de ${primaryEffortActivity}`}
         icon="🏃‍♂️"
         primaryButtonText="Retourner à l'accueil"
         onPrimaryPress={handleAteItConfirm}
@@ -602,6 +389,15 @@ const $loadingText: ThemedStyle<ViewStyle> = ({ spacing, colors, typography }) =
   color: colors.textDim,
   textAlign: "center",
   marginTop: spacing.xl,
+})
+
+const $errorText: ThemedStyle<TextStyle> = ({ spacing, colors, typography }) => ({
+  fontSize: 14,
+  fontFamily: typography.primary.normal,
+  color: colors.error,
+  textAlign: "center",
+  marginTop: spacing.md,
+  marginBottom: spacing.md,
 })
 
 const $retryButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({

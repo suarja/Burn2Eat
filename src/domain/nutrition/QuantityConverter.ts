@@ -75,6 +75,8 @@ export class QuantityConverter {
       [PortionUnit.MILLILITERS]: 1, // 1ml ≈ 1g approximation
       [PortionUnit.LITERS]: 1000,
       [PortionUnit.CUP]: 200,
+      [PortionUnit.TABLESPOON]: 15,
+      [PortionUnit.TEASPOON]: 5,
       [PortionUnit.PIECE]: 20,
       [PortionUnit.SLICE]: 30,
       [PortionUnit.SERVING]: 150,
@@ -84,7 +86,7 @@ export class QuantityConverter {
       [PortionUnit.PER_100G]: 100
     }
     
-    const factor = conversionFactors[unit] || 100 // Default fallback
+    const factor = conversionFactors[unit as keyof typeof conversionFactors] || 100 // Default fallback
     return Math.max(1, amount * factor) as Grams
   }
   
@@ -144,7 +146,7 @@ export class QuantityConverter {
       "l": "l"
     }
     
-    return unitMappings[normalized] || unit // Return original if no mapping found
+    return unitMappings[normalized as keyof typeof unitMappings] || unit // Return original if no mapping found
   }
   
   /**

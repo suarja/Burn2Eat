@@ -155,6 +155,6 @@ export class PortionUnitUtils {
       }
     }
     
-    return displayNames[locale]?.[unit] || displayNames.en[unit] || unit
+    return displayNames[locale as keyof typeof displayNames]?.[unit] || displayNames.en[unit] || unit
   }
 }
