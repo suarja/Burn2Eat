@@ -12,10 +12,12 @@ import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
+import { BarcodeScreen } from "@/screens/BarcodeScreen"
 
 export type MainTabParamList = {
   Home: undefined
   Profile: undefined
+  Barcode: undefined
   // HistoryTab: undefined // Will add later
 }
 
@@ -59,6 +61,20 @@ export function MainTabNavigator() {
           tabBarIcon: ({ focused }) => (
             <Icon
               icon="view"
+              size={30}
+              color={focused ? colors.palette.primary500 : colors.textDim}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Barcode"
+        component={BarcodeScreen}
+        options={{
+          tabBarLabel: "Scan",
+          tabBarIcon: ({ focused }) => (
+            <Icon
+              icon="menu"
               size={30}
               color={focused ? colors.palette.primary500 : colors.textDim}
             />

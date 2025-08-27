@@ -40,7 +40,8 @@ export type AppStackParamList = {
   Profile: undefined
   Home: undefined
   Result: { foodId: string }
-  // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
+  Barcode: undefined
+	// IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
 
 /**

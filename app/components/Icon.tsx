@@ -139,6 +139,7 @@ export const iconRegistry = {
   weight: require("@assets/icons/settings.png"), // Temporary: using settings icon as weight placeholder
   height: require("@assets/icons/caretRight.png"), // Temporary: using caret as height placeholder
   x: require("@assets/icons/x.png"),
+  camera: require("@assets/icons/camera.png"),
 }
 
 const $imageStyleBase: ImageStyle = {
