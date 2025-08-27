@@ -1,6 +1,6 @@
 import { ApisauceInstance, create, ApiResponse } from "apisauce"
 
-import { Kilocalories } from "@/domain/common/UnitTypes"
+import { Kilocalories, Kilograms } from "@/domain/common/UnitTypes"
 import { Dish } from "@/domain/nutrition/Dish"
 import { DishId } from "@/domain/nutrition/DishId"
 import { NutritionalInfo } from "@/domain/nutrition/NutritionalInfo"
@@ -72,8 +72,11 @@ export class OpenFoodFactsService {
         product.product_name_en ||
         "Produit inconnu"
 
+        console.log({product})
+
       // Extract calories per 100g
       let caloriesPer100g = product.nutriments?.["energy-kcal_100g"]
+      let caloriesPerPortion = product.nutriments?.["energy-kcal_per_portion"]
       if (!caloriesPer100g && product.nutriments) {
         // Try alternative fields
         const energyKcal = product.nutriments["energy-kcal"]
@@ -83,17 +86,18 @@ export class OpenFoodFactsService {
           caloriesPer100g = energyKcal
         } else if (energyKj) {
           caloriesPer100g = energyKj / 4.184 // Convert kJ to kcal
-        }
+        } 
+
       }
 
-      if (!caloriesPer100g || caloriesPer100g <= 0) {
+      if ((!caloriesPer100g || caloriesPer100g <= 0) && !caloriesPerPortion) {
         console.warn(`No calorie information for product: ${barcode}`)
         return null
       }
 
       // Create domain objects
       const dishId = DishId.from(`openfoodfacts-${barcode}`)
-      const nutritionalInfo = NutritionalInfo.perServing(caloriesPer100g as Kilocalories)
+      const nutritionalInfo = NutritionalInfo.perServing( (caloriesPerPortion || caloriesPer100g) as Kilocalories  )
 
       return Dish.create({
         dishId,

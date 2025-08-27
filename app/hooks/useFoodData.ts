@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState, useRef } from "react"
 
 import { Centimeters, Kilograms } from "@/domain/common/UnitTypes"
 import { Dish } from "@/domain/nutrition/Dish"
@@ -14,6 +14,15 @@ export const useFoodCatalog = () => {
   const getDishUseCase = Dependencies.getFoodCatalogUseCase()
   const { loading: profileLoading, profile } = useCurrentProfile()
   const calculateEffortUseCase = Dependencies.calculateEffortUseCase()
+  
+  // Use ref to get current profile value
+  const profileRef = useRef(profile)
+  const profileLoadingRef = useRef(profileLoading)
+  
+  useEffect(() => {
+    profileRef.current = profile
+    profileLoadingRef.current = profileLoading
+  }, [profile, profileLoading])
 
   useEffect(() => {
     getFoodCatalog().finally(() => {
@@ -42,26 +51,44 @@ export const useFoodCatalog = () => {
 
   /**
    * Calculate effort for a dish object directly (for barcode scanned dishes)
-   * This bypasses the local database lookup
+   * This bypasses the local database lookup and waits for profile to be available
    */
-  const calculateEffortForDish = (dish: Dish) => {
+  const calculateEffortForDish = async (dish: Dish) => {
     console.log("🔧 calculateEffortForDish called with:", dish.getName())
     
-    if (!profile) {
-      console.log("❌ No profile available for effort calculation")
-      return Promise.resolve(null)
+    // Wait for profile to be available if still loading
+    let currentProfile = profileRef.current
+    let currentLoading = profileLoadingRef.current
+    
+    if (currentLoading || !currentProfile) {
+      console.log("⏳ Profile still loading, waiting...")
+      // Simple retry mechanism with timeout
+      let retries = 0
+      const maxRetries = 50 // 5 seconds maximum wait
+      
+      while ((!currentProfile || currentLoading) && retries < maxRetries) {
+        await new Promise(resolve => setTimeout(resolve, 100))
+        currentProfile = profileRef.current
+        currentLoading = profileLoadingRef.current
+        retries++
+      }
+    }
+    
+    if (!currentProfile) {
+      console.log("❌ No profile available for effort calculation after waiting")
+      return null
     }
     
     console.log("✅ Profile available, proceeding with calculation")
     
     try {
-      const result = calculateEffortUseCase.executeWithDish({
+      const result = await calculateEffortUseCase.executeWithDish({
         dish: dish,
         user: UserHealthInfo.create(
-          profile.sex,
-          profile.weight as Kilograms,
-          profile.height as Centimeters,
-          profile.preferredActivityKeys,
+          currentProfile.sex,
+          currentProfile.weight as Kilograms,
+          currentProfile.height as Centimeters,
+          currentProfile.preferredActivityKeys,
         ),
       })
       
@@ -69,7 +96,7 @@ export const useFoodCatalog = () => {
       return result
     } catch (error) {
       console.error("❌ Error in calculateEffortForDish:", error)
-      return Promise.resolve(null)
+      return null
     }
   }
 

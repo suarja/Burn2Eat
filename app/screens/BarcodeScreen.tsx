@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef } from "react"
+import React, { FC, useCallback, useEffect, useRef } from "react"
 import { useState } from "react"
 import { ViewStyle, TextStyle, ActivityIndicator } from "react-native"
 import { View } from "react-native"
@@ -36,10 +36,9 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
 
   // Handle camera lifecycle with focus/blur - mount/unmount approach
   useFocusEffect(
-    React.useCallback(() => {
+   useCallback(() => {
       // Screen is focused - mount camera and start scanning
       if (permission?.granted) {
-        console.log("🎥 Mounting camera (screen focused)")
         setShouldShowCamera(true)
         // Small delay to ensure camera is mounted before scanning
         const timeoutId = setTimeout(() => {
@@ -49,7 +48,6 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
         // Cleanup timeout if component unmounts quickly
         return () => {
           clearTimeout(timeoutId)
-          console.log("🎥 Unmounting camera (screen blurred)")
           setShouldShowCamera(false)
           resetScanning()
         }
@@ -72,7 +70,6 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
 
 
   if (!permission.granted) {
-    // Camera permissions are not granted yet.
     return (
       <Screen preset="fixed" safeAreaEdges={["top"]} style={themed($styles.container)}>
         <View style={themed($permissionWrapper)}>
