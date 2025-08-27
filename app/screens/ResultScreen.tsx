@@ -27,9 +27,10 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
   const [dish, setDish] = useState<Dish | null>(null)
   const [computedEffort, setComputedEffort] = useState<CalculateEffortOutput | null>(null)
 
-  // Quantity and calories states
-  const [selectedQuantity, setSelectedQuantity] = useState<Grams>(100 as Grams)
+  // Quantity and calories states - Start with suggested serving
+  const [selectedQuantity, setSelectedQuantity] = useState<Grams>(21.5 as Grams)
   const [actualCalories, setActualCalories] = useState<Kilocalories>(0 as Kilocalories)
+  const [suggestedServing, setSuggestedServing] = useState<string>("21.5g")
 
   // User choice states
   const [showAteItModal, setShowAteItModal] = useState(false)
@@ -63,6 +64,8 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
         console.log("✅ Using dish object directly from barcode scan:", simpleDish.name)
         const domainDish = convertSimpleDishToDish(simpleDish)
         setDish(domainDish)
+        // TODO: Extract actual serving size from OpenFoodFacts
+        setSuggestedServing("21.5g")
         return
       }
 
@@ -213,20 +216,15 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
               dish={dish}
               onPress={() => {}} // No action needed in result view
               size="result"
+              displayCalories={actualCalories}
+              quantityText={`pour ${selectedQuantity}g`}
             />
           </View>
 
-          {/* Quantity Selector */}
-          <QuantitySelector
-            quantity={selectedQuantity}
-            onQuantityChange={setSelectedQuantity}
-            suggestedServing="21.5g" // TODO: Extract from OpenFoodFacts data
-          />
-
-          {/* Calories Display */}
-          <View style={themed($caloriesSection)}>
-            <Text style={themed($caloriesText)}>
-              🔥 {Math.round(actualCalories)} kcal pour {selectedQuantity}g
+          {/* Suggested serving info */}
+          <View style={themed($suggestedServingSection)}>
+            <Text style={themed($suggestedServingText)}>
+              💡 Portion suggérée: {suggestedServing}
             </Text>
           </View>
 
@@ -255,7 +253,7 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
             </View>
           </View>
 
-          {/* Decision Section */}
+          {/* Decision Section - Always visible */}
           <View style={themed($decisionSection)}>
             <Text style={themed($questionText)}>Vas-tu manger ce plat ? 🤔</Text>
 
@@ -277,6 +275,14 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
               </Button>
             </View>
           </View>
+
+          {/* Quantity Selector - At the end for advanced users */}
+          <QuantitySelector
+            quantity={selectedQuantity}
+            onQuantityChange={setSelectedQuantity}
+            suggestedServing={suggestedServing}
+            initiallyCollapsed={true}
+          />
         </View>
       </Screen>
 
@@ -323,17 +329,17 @@ const $foodCardContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   alignSelf: "center",
 })
 
-const $caloriesSection: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+const $suggestedServingSection: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  alignItems: "center",
+  marginBottom: spacing.md,
   backgroundColor: colors.palette.accent100,
   borderRadius: 8,
   padding: spacing.sm,
-  marginBottom: spacing.md,
-  alignItems: "center",
 })
 
-const $caloriesText: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
-  fontSize: 18,
-  fontFamily: typography.primary.bold,
+const $suggestedServingText: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
+  fontSize: 14,
+  fontFamily: typography.primary.medium,
   color: colors.tint,
   textAlign: "center",
 })

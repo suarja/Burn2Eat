@@ -29,6 +29,14 @@ export interface FoodCardProps {
    * Size variant
    */
   size?: "small" | "medium" | "large" | "result"
+  /**
+   * Override calories display (for result screen with custom portions)
+   */
+  displayCalories?: number
+  /**
+   * Custom quantity text (e.g. "pour 21g")
+   */
+  quantityText?: string
 }
 
 export const FoodCard: React.FC<FoodCardProps> = ({
@@ -37,6 +45,8 @@ export const FoodCard: React.FC<FoodCardProps> = ({
   style,
   disabled = false,
   size = "medium",
+  displayCalories,
+  quantityText,
 }) => {
   const { themed, theme } = useAppTheme()
 
@@ -109,9 +119,16 @@ export const FoodCard: React.FC<FoodCardProps> = ({
         {/* Show calories only for result variant */}
         {size === "result" && (
           <View style={themed($caloriesContainer)}>
-            <Text style={themed($caloriesText)}>{dish.getCalories()}</Text>
+            <Text style={themed($caloriesText)}>
+              {Math.round(displayCalories || dish.getCalories())}
+            </Text>
             <Text style={themed($caloriesUnit)}>kcal</Text>
           </View>
+        )}
+
+        {/* Show quantity text if provided */}
+        {quantityText && size === "result" && (
+          <Text style={themed($quantityText)}>{quantityText}</Text>
         )}
 
         {/* High calorie indicator only for result variant */}
@@ -250,6 +267,14 @@ const $highCalorieText: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
   fontSize: 10,
   fontFamily: typography.primary.medium,
   color: colors.palette.neutral100,
+})
+
+const $quantityText: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
+  fontSize: 12,
+  color: colors.textDim,
+  textAlign: "center",
+  marginBottom: spacing.xs,
+  fontStyle: "italic",
 })
 
 const $accentBorder: ThemedStyle<ViewStyle> = ({}) => ({

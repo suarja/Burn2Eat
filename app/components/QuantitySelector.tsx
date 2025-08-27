@@ -29,6 +29,11 @@ export interface QuantitySelectorProps {
    * Optional styling
    */
   style?: ViewStyle
+  
+  /**
+   * Whether the selector starts collapsed
+   */
+  initiallyCollapsed?: boolean
 }
 
 /**
@@ -36,10 +41,11 @@ export interface QuantitySelectorProps {
  * Includes quick-action buttons and manual input
  */
 export const QuantitySelector: FC<QuantitySelectorProps> = function QuantitySelector(props) {
-  const { quantity, onQuantityChange, suggestedServing, style: $styleOverride } = props
+  const { quantity, onQuantityChange, suggestedServing, style: $styleOverride, initiallyCollapsed = true } = props
   const { themed } = useAppTheme()
 
   const [inputValue, setInputValue] = useState(quantity.toString())
+  const [isExpanded, setIsExpanded] = useState(!initiallyCollapsed)
 
   // Update input when quantity prop changes
   useEffect(() => {
@@ -79,39 +85,52 @@ export const QuantitySelector: FC<QuantitySelectorProps> = function QuantitySele
 
   return (
     <View style={[$container, themed($containerThemed), $styleOverride]}>
-      <Text style={themed($sectionTitle)}>📏 Quantité consommée</Text>
-
-      {/* Quick action buttons */}
-      <View style={themed($quickActionsContainer)}>
-        {quickActions.map((action, index) => (
-          <Button
-            key={index}
-            preset={quantity === action.value ? "filled" : "default"}
-            style={themed($quickActionButton)}
-            onPress={() => handleQuickAction(action.value)}
-          >
-            {action.label}
-          </Button>
-        ))}
-      </View>
-
-      {/* Manual input */}
-      <View style={themed($inputContainer)}>
-        <TextField
-          value={inputValue}
-          onChangeText={handleInputChange}
-          placeholder="Ex: 25"
-          keyboardType="numeric"
-          style={themed($textField)}
-          inputWrapperStyle={themed($textFieldWrapper)}
-        />
-        <Text style={themed($unitLabel)}>grammes</Text>
-      </View>
-
-      {/* Info text */}
-      <Text style={themed($infoText)}>
-        {suggestedServing && `💡 Portion suggérée: ${suggestedServing}`}
-      </Text>
+      {/* Toggle button */}
+      <Button
+        preset="default"
+        style={themed($toggleButton)}
+        onPress={() => setIsExpanded(!isExpanded)}
+      >
+        {isExpanded ? "⚙️ Réduire" : `⚙️ Ajuster (${quantity}g)`}
+      </Button>
+      
+      {isExpanded && (
+        <>
+          {/* Quick action buttons */}
+          <View style={themed($quickActionsContainer)}>
+            {quickActions.map((action, index) => (
+              <Button
+                key={index}
+                preset={quantity === action.value ? "filled" : "default"}
+                style={themed($quickActionButton)}
+                onPress={() => handleQuickAction(action.value)}
+              >
+                {action.label}
+              </Button>
+            ))}
+          </View>
+          
+          {/* Manual input */}
+          <View style={themed($inputContainer)}>
+            <TextField
+              value={inputValue}
+              onChangeText={handleInputChange}
+              placeholder="Ex: 25"
+              keyboardType="numeric"
+              style={themed($textField)}
+              inputWrapperStyle={themed($textFieldWrapper)}
+            />
+            <Text style={themed($unitLabel)}>grammes</Text>
+          </View>
+          
+          {/* Info text */}
+          {suggestedServing && (
+            <Text style={themed($infoText)}>
+              💡 Portion suggérée: {suggestedServing}
+            </Text>
+          )}
+        </>
+      )}
     </View>
   )
 }
@@ -124,6 +143,14 @@ const $containerThemed: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   backgroundColor: colors.palette.neutral100,
   borderRadius: 12,
   padding: spacing.md,
+})
+
+const $toggleButton: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
+  backgroundColor: colors.palette.neutral200,
+  borderColor: colors.palette.neutral300,
+  borderWidth: 1,
+  marginBottom: spacing.sm,
+  opacity: 0.8,
 })
 
 const $sectionTitle: ThemedStyle<TextStyle> = ({ colors, typography, spacing }) => ({
@@ -152,16 +179,19 @@ const $quickActionButton: ThemedStyle<ViewStyle> = ({ colors }) => ({
 const $inputContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   flexDirection: "row",
   alignItems: "center",
+  justifyContent: "center",
   marginBottom: spacing.sm,
   gap: spacing.sm,
 })
 
 const $textField: ThemedStyle<ViewStyle> = () => ({
-  flex: 1,
+  width: 80,
+  textAlign: "center",
 })
 
 const $textFieldWrapper: ThemedStyle<ViewStyle> = ({ colors }) => ({
   borderColor: colors.tint,
+  alignItems: "center",
 })
 
 const $unitLabel: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
