@@ -96,41 +96,40 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
   }, [dish, selectedQuantity])
 
   useEffect(() => {
-    if (!dish) return
-    getCalculatedEffort()
-  }, [dish, selectedQuantity, actualCalories, calculateEffortForDish])
-
-  const getCalculatedEffort = useCallback(async () => {
     if (!dish || !actualCalories) return
 
-    try {
-      // Create a temporary dish with adjusted calories for effort calculation
-      const adjustedNutrition = NutritionalInfo.perServing(actualCalories)
-      const adjustedDish = Dish.create({
-        dishId: dish.getId(),
-        name: dish.getName(),
-        nutrition: adjustedNutrition,
-        imageUrl: dish.getImageUrl(),
-      })
+    const calculateEffort = async () => {
+      try {
+        // Create a temporary dish with adjusted calories for effort calculation
+        const adjustedNutrition = NutritionalInfo.perServing(actualCalories)
+        const adjustedDish = Dish.create({
+          dishId: dish.getId(),
+          name: dish.getName(),
+          nutrition: adjustedNutrition,
+          imageUrl: dish.getImageUrl(),
+        })
 
-      // Always use calculateEffortForDish since we have adjusted calories
-      console.log(
-        `🧮 Calculating effort for ${selectedQuantity}g of ${dish.getName()} (${actualCalories} kcal)`,
-      )
-      const effort = await calculateEffortForDish(adjustedDish)
+        // Always use calculateEffortForDish since we have adjusted calories
+        console.log(
+          `🧮 Calculating effort for ${selectedQuantity}g of ${dish.getName()} (${actualCalories} kcal)`,
+        )
+        const effort = await calculateEffortForDish(adjustedDish)
 
-      if (!effort) {
-        console.log("❌ No effort calculated for dish:", dish.getName())
-        throw new Error("No effort calculated")
+        if (!effort) {
+          console.log("❌ No effort calculated for dish:", dish.getName())
+          throw new Error("No effort calculated")
+        }
+
+        console.log("✅ Effort calculated successfully:", effort.effort.primary.minutes, "min")
+        setComputedEffort(effort)
+      } catch (error) {
+        console.error("❌ Error calculating effort:", error)
+        throw error
       }
-
-      console.log("✅ Effort calculated successfully:", effort.effort.primary.minutes, "min")
-      setComputedEffort(effort)
-    } catch (error) {
-      console.error("❌ Error calculating effort:", error)
-      throw error
     }
-  }, [dish, actualCalories, selectedQuantity, calculateEffortForDish])
+
+    calculateEffort()
+  }, [dish, actualCalories, selectedQuantity])
 
   const handleBack = () => {
     navigation.goBack()
