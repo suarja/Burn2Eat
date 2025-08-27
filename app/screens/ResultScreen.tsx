@@ -257,6 +257,10 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
   // Calculate actual calories when dish or quantity changes
   useEffect(() => {
     if (!dish) return
+    if (foodId) {
+      setActualCalories(dish.getCalories())
+      return
+    } 
     const calories = dish.getNutrition().calculateCaloriesForQuantity(selectedQuantity)
     setActualCalories(calories)
   }, [dish, selectedQuantity])
@@ -379,7 +383,7 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
           <View style={themed($foodCardContainer)}>
             <FoodCard
               dish={dish}
-              onPress={() => {}} // No action needed in result view
+              onPress={() => {}} 
               size="result"
               displayCalories={actualCalories}
               quantityText={getDisplayContext(suggestedServing, selectedQuantity).quantityText}
