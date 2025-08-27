@@ -2,9 +2,10 @@ import { FC, useEffect, useState } from "react"
 import { TextStyle, View, ViewStyle } from "react-native"
 
 import { Button } from "@/components/Button"
-import { Card } from "@/components/Card"
+import { OnboardingModal } from "@/components/OnboardingModal"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
+import { useOnboardingModals } from "@/hooks/useOnboardingModals"
 import { useUserProfile } from "@/hooks/useUserProfile"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
 import { useAppTheme } from "@/theme/context"
@@ -22,6 +23,20 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(_pro
 
   const [hasExistingProfile, setHasExistingProfile] = useState<boolean | null>(null)
   const [isCheckingProfile, setIsCheckingProfile] = useState(true)
+
+  // Onboarding modals management
+  const {
+    currentModal,
+    isModalVisible,
+    hasSeenOnboarding,
+    currentStep,
+    totalSteps,
+    isLastModal,
+    startOnboarding,
+    nextModal,
+    skipOnboarding,
+    closeModal,
+  } = useOnboardingModals()
 
   // Check for existing profile on component mount
   useEffect(() => {
@@ -47,12 +62,22 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(_pro
   }, [loadCurrentProfile, navigation])
 
   function handleStartOnboarding() {
-    navigation.navigate("Profile")
+    if (!hasSeenOnboarding) {
+      startOnboarding()
+    } else {
+      navigation.navigate("Profile")
+    }
   }
 
   function handleGuestMode() {
     // Navigate directly to Home with default profile
     navigation.navigate("MainTabs", { screen: "Home" })
+  }
+
+  function handleModalClose() {
+    closeModal()
+    // After closing modals, go to profile setup
+    navigation.navigate("Profile")
   }
 
   // Show loading state while checking profile
@@ -76,145 +101,131 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(_pro
   }
 
   return (
-    <Screen preset="scroll" contentContainerStyle={themed($screenContainer)}>
-      <View style={themed($contentContainer)}>
-        {/* App Title & Logo */}
-        <View style={themed($headerSection)}>
-          <Text testID="app-title" preset="heading" style={themed($appTitle)}>
-            🔥 Burn2Eat 🍔
-          </Text>
-          <Text preset="subheading" style={themed($tagline)}>
-            &quot;Born to eat. Burn to eat.&quot;
-          </Text>
+    <>
+      <Screen preset="fixed" contentContainerStyle={$styles.flex1}>
+        <View style={themed($container)}>
+          {/* App Title & Logo */}
+          <View style={themed($heroSection)}>
+            <Text testID="app-title" preset="heading" style={themed($appTitle)}>
+              🔥 Burn2Eat 🍔
+            </Text>
+            <Text preset="subheading" style={themed($tagline)}>
+              &quot;Born to eat. Burn to eat.&quot;
+            </Text>
+            <Text style={themed($subtitle)}>Découvre l&apos;énergie de tes aliments</Text>
+          </View>
+
+          {/* Action Buttons */}
+          <View style={themed($buttonContainer)}>
+            <Button
+              testID="start-button"
+              preset="filled"
+              style={themed($mainButton)}
+              onPress={handleStartOnboarding}
+            >
+              Commencer 🚀
+            </Button>
+
+            <Button
+              testID="guest-mode-button"
+              preset="default"
+              style={themed($secondaryButton)}
+              onPress={handleGuestMode}
+            >
+              Mode invité
+            </Button>
+          </View>
+
+          <View style={themed([$bottomContainer, $bottomContainerInsets])}>
+            <Text style={themed($footerText)}>
+              Appuie sur &quot;Commencer&quot; pour découvrir nos conseils !
+            </Text>
+          </View>
         </View>
+      </Screen>
 
-        {/* Educational Content */}
-        <Card
-          style={themed($educationalCard)}
-          heading="🎯 Découvre ton équilibre"
-          content="Transforme ta façon de voir la nourriture ! Comprends l'impact énergétique de tes repas en les convertissant en temps d'exercice. Une approche ludique pour développer de saines habitudes alimentaires."
-          verticalAlignment="top"
+      {/* Onboarding Modals */}
+      {currentModal && (
+        <OnboardingModal
+          visible={isModalVisible}
+          onClose={isLastModal ? handleModalClose : closeModal}
+          onNext={nextModal}
+          onSkip={skipOnboarding}
+          title={currentModal.title}
+          content={currentModal.content}
+          emoji={currentModal.emoji}
+          isLastModal={isLastModal}
+          currentStep={currentStep}
+          totalSteps={totalSteps}
         />
-
-        {/* Health Tips */}
-        <Card
-          style={themed($tipsCard)}
-          heading="💡 Conseils bien-être"
-          content="• Mange varié et équilibré\n• Reste hydraté(e) tout au long de la journée\n• Bouge au quotidien, même 10 minutes comptent\n• Écoute ton corps et ses besoins"
-          verticalAlignment="top"
-        />
-
-        {/* Important Disclaimer */}
-        <Card
-          style={themed($disclaimerCard)}
-          heading="⚠️ Information importante"
-          content="Cette application fournit des estimations à des fins éducatives uniquement. Les calculs ne remplacent pas les conseils d'un professionnel de santé. Consulte toujours un médecin ou nutritionniste pour des recommandations personnalisées."
-          verticalAlignment="top"
-        />
-
-        {/* Action Buttons */}
-        <View style={themed($buttonContainer)}>
-          <Button
-            testID="start-button"
-            preset="filled"
-            style={themed($mainButton)}
-            onPress={handleStartOnboarding}
-          >
-            Créer mon profil 🚀
-          </Button>
-
-          <Button
-            testID="guest-mode-button"
-            preset="default"
-            style={themed($secondaryButton)}
-            onPress={handleGuestMode}
-          >
-            Continuer en mode invité
-          </Button>
-        </View>
-
-        <View style={themed([$bottomContainer, $bottomContainerInsets])}>
-          <Text style={themed($footerText)}>
-            Prêt(e) à découvrir l&apos;énergie de tes aliments ?
-          </Text>
-        </View>
-      </View>
-    </Screen>
+      )}
+    </>
   )
 }
 
-const $screenContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
+const $container: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
+  flex: 1,
   backgroundColor: colors.background,
-  flexGrow: 1,
-})
-
-const $contentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  justifyContent: "space-between",
   paddingHorizontal: spacing.lg,
-  paddingVertical: spacing.md,
 })
 
-const $headerSection: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+const $heroSection: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  flex: 1,
+  justifyContent: "center",
   alignItems: "center",
-  marginBottom: spacing.xl,
+  paddingTop: spacing.xxxl,
 })
 
 const $appTitle: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
-  fontSize: 32,
+  fontSize: 36,
   textAlign: "center",
-  marginBottom: spacing.sm,
+  marginBottom: spacing.xs,
   color: colors.palette.primary500,
 })
 
-const $tagline: ThemedStyle<TextStyle> = ({ colors }) => ({
+const $tagline: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
   textAlign: "center",
   color: colors.textDim,
   fontStyle: "italic",
+  fontSize: 18,
+  marginBottom: spacing.sm,
+})
+
+const $subtitle: ThemedStyle<TextStyle> = ({ colors }) => ({
+  textAlign: "center",
+  color: colors.text,
   fontSize: 16,
-})
-
-const $educationalCard: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  marginBottom: spacing.lg,
-  backgroundColor: colors.palette.accent100,
-  borderColor: colors.palette.accent200,
-})
-
-const $tipsCard: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  marginBottom: spacing.lg,
-  backgroundColor: colors.palette.secondary100,
-  borderColor: colors.palette.secondary200,
-})
-
-const $disclaimerCard: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  marginBottom: spacing.xl,
-  backgroundColor: colors.palette.angry100,
-  borderColor: colors.palette.angry500,
+  opacity: 0.8,
 })
 
 const $buttonContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginBottom: spacing.lg,
+  paddingVertical: spacing.xl,
   gap: spacing.md,
 })
 
 const $mainButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   backgroundColor: colors.palette.primary500,
+  paddingVertical: spacing.lg,
+  borderRadius: 16,
+})
+
+const $secondaryButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  borderColor: colors.palette.neutral400,
+  borderWidth: 1,
   paddingVertical: spacing.md,
   borderRadius: 12,
 })
 
-const $secondaryButton: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  borderColor: colors.palette.neutral400,
-  borderWidth: 1,
-})
-
 const $bottomContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   alignItems: "center",
-  paddingTop: spacing.md,
+  paddingBottom: spacing.md,
 })
 
 const $footerText: ThemedStyle<TextStyle> = ({ colors }) => ({
   textAlign: "center",
   color: colors.textDim,
-  fontSize: 14,
+  fontSize: 13,
   fontStyle: "italic",
 })
 
