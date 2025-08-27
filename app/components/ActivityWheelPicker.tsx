@@ -127,13 +127,7 @@ const ActivityWheel: React.FC<ActivityWheelProps> = ({
             <View key={index} style={themed($itemContainer)}>
               {isVisible && (
                 <View style={themed($activityItem)}>
-                  {/* <Text style={themed([
-                    $activityEmoji,
-                    isSelected && $selectedActivityEmoji,
-                    disabled && $disabledText,
-                  ])}>
-                    {activity.emoji}
-                  </Text> */}
+      
                   <Text
                     style={themed([
                       $activityText,
@@ -143,13 +137,7 @@ const ActivityWheel: React.FC<ActivityWheelProps> = ({
                   >
                     {activity.name}
                   </Text>
-                  {/* <Text style={themed([
-                    $activityMet,
-                    isSelected && $selectedActivityMet,
-                    disabled && $disabledText,
-                  ])}>
-                    {activity.met} MET
-                  </Text> */}
+      
                 </View>
               )}
             </View>
@@ -317,7 +305,7 @@ const $selectedActivityEmoji: ThemedStyle<TextStyle> = ({}) => ({
 const $activityText: ThemedStyle<TextStyle> = ({ colors, typography, spacing }) => ({
   fontSize: 14,
   fontFamily: typography.primary.normal,
-  color: colors.textDim,
+  color: colors.palette.overlay50,
   textAlign: "center",
   marginBottom: spacing.xxxs,
 })
@@ -325,7 +313,7 @@ const $activityText: ThemedStyle<TextStyle> = ({ colors, typography, spacing }) 
 const $selectedActivityText: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
   fontSize: 16,
   fontFamily: typography.primary.bold,
-  color: colors.text,
+  color: colors.palette.angry500,
 })
 
 const $activityMet: ThemedStyle<TextStyle> = ({ colors, typography }) => ({

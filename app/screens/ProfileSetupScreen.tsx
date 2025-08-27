@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useState } from "react"
 import { View, ViewStyle, TextStyle } from "react-native"
 import { Toast } from "toastify-react-native"
+import {Text as TextIgnite} from '@/components/Text'
 
 import { ActivityWheelPicker } from "@/components/ActivityWheelPicker"
 import { Button } from "@/components/Button"
@@ -13,6 +14,7 @@ import { useUserProfile } from "@/hooks/useUserProfile"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
+import { colors } from "@/theme/colors"
 
 interface ProfileSetupScreenProps extends AppStackScreenProps<"Profile"> {}
 
@@ -158,11 +160,10 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
         {/* Save Button */}
         <Button
           preset="filled"
-          style={themed($saveButton)}
           onPress={handleSave}
           disabled={loading || !selectedActivity}
         >
-          {loading ? "💾 Sauvegarde..." : "🚀 Commencer l'aventure !"}
+          <TextIgnite text={loading ? "💾 Sauvegarde..." : "🚀 Commencer l'aventure !"} />
         </Button>
 
         <Text style={themed($footerText)}>Modifiable dans les paramètres</Text>
@@ -209,7 +210,7 @@ const $loadingText: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
 })
 
 const $saveButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  backgroundColor: colors.tint,
+  backgroundColor: colors.palette.neutral600,
   marginBottom: spacing.sm, // Reduced from md to sm
 })
 

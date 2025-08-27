@@ -8,6 +8,7 @@ import type { ThemedStyle } from "@/theme/types"
 import { Button } from "./Button"
 import { Text } from "./Text"
 import { TextField } from "./TextField"
+import { colors } from "@/theme/colors"
 
 export interface QuantitySelectorProps {
   /**
@@ -189,8 +190,9 @@ const $inputContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 })
 
 const $textField: ThemedStyle<ViewStyle> = () => ({
-  width: 80,
+  width: "auto",
   textAlign: "center",
+  color: colors.palette.accent100
 })
 
 const $textFieldWrapper: ThemedStyle<ViewStyle> = ({ colors }) => ({

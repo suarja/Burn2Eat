@@ -428,16 +428,13 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
 
             <View style={themed($choiceButtons)}>
               <Button
-                preset="filled"
-                style={themed($eatButton)}
                 onPress={() => handleDecisionMade("eat")}
               >
                 😋 Oui, je mange !
               </Button>
 
               <Button
-                preset="default"
-                style={themed($skipButton)}
+                preset="reversed"
                 onPress={() => handleDecisionMade("skip")}
               >
                 💪 Non, je passe
