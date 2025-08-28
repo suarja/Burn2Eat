@@ -20,9 +20,9 @@ module.exports = ({ config }: ConfigContext): Partial<ExpoConfig> => {
     ios: {
       ...config.ios,
       icon: {
-        light: "./assets/icons/app/light-dark.png",
+        light: "./assets/icons/app/ios-light.png",
         dark: "./assets/icons/app/ios-dark.png",
-        tinted: "./assets/icons/app/tinted-dark.png"
+        tinted: "./assets/icons/app/ios-tinted.png"
       },
       
       // This privacyManifests is to get you started.

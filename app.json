@@ -5,7 +5,7 @@
   "version": "1.0.0",
   "orientation": "portrait",
   "userInterfaceStyle": "automatic",
-  "icon": "./assets/images/app-icon-all.png",
+  "icon": "./assets/icons/app/ios-dark.png",
   "updates": {
     "fallbackToCacheTimeout": 0
   },
@@ -15,19 +15,24 @@
     "**/*"
   ],
   "android": {
-    "icon": "./assets/images/app-icon-android-legacy.png",
+    "icon": "./assets/icons/app/adaptive-icon.png",
     "package": "com.burn2eat",
     "adaptiveIcon": {
-      "foregroundImage": "./assets/images/app-icon-android-adaptive-foreground.png",
-      "backgroundImage": "./assets/images/app-icon-android-adaptive-background.png"
+      "backgroundColor": "#ffffff",
+      "foregroundImage": "./assets/icons/app/adaptive-icon.png",
+      "monochromeImage": "./assets/icons/app/adaptive-icon.png"
     },
     "allowBackup": false,
     "edgeToEdgeEnabled": true
   },
   "ios": {
-    "icon": "./assets/images/app-icon-ios.png",
+    "icon": {
+      "light": "./assets/icons/app/ios-light.png",
+      "dark": "./assets/icons/app/ios-dark.png",
+      "tinted": "./assets/icons/app/ios-tinted.png"
+    },
     "supportsTablet": true,
-    "bundleIdentifier": "com.burn2eat.app"
+    "bundleIdentifier": "com.burn2eat.swarecito"
   },
   "web": {
     "favicon": "./assets/images/app-icon-web-favicon.png",

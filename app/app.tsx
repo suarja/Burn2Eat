@@ -34,6 +34,8 @@ import { ThemeProvider } from "./theme/context"
 import { customFontsToLoad } from "./theme/typography"
 import { loadDateFnsLocale } from "./utils/formatDate"
 import * as storage from "./utils/storage"
+import * as Updates from 'expo-updates';
+
 
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
 
@@ -77,9 +79,24 @@ export function App() {
     initI18n()
       .then(() => setIsI18nInitialized(true))
       .then(() => loadDateFnsLocale())
-      .then(() => {
+      .then(async () => {
         // Initialize DDD dependencies after everything else
         initializeDependencies()
+
+                // Check for updates automatically on app start (only in production)
+                if (!__DEV__) {
+                  try {
+                    const update = await Updates.checkForUpdateAsync();
+                    if (update.isAvailable) {
+                      console.log('Update available, downloading...');
+                      await Updates.fetchUpdateAsync();
+                      // The update will be applied on next app restart
+                      // We don't auto-reload to avoid interrupting the user
+                    }
+                  } catch (error) {
+                    console.error('Error checking for updates:', error);
+                  }
+                }
       })
   }, [])
 
