@@ -1,17 +1,17 @@
 import { Grams, Kilocalories } from "@/domain/common/UnitTypes"
 import { Dish } from "@/domain/nutrition/Dish"
 import { DishId } from "@/domain/nutrition/DishId"
+import { DishRepository } from "@/domain/nutrition/DishRepository"
 import { NutritionalInfo } from "@/domain/nutrition/NutritionalInfo"
 import { QuantityConverter, DisplayContext } from "@/domain/nutrition/QuantityConverter"
 import { ServingSize, InvalidServingSizeError } from "@/domain/nutrition/ServingSize"
-import { DishRepository } from "@/domain/nutrition/DishRepository"
 
 /**
  * Input for portion calculation use case
  */
 export interface CalculatePortionInput {
   readonly dishId?: string
-  readonly dish?: Dish  
+  readonly dish?: Dish
   readonly servingSizeString?: string
   readonly selectedGrams: Grams
 }
@@ -34,12 +34,12 @@ export interface PortionCalculationResult {
   readonly selectedGrams: Grams
   readonly actualCalories: Kilocalories
   readonly displayContext: DisplayContext
-  readonly adjustedDish: Dish  // Dish with calories adjusted for selected quantity
+  readonly adjustedDish: Dish // Dish with calories adjusted for selected quantity
 }
 
 /**
  * Use case for calculating portion information and adjusted calories
- * 
+ *
  * Following established patterns from other use cases in the project:
  * - Clear input/output interfaces
  * - Error handling with success/error pattern
@@ -49,7 +49,7 @@ export interface PortionCalculationResult {
 export class CalculatePortionUseCase {
   constructor(
     private readonly dishRepository: DishRepository,
-    private readonly quantityConverter: QuantityConverter = new QuantityConverter()
+    private readonly quantityConverter: QuantityConverter = new QuantityConverter(),
   ) {}
 
   /**
@@ -62,25 +62,25 @@ export class CalculatePortionUseCase {
       if (!dish) {
         return {
           success: false,
-          error: input.dishId ? `Dish not found: ${input.dishId}` : "No dish provided"
+          error: input.dishId ? `Dish not found: ${input.dishId}` : "No dish provided",
         }
       }
 
       // Parse serving size information
       const servingSize = this.parseServingSize(input, dish)
-      
+
       // Calculate actual calories for selected grams
       const actualCalories = this.calculateActualCalories(dish, input.selectedGrams)
-      
+
       // Generate display context
       const displayContext = this.quantityConverter.generateDisplayContext(
         servingSize,
-        input.selectedGrams
+        input.selectedGrams,
       )
-      
+
       // Create adjusted dish for downstream calculations (like effort calculation)
       const adjustedDish = this.createAdjustedDish(dish, actualCalories)
-      
+
       return {
         success: true,
         result: {
@@ -89,16 +89,16 @@ export class CalculatePortionUseCase {
           selectedGrams: input.selectedGrams,
           actualCalories,
           displayContext,
-          adjustedDish
-        }
+          adjustedDish,
+        },
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       console.error("❌ CalculatePortionUseCase: Error calculating portion:", errorMessage)
-      
+
       return {
         success: false,
-        error: errorMessage
+        error: errorMessage,
       }
     }
   }
@@ -111,13 +111,13 @@ export class CalculatePortionUseCase {
     selectedGrams?: Grams
     servingSizeString?: string
   }): Promise<CalculatePortionOutput> {
-    const selectedGrams = input.selectedGrams || 100 as Grams
+    const selectedGrams = input.selectedGrams || (100 as Grams)
     const servingSizeString = input.servingSizeString || "100g"
-    
+
     return this.execute({
       dish: input.dish,
       selectedGrams,
-      servingSizeString
+      servingSizeString,
     })
   }
 
@@ -139,21 +139,21 @@ export class CalculatePortionUseCase {
       if (!dish) {
         return {
           success: false,
-          error: input.dishId ? `Dish not found: ${input.dishId}` : "No dish provided"
+          error: input.dishId ? `Dish not found: ${input.dishId}` : "No dish provided",
         }
       }
 
       const baseServing = this.parseServingSize(input, dish)
       const suggestions = this.quantityConverter.getSuggestedServings(baseServing)
-      
+
       return {
         success: true,
-        suggestions
+        suggestions,
       }
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       }
     }
   }
@@ -161,10 +161,7 @@ export class CalculatePortionUseCase {
   /**
    * Get or fetch the dish from the input parameters
    */
-  private async getDish(input: {
-    dishId?: string
-    dish?: Dish
-  }): Promise<Dish | null> {
+  private async getDish(input: { dishId?: string; dish?: Dish }): Promise<Dish | null> {
     if (input.dish) {
       return input.dish
     }
@@ -184,15 +181,21 @@ export class CalculatePortionUseCase {
   /**
    * Parse serving size from input or extract from food data
    */
-  private parseServingSize(input: {
-    servingSizeString?: string
-    dishId?: string
-  }, dish: Dish): ServingSize {
+  private parseServingSize(
+    input: {
+      servingSizeString?: string
+      dishId?: string
+    },
+    dish: Dish,
+  ): ServingSize {
     if (input.servingSizeString) {
       try {
         return this.quantityConverter.parseServingString(input.servingSizeString)
       } catch (error) {
-        console.warn(`Failed to parse serving size "${input.servingSizeString}", using default:`, error)
+        console.warn(
+          `Failed to parse serving size "${input.servingSizeString}", using default:`,
+          error,
+        )
         return ServingSize.grams(100)
       }
     }
@@ -219,12 +222,12 @@ export class CalculatePortionUseCase {
    */
   private calculateActualCalories(dish: Dish, selectedGrams: Grams): Kilocalories {
     const nutrition = dish.getNutrition()
-    
+
     // If nutrition supports per-gram calculation, use it
-    if (typeof nutrition.calculateCaloriesForQuantity === 'function') {
+    if (typeof nutrition.calculateCaloriesForQuantity === "function") {
       return nutrition.calculateCaloriesForQuantity(selectedGrams)
     }
-    
+
     // Fallback: assume dish calories are per 100g and scale
     const dishCalories = dish.getCalories()
     return ((dishCalories * selectedGrams) / 100) as Kilocalories
@@ -236,12 +239,12 @@ export class CalculatePortionUseCase {
    */
   private createAdjustedDish(originalDish: Dish, actualCalories: Kilocalories): Dish {
     const adjustedNutrition = NutritionalInfo.perServing(actualCalories)
-    
+
     return Dish.create({
       dishId: originalDish.getId(),
       name: originalDish.getName(),
       nutrition: adjustedNutrition,
-      imageUrl: originalDish.getImageUrl()
+      imageUrl: originalDish.getImageUrl(),
     })
   }
 

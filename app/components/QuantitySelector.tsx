@@ -2,13 +2,13 @@ import React, { FC, useState, useEffect } from "react"
 import { View, ViewStyle, TextStyle } from "react-native"
 
 import { Grams } from "@/domain/common/UnitTypes"
+import { colors } from "@/theme/colors"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 
 import { Button } from "./Button"
 import { Text } from "./Text"
 import { TextField } from "./TextField"
-import { colors } from "@/theme/colors"
 
 export interface QuantitySelectorProps {
   /**
@@ -192,7 +192,7 @@ const $inputContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 const $textField: ThemedStyle<ViewStyle> = () => ({
   width: "auto",
   textAlign: "center",
-  color: colors.palette.accent100
+  color: colors.palette.accent100,
 })
 
 const $textFieldWrapper: ThemedStyle<ViewStyle> = ({ colors }) => ({

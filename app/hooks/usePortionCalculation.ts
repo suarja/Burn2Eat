@@ -1,26 +1,27 @@
 import { useCallback, useState } from "react"
 
-import { Grams, Kilocalories } from "@/domain/common/UnitTypes"
-import { Dish } from "@/domain/nutrition/Dish"
-import { ServingSize } from "@/domain/nutrition/ServingSize"
-import { DisplayContext } from "@/domain/nutrition/QuantityConverter"
-import { 
+import {
   CalculatePortionInput,
   CalculatePortionOutput,
-  PortionCalculationResult
+  PortionCalculationResult,
 } from "@/application/usecases/CalculatePortionUseCase"
+import { Grams, Kilocalories } from "@/domain/common/UnitTypes"
+import { Dish } from "@/domain/nutrition/Dish"
+import { DisplayContext } from "@/domain/nutrition/QuantityConverter"
+import { ServingSize } from "@/domain/nutrition/ServingSize"
+
 import { Dependencies } from "../services/Dependencies"
 
 /**
  * Custom hook for portion calculation management
- * 
+ *
  * Following modern React DDD patterns (2024):
  * - Encapsulates business logic through use cases
  * - Provides clean state management for UI
  * - Maintains separation of concerns
  * - Enables independent testing
- * 
- * This hook bridges the domain layer (ServingSize, QuantityConverter) 
+ *
+ * This hook bridges the domain layer (ServingSize, QuantityConverter)
  * and the UI layer (ResultScreen component)
  */
 export const usePortionCalculation = () => {
@@ -44,7 +45,10 @@ export const usePortionCalculation = () => {
         if (calculationResult.success && calculationResult.result) {
           setResult(calculationResult.result)
         } else {
-          console.warn("❌ usePortionCalculation: Failed to calculate portion:", calculationResult.error)
+          console.warn(
+            "❌ usePortionCalculation: Failed to calculate portion:",
+            calculationResult.error,
+          )
           setError(calculationResult.error || "Failed to calculate portion")
           setResult(null)
         }
@@ -55,16 +59,16 @@ export const usePortionCalculation = () => {
         console.error("💥 usePortionCalculation: Exception during calculation:", errorMessage)
         setError(errorMessage)
         setResult(null)
-        
+
         return {
           success: false,
-          error: errorMessage
+          error: errorMessage,
         }
       } finally {
         setLoading(false)
       }
     },
-    [calculatePortionUseCase]
+    [calculatePortionUseCase],
   )
 
   /**
@@ -78,7 +82,7 @@ export const usePortionCalculation = () => {
     }): Promise<CalculatePortionOutput> => {
       return calculatePortionUseCase.executeWithDefaults(input)
     },
-    [calculatePortionUseCase]
+    [calculatePortionUseCase],
   )
 
   /**
@@ -86,14 +90,18 @@ export const usePortionCalculation = () => {
    * Useful for traditional food search flow
    */
   const calculateFromFoodId = useCallback(
-    async (dishId: string, selectedGrams: Grams, servingSizeString?: string): Promise<CalculatePortionOutput> => {
+    async (
+      dishId: string,
+      selectedGrams: Grams,
+      servingSizeString?: string,
+    ): Promise<CalculatePortionOutput> => {
       return calculatePortion({
         dishId,
         selectedGrams,
-        servingSizeString
+        servingSizeString,
       })
     },
-    [calculatePortion]
+    [calculatePortion],
   )
 
   /**
@@ -101,31 +109,31 @@ export const usePortionCalculation = () => {
    * Useful for barcode scanning flow
    */
   const calculateFromDish = useCallback(
-    async (dish: Dish, selectedGrams: Grams, servingSizeString?: string): Promise<CalculatePortionOutput> => {
+    async (
+      dish: Dish,
+      selectedGrams: Grams,
+      servingSizeString?: string,
+    ): Promise<CalculatePortionOutput> => {
       return calculatePortion({
         dish,
         selectedGrams,
-        servingSizeString
+        servingSizeString,
       })
     },
-    [calculatePortion]
+    [calculatePortion],
   )
 
   /**
    * Get suggested portion sizes for a dish
    */
   const getSuggestedPortions = useCallback(
-    async (input: {
-      dishId?: string
-      dish?: Dish
-      servingSizeString?: string
-    }) => {
+    async (input: { dishId?: string; dish?: Dish; servingSizeString?: string }) => {
       setLoading(true)
       setError(null)
 
       try {
         const result = await calculatePortionUseCase.getSuggestedPortions(input)
-        
+
         if (!result.success) {
           setError(result.error || "Failed to get suggested portions")
         }
@@ -136,13 +144,13 @@ export const usePortionCalculation = () => {
         setError(errorMessage)
         return {
           success: false,
-          error: errorMessage
+          error: errorMessage,
         }
       } finally {
         setLoading(false)
       }
     },
-    [calculatePortionUseCase]
+    [calculatePortionUseCase],
   )
 
   /**
@@ -160,10 +168,10 @@ export const usePortionCalculation = () => {
       await calculatePortion({
         dish: result.dish,
         selectedGrams: newGrams,
-        servingSizeString: result.originalServingSize.toDisplayString()
+        servingSizeString: result.originalServingSize.toDisplayString(),
       })
     },
-    [result, calculatePortion]
+    [result, calculatePortion],
   )
 
   /**
@@ -180,10 +188,10 @@ export const usePortionCalculation = () => {
    */
   const getPortionRatio = useCallback((): number | null => {
     if (!result) return null
-    
+
     return calculatePortionUseCase.calculatePortionRatio(
       result.originalServingSize,
-      result.selectedGrams
+      result.selectedGrams,
     )
   }, [result, calculatePortionUseCase])
 
@@ -200,7 +208,7 @@ export const usePortionCalculation = () => {
     return {
       quantityText: result.displayContext.quantityText,
       servingDescription: result.displayContext.servingDescription,
-      isPerProduct: result.displayContext.isPerProduct
+      isPerProduct: result.displayContext.isPerProduct,
     }
   }, [result])
 
@@ -224,11 +232,23 @@ export const usePortionCalculation = () => {
     getDisplayInfo,
 
     // Convenience getters for common UI needs
-    get dish() { return result?.dish || null },
-    get originalServingSize() { return result?.originalServingSize || null },
-    get selectedGrams() { return result?.selectedGrams || null },
-    get actualCalories() { return result?.actualCalories || null },
-    get displayContext() { return result?.displayContext || null },
-    get adjustedDish() { return result?.adjustedDish || null }
+    get dish() {
+      return result?.dish || null
+    },
+    get originalServingSize() {
+      return result?.originalServingSize || null
+    },
+    get selectedGrams() {
+      return result?.selectedGrams || null
+    },
+    get actualCalories() {
+      return result?.actualCalories || null
+    },
+    get displayContext() {
+      return result?.displayContext || null
+    },
+    get adjustedDish() {
+      return result?.adjustedDish || null
+    },
   }
 }

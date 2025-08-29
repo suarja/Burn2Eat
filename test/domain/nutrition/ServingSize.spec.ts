@@ -1,6 +1,6 @@
 import { Grams } from "@/domain/common/UnitTypes"
-import { ServingSize, InvalidServingSizeError } from "@/domain/nutrition/ServingSize"
 import { PortionUnit } from "@/domain/nutrition/PortionUnit"
+import { ServingSize, InvalidServingSizeError } from "@/domain/nutrition/ServingSize"
 
 describe("ServingSize Value Object", () => {
   describe("ServingSize.fromString", () => {
@@ -133,7 +133,7 @@ describe("ServingSize Value Object", () => {
     it("should return per-product context for count units", () => {
       const serving = ServingSize.fromString("1 slice") // 30g per slice
       const context = serving.getDisplayContext(60 as Grams) // 60g = 2 slices
-      
+
       expect(context.quantityText).toBe("pour 2 tranches")
       expect(context.isPerProduct).toBe(true)
     })
@@ -141,7 +141,7 @@ describe("ServingSize Value Object", () => {
     it("should return per-gram context for weight units", () => {
       const serving = ServingSize.fromString("100g")
       const context = serving.getDisplayContext(150 as Grams)
-      
+
       expect(context.quantityText).toBe("pour 150g")
       expect(context.isPerProduct).toBe(false)
     })
@@ -149,7 +149,7 @@ describe("ServingSize Value Object", () => {
     it("should handle single units correctly", () => {
       const serving = ServingSize.fromString("1 piece") // 20g per piece
       const context = serving.getDisplayContext(20 as Grams) // 20g = 1 piece
-      
+
       expect(context.quantityText).toBe("pour 1 pièce")
       expect(context.isPerProduct).toBe(true)
     })
@@ -158,8 +158,8 @@ describe("ServingSize Value Object", () => {
       const bottleServing = ServingSize.fromString("1 bottle") // 330g
       const bottleContext = bottleServing.getDisplayContext(330 as Grams)
       expect(bottleContext.quantityText).toBe("pour 1 bouteille")
-      
-      const canServing = ServingSize.fromString("1 can") // 250g  
+
+      const canServing = ServingSize.fromString("1 can") // 250g
       const canContext = canServing.getDisplayContext(500 as Grams)
       expect(canContext.quantityText).toBe("pour 2 canettes")
     })
@@ -170,7 +170,7 @@ describe("ServingSize Value Object", () => {
       const serving1 = ServingSize.fromString("100g")
       const serving2 = ServingSize.fromString("100g")
       const serving3 = ServingSize.fromString("200g")
-      
+
       expect(serving1.equals(serving2)).toBe(true)
       expect(serving1.equals(serving3)).toBe(false)
     })
@@ -178,7 +178,7 @@ describe("ServingSize Value Object", () => {
     it("should compare different units with same grams", () => {
       const serving1 = ServingSize.grams(100)
       const serving2 = ServingSize.fromString("100ml") // Also 100g equivalent
-      
+
       // Different units, same grams - should be equal by grams
       expect(serving1.toGrams()).toBe(serving2.toGrams())
       // But not equal as value objects (different amount/unit combination)
@@ -190,11 +190,11 @@ describe("ServingSize Value Object", () => {
     it("should create new serving with different amount", () => {
       const original = ServingSize.fromString("1 piece") // 20g
       const doubled = original.withAmount(2) // Should be 40g
-      
+
       expect(doubled.getAmount()).toBe(2)
       expect(doubled.getUnit()).toBe(PortionUnit.PIECE)
       expect(doubled.toGrams()).toBe(40)
-      
+
       // Original should be unchanged (immutability)
       expect(original.getAmount()).toBe(1)
       expect(original.toGrams()).toBe(20)
@@ -211,7 +211,7 @@ describe("ServingSize Value Object", () => {
     it("should scale serving by factor", () => {
       const original = ServingSize.fromString("100g")
       const scaled = original.scale(1.5)
-      
+
       expect(scaled.getAmount()).toBe(150)
       expect(scaled.getUnit()).toBe(PortionUnit.GRAMS)
       expect(scaled.toGrams()).toBe(150)
@@ -220,7 +220,7 @@ describe("ServingSize Value Object", () => {
     it("should handle fractional scaling", () => {
       const original = ServingSize.fromString("2 pieces") // 40g
       const scaled = original.scale(0.5) // Should be 1 piece, 20g
-      
+
       expect(scaled.getAmount()).toBe(1)
       expect(scaled.toGrams()).toBe(20)
     })

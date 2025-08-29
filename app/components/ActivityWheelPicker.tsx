@@ -127,7 +127,6 @@ const ActivityWheel: React.FC<ActivityWheelProps> = ({
             <View key={index} style={themed($itemContainer)}>
               {isVisible && (
                 <View style={themed($activityItem)}>
-      
                   <Text
                     style={themed([
                       $activityText,
@@ -137,7 +136,6 @@ const ActivityWheel: React.FC<ActivityWheelProps> = ({
                   >
                     {activity.name}
                   </Text>
-      
                 </View>
               )}
             </View>

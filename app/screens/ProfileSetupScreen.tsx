@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useState } from "react"
 import { View, ViewStyle, TextStyle } from "react-native"
 import { Toast } from "toastify-react-native"
-import {Text as TextIgnite} from '@/components/Text'
 
 import { ActivityWheelPicker } from "@/components/ActivityWheelPicker"
 import { Button } from "@/components/Button"
@@ -9,12 +8,13 @@ import { Card } from "@/components/Card"
 import { Header } from "@/components/Header"
 import { WeightHeightSelector, WeightHeightWheelSelector } from "@/components/NumberComponents"
 import { Screen } from "@/components/Screen"
+import { Text as TextIgnite } from "@/components/Text"
 import { Text } from "@/components/Text"
 import { useUserProfile } from "@/hooks/useUserProfile"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
+import { colors } from "@/theme/colors"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
-import { colors } from "@/theme/colors"
 
 interface ProfileSetupScreenProps extends AppStackScreenProps<"Profile"> {}
 
@@ -158,11 +158,7 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
         </View>
 
         {/* Save Button */}
-        <Button
-          preset="filled"
-          onPress={handleSave}
-          disabled={loading || !selectedActivity}
-        >
+        <Button preset="filled" onPress={handleSave} disabled={loading || !selectedActivity}>
           <TextIgnite text={loading ? "💾 Sauvegarde..." : "🚀 Commencer l'aventure !"} />
         </Button>
 

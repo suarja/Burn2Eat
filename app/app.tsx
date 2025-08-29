@@ -21,6 +21,7 @@ import "./utils/gestureHandler"
 import { useEffect, useState } from "react"
 import { useFonts } from "expo-font"
 import * as Linking from "expo-linking"
+import * as Updates from "expo-updates"
 import { KeyboardProvider } from "react-native-keyboard-controller"
 import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-context"
 import ToastManager from "toastify-react-native"
@@ -34,8 +35,6 @@ import { ThemeProvider } from "./theme/context"
 import { customFontsToLoad } from "./theme/typography"
 import { loadDateFnsLocale } from "./utils/formatDate"
 import * as storage from "./utils/storage"
-import * as Updates from 'expo-updates';
-
 
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
 
@@ -83,20 +82,20 @@ export function App() {
         // Initialize DDD dependencies after everything else
         initializeDependencies()
 
-                // Check for updates automatically on app start (only in production)
-                if (!__DEV__) {
-                  try {
-                    const update = await Updates.checkForUpdateAsync();
-                    if (update.isAvailable) {
-                      console.log('Update available, downloading...');
-                      await Updates.fetchUpdateAsync();
-                      // The update will be applied on next app restart
-                      // We don't auto-reload to avoid interrupting the user
-                    }
-                  } catch (error) {
-                    console.error('Error checking for updates:', error);
-                  }
-                }
+        // Check for updates automatically on app start (only in production)
+        if (!__DEV__) {
+          try {
+            const update = await Updates.checkForUpdateAsync()
+            if (update.isAvailable) {
+              console.log("Update available, downloading...")
+              await Updates.fetchUpdateAsync()
+              // The update will be applied on next app restart
+              // We don't auto-reload to avoid interrupting the user
+            }
+          } catch (error) {
+            console.error("Error checking for updates:", error)
+          }
+        }
       })
   }, [])
 

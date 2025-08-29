@@ -1,4 +1,8 @@
-import { PortionUnit, PortionUnitUtils, InvalidPortionUnitError } from "@/domain/nutrition/PortionUnit"
+import {
+  PortionUnit,
+  PortionUnitUtils,
+  InvalidPortionUnitError,
+} from "@/domain/nutrition/PortionUnit"
 
 describe("PortionUnit Domain", () => {
   describe("PortionUnitUtils.fromString", () => {

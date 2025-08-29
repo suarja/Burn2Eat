@@ -16,7 +16,7 @@ interface ResultScreenProps extends AppStackScreenProps<"Result"> {}
 
 /**
  * Refactored ResultScreen following DDD principles
- * 
+ *
  * ✅ Clean Architecture Benefits:
  * - Business logic encapsulated in custom hooks
  * - UI layer focuses only on presentation
@@ -53,7 +53,7 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
     primaryEffortActivity,
     initializeFromFoodId,
     initializeFromSimpleDish,
-    updateQuantity
+    updateQuantity,
   } = useResultEffort()
 
   /**
@@ -79,7 +79,6 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
 
     initializeCalculation()
   }, [foodId, simpleDish, initializeFromFoodId, initializeFromSimpleDish])
-
 
   const handleBack = () => {
     navigation.goBack()
@@ -116,9 +115,7 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
                 ? "Produit non trouvé dans la base de données..."
                 : "Aucune donnée de produit fournie..."}
           </Text>
-          <Text style={themed($errorText)}>
-            {error}
-          </Text>
+          <Text style={themed($errorText)}>{error}</Text>
           <Button preset="default" style={themed($retryButton)} onPress={handleBack}>
             Retour
           </Button>
@@ -170,7 +167,7 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
           <View style={themed($foodCardContainer)}>
             <FoodCard
               dish={dish!}
-              onPress={() => {}} 
+              onPress={() => {}}
               size="result"
               displayCalories={actualCalories || 0}
               quantityText={quantityText || ""}
@@ -189,12 +186,8 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
             <Text style={themed($sectionTitle)}>⚡ Effort nécessaire</Text>
 
             <View style={themed($effortContent)}>
-              <Text style={themed($primaryEffort)}>
-                {primaryEffortMinutes} min
-              </Text>
-              <Text style={themed($primaryActivity)}>
-                de {primaryEffortActivity}
-              </Text>
+              <Text style={themed($primaryEffort)}>{primaryEffortMinutes} min</Text>
+              <Text style={themed($primaryActivity)}>de {primaryEffortActivity}</Text>
 
               {alternativeEfforts.length > 0 && (
                 <View style={themed($alternativesList)}>
@@ -379,8 +372,6 @@ const $eatButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
 const $skipButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   backgroundColor: colors.tint,
   marginBottom: spacing.sm,
-
-
 })
 
 const $loadingText: ThemedStyle<ViewStyle> = ({ spacing, colors, typography }) => ({

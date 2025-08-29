@@ -1,25 +1,25 @@
 import { useCallback, useState, useEffect } from "react"
 
+import { CalculateEffortOutput } from "@/application/usecases"
 import { Grams, Kilocalories } from "@/domain/common/UnitTypes"
 import { Dish } from "@/domain/nutrition/Dish"
 import { DishId } from "@/domain/nutrition/DishId"
 import { NutritionalInfo } from "@/domain/nutrition/NutritionalInfo"
-import { CalculateEffortOutput } from "@/application/usecases"
 import type { SimpleDish } from "@/navigators/AppNavigator"
 
-import { useCurrentProfile } from "./useUserProfile"
-import { usePortionCalculation } from "./usePortionCalculation"
 import { useFoodCatalog } from "./useFoodData"
+import { usePortionCalculation } from "./usePortionCalculation"
+import { useCurrentProfile } from "./useUserProfile"
 
 /**
  * Custom hook for managing effort calculation in ResultScreen
- * 
+ *
  * This hook orchestrates:
  * - Portion calculation (serving size, quantity, calories)
  * - Effort calculation (exercise time required)
  * - State management for loading and error states
  * - Integration between portion and effort calculations
- * 
+ *
  * Following DDD principles:
  * - Uses domain-driven use cases
  * - Encapsulates complex business logic
@@ -30,16 +30,16 @@ export const useResultEffort = () => {
   const [effortResult, setEffortResult] = useState<CalculateEffortOutput | null>(null)
   const [effortLoading, setEffortLoading] = useState(false)
   const [effortError, setEffortError] = useState<string | null>(null)
-  
+
   // Track the flow type to determine calorie calculation method
-  const [flowType, setFlowType] = useState<'foodId' | 'simpleDish' | null>(null)
+  const [flowType, setFlowType] = useState<"foodId" | "simpleDish" | null>(null)
 
   // Dependencies
   const { profile, loading: profileLoading } = useCurrentProfile()
   const {
-    actions: { calculateEffortForDish, findDish }
+    actions: { calculateEffortForDish, findDish },
   } = useFoodCatalog()
-  
+
   // Portion calculation hook
   const {
     result: portionResult,
@@ -47,7 +47,7 @@ export const useResultEffort = () => {
     error: portionError,
     calculateFromFoodId,
     calculateFromDish,
-    updateSelectedGrams
+    updateSelectedGrams,
   } = usePortionCalculation()
 
   /**
@@ -58,11 +58,11 @@ export const useResultEffort = () => {
     async (foodId: string, selectedGrams?: Grams, servingSizeString?: string): Promise<void> => {
       try {
         // Set flow type for proper calorie calculation
-        setFlowType('foodId')
-        
+        setFlowType("foodId")
+
         // Use default serving size if not provided
-        const defaultGrams = selectedGrams || 21.5 as Grams
-        
+        const defaultGrams = selectedGrams || (21.5 as Grams)
+
         // Let the CalculatePortionUseCase handle dish lookup internally
         await calculateFromFoodId(foodId, defaultGrams, servingSizeString)
       } catch (error) {
@@ -70,7 +70,7 @@ export const useResultEffort = () => {
         throw error
       }
     },
-    [calculateFromFoodId]
+    [calculateFromFoodId],
   )
 
   /**
@@ -80,15 +80,15 @@ export const useResultEffort = () => {
     async (simpleDish: SimpleDish, selectedGrams?: Grams): Promise<void> => {
       try {
         // Set flow type for proper calorie calculation
-        setFlowType('simpleDish')
-        
+        setFlowType("simpleDish")
+
         // Convert SimpleDish to domain Dish
         // This mirrors the convertSimpleDishToDish logic from ResultScreen
         const dish = Dish.create({
           dishId: DishId.from(simpleDish.id),
           name: simpleDish.name,
           nutrition: NutritionalInfo.perServing(simpleDish.calories as Kilocalories),
-          imageUrl: undefined // OpenFoodFacts images not handled yet
+          imageUrl: undefined, // OpenFoodFacts images not handled yet
         })
 
         // Use actual serving size from OpenFoodFacts or default
@@ -101,7 +101,7 @@ export const useResultEffort = () => {
         throw error
       }
     },
-    [calculateFromDish]
+    [calculateFromDish],
   )
 
   /**
@@ -111,7 +111,7 @@ export const useResultEffort = () => {
     async (newGrams: Grams): Promise<void> => {
       await updateSelectedGrams(newGrams)
     },
-    [updateSelectedGrams]
+    [updateSelectedGrams],
   )
 
   /**
@@ -132,14 +132,16 @@ export const useResultEffort = () => {
         let finalCalories: Kilocalories
         let adjustedDish: Dish
 
-        if (flowType === 'foodId') {
+        if (flowType === "foodId") {
           // HomeScreen flow: Use full dish calories (original behavior)
           finalCalories = portionResult.dish.getCalories()
           console.log(`🍔 HomeScreen flow: Using full dish calories (${finalCalories} kcal)`)
         } else {
           // SimpleDish/Barcode flow: Use portion-based calories (original behavior)
           finalCalories = portionResult.actualCalories
-          console.log(`📱 Barcode flow: Using portion calories (${finalCalories} kcal for ${portionResult.selectedGrams}g)`)
+          console.log(
+            `📱 Barcode flow: Using portion calories (${finalCalories} kcal for ${portionResult.selectedGrams}g)`,
+          )
         }
 
         // Create adjusted dish with correct calories for effort calculation
@@ -147,11 +149,11 @@ export const useResultEffort = () => {
           dishId: portionResult.dish.getId(),
           name: portionResult.dish.getName(),
           nutrition: NutritionalInfo.perServing(finalCalories),
-          imageUrl: portionResult.dish.getImageUrl()
+          imageUrl: portionResult.dish.getImageUrl(),
         })
 
         console.log(
-          `🧮 Calculating effort for ${portionResult.dish.getName()} (${finalCalories} kcal)`
+          `🧮 Calculating effort for ${portionResult.dish.getName()} (${finalCalories} kcal)`,
         )
 
         const effort = await calculateEffortForDish(adjustedDish)
@@ -203,14 +205,14 @@ export const useResultEffort = () => {
     loading,
     error,
     isReady,
-    
+
     // Portion calculation results
     portionResult,
     dish: portionResult?.dish || null,
     // Apply correct calorie calculation for UI display
     actualCalories: (() => {
       if (!portionResult || !flowType) return null
-      if (flowType === 'foodId') {
+      if (flowType === "foodId") {
         // HomeScreen: Show full dish calories
         return portionResult.dish.getCalories()
       } else {
@@ -222,44 +224,44 @@ export const useResultEffort = () => {
     // Apply correct display context based on flow type
     displayContext: (() => {
       if (!portionResult || !flowType) return null
-      
-      if (flowType === 'foodId') {
+
+      if (flowType === "foodId") {
         // HomeScreen: Force display for whole dish (like "pour 1 burger" or "pour 1 portion")
         // Based on the original serving size, determine the appropriate unit text
         const originalServingString = portionResult.originalServingSize.toDisplayString()
         const normalized = originalServingString.toLowerCase().trim()
-        
+
         // Detect the type of food and show appropriate context
         if (normalized.includes("pièce") || normalized.includes("piece")) {
           return {
             quantityText: "pour 1 pièce",
             servingDescription: originalServingString,
-            isPerProduct: true
+            isPerProduct: true,
           }
         } else if (normalized.includes("tranche") || normalized.includes("slice")) {
           return {
-            quantityText: "pour 1 tranche", 
+            quantityText: "pour 1 tranche",
             servingDescription: originalServingString,
-            isPerProduct: true
+            isPerProduct: true,
           }
         } else if (normalized.includes("bouteille") || normalized.includes("bottle")) {
           return {
             quantityText: "pour 1 bouteille",
             servingDescription: originalServingString,
-            isPerProduct: true
+            isPerProduct: true,
           }
         } else if (normalized.includes("canette") || normalized.includes("can")) {
           return {
             quantityText: "pour 1 canette",
             servingDescription: originalServingString,
-            isPerProduct: true
+            isPerProduct: true,
           }
         } else {
           // Default: show as portion for whole dish
           return {
             quantityText: "pour 1 portion",
             servingDescription: originalServingString,
-            isPerProduct: true
+            isPerProduct: true,
           }
         }
       } else {
@@ -283,17 +285,17 @@ export const useResultEffort = () => {
     // Convenience getters for common UI patterns
     get suggestedServing(): string {
       if (!portionResult || !flowType) return "100g"
-      
-      if (flowType === 'foodId') {
+
+      if (flowType === "foodId") {
         // HomeScreen: Show the whole dish as suggested serving with gram weight
         const originalServingString = portionResult.originalServingSize.toDisplayString()
         const normalized = originalServingString.toLowerCase().trim()
         const dishTotalCalories = portionResult.dish.getCalories()
         const caloriesPer100g = portionResult.dish.getNutrition().getCalories()
-        
+
         // Calculate total grams for the whole dish (reverse from calories)
         const totalGrams = Math.round((dishTotalCalories / caloriesPer100g) * 100)
-        
+
         // Return appropriate whole dish serving with weight
         if (normalized.includes("pièce") || normalized.includes("piece")) {
           return `1 pièce (${totalGrams}g)`
@@ -322,7 +324,7 @@ export const useResultEffort = () => {
 
     get primaryEffortActivity(): string {
       return effortResult?.effort.primary.activityLabel || ""
-    }
+    },
   }
 }
 
