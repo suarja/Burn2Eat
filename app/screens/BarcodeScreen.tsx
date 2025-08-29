@@ -23,6 +23,9 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
   const [shouldShowCamera, setShouldShowCamera] = useState(false)
   const cameraRef = useRef<CameraView>(null)
   const { themed } = useAppTheme()
+  
+  // Flag de protection pour empêcher les appels multiples
+  const isProcessingRef = useRef(false)
 
   const {
     isScanning,
@@ -32,34 +35,43 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
     handleBarcodeScanned,
     startScanning,
     resetScanning,
+    dismountCleanup,
   } = useBarcodeScanning()
 
   // Handle camera lifecycle with focus/blur - mount/unmount approach
   useFocusEffect(
     useCallback(() => {
+      console.log("🎥 BarcodeScreen focused - initializing camera")
+
       // Screen is focused - mount camera and start scanning
       if (permission?.granted) {
         setShouldShowCamera(true)
+
         // Small delay to ensure camera is mounted before scanning
         const timeoutId = setTimeout(() => {
+          console.log("🎥 Starting scanning after camera mount")
+          isProcessingRef.current = false // DÉBLOQUER pour permettre le scan
           startScanning()
         }, 100)
 
-        // Cleanup timeout if component unmounts quickly
+        // Cleanup function called when screen loses focus
         return () => {
+          console.log("🎥 BarcodeScreen blurred - cleaning up")
           clearTimeout(timeoutId)
           setShouldShowCamera(false)
-          resetScanning()
+          isProcessingRef.current = false // DÉBLOQUER
+          dismountCleanup() // Use the comprehensive cleanup
         }
       }
 
       // If no permission, ensure camera is not shown
       return () => {
-        console.log("🎥 Unmounting camera (screen blurred)")
+        console.log("🎥 BarcodeScreen cleanup (no permission)")
         setShouldShowCamera(false)
-        resetScanning()
+        isProcessingRef.current = false // DÉBLOQUER
+        dismountCleanup()
       }
-    }, [permission?.granted, startScanning, resetScanning]),
+    }, [permission?.granted, startScanning, dismountCleanup]),
   )
 
   if (!permission) {
@@ -95,12 +107,21 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
   }
 
   const onBarcodeScanned = (result: BarcodeScanningResult) => {
+    // PROTECTION IMMÉDIATE : empêcher les appels multiples
+    if (isProcessingRef.current) {
+      console.log("🛡️ Scan ignoré - traitement en cours")
+      return
+    }
+    
     if (isScanning && result.data) {
+      console.log("📱 Barcode detected:", result.data)
+      isProcessingRef.current = true // BLOQUER immédiatement
       handleBarcodeScanned(result.data)
     }
   }
 
   const handleRetry = () => {
+    isProcessingRef.current = false // DÉBLOQUER pour permettre un nouveau scan
     resetScanning()
   }
 
@@ -151,66 +172,14 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
         >
           {error
             ? `❌ ${error}`
-            : isScanning
-              ? "📱 Positionnez le code-barres dans le cadre"
-              : "⏳ Scanning en cours..."}
+            : isLoading
+              ? "🔍 Recherche du produit..."
+              : isScanning
+                ? "📱 Positionnez le code-barres dans le cadre"
+                : "⏳ Scanning en cours..."}
         </Text>
       </View>
 
-      {/* Bottom Controls with safe area */}
-      {/* <View style={themed($bottomSafeArea)}>
-        <View style={themed($controlsWrapper)}>
-          {error && (
-            <View style={themed($errorButtonContainer)}>
-              <Button preset="filled" onPress={handleRetry} style={themed($retryButton)}>
-                Réessayer
-              </Button>
-              <Button
-                preset="default"
-                onPress={() => {
-                  console.log("🔧 Force reset triggered")
-                  resetScanning()
-                }}
-                style={themed($resetButton)}
-              >
-                Reset
-              </Button>
-            </View>
-          )}
-
-          <View style={themed($buttonContainer)}>
-            <Button
-              preset="default"
-              onPress={() => navigation.goBack()}
-              style={themed($backButton)}
-            >
-              Retour
-            </Button>
-
-            <Button
-              preset="default"
-              onPress={() => navigation.navigate("MainTabs", { screen: "Home" })}
-              style={themed($manualSearchButton)}
-            >
-              Recherche manuelle
-            </Button>
-
-            {__DEV__ && (
-              <Button
-                preset="default"
-                onPress={() => {
-                  console.log("🔧 Debug Info:", { isScanning, isLoading, error, scannedBarcode })
-                  handleRetry()
-                }}
-                style={themed($debugButton)}
-              >
-                Debug Reset
-              </Button>
-            )}
-          </View>
-          
-        </View>
-      </View> */}
     </View>
   )
 }

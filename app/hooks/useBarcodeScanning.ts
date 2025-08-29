@@ -15,74 +15,23 @@ export const useBarcodeScanning = () => {
   const [scannedBarcode, setScannedBarcode] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [isScanningLocked, setIsScanningLocked] = useState(false)
 
   const navigation = useNavigation<any>()
   const scanBarcodeUseCase = Dependencies.scanBarcodeUseCase()
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const activeAlertRef = useRef<boolean>(false)
 
-  /**
-   * Dismiss any active alerts to prevent stacking
-   */
-  const dismissActiveAlerts = useCallback(() => {
-    if (activeAlertRef.current) {
-      console.log("🚨 Dismissing active alert to prevent stacking")
-      // Note: React Native doesn't provide a direct way to dismiss alerts
-      // But setting the flag helps prevent new ones from showing
-      activeAlertRef.current = false
-    }
-  }, [])
-
-  /**
-   * Show alert with proper management to prevent stacking
-   */
-  const showManagedAlert = useCallback(
-    (title: string, message: string, buttons: any[]) => {
-      // Dismiss any existing alerts first
-      dismissActiveAlerts()
-
-      // Mark that we have an active alert
-      activeAlertRef.current = true
-      console.log("🚨 Showing managed alert:", title)
-
-      // Add onPress callbacks to all buttons to clear the active flag
-      const managedButtons = buttons.map((button) => ({
-        ...button,
-        onPress: () => {
-          activeAlertRef.current = false
-          console.log("🚨 Alert button pressed:", button.text)
-          if (button.onPress) {
-            button.onPress()
-          }
-        },
-      }))
-
-      Alert.alert(title, message, managedButtons)
-    },
-    [dismissActiveAlerts],
-  )
 
   const handleBarcodeScanned = useCallback(
     async (barcode: string) => {
-      // Prevent multiple scans or if scanning is locked
-      if (isLoading || isScanningLocked || scannedBarcode === barcode || activeAlertRef.current) {
-        console.log("⚠️ Ignoring scan - locked or duplicate:", {
-          barcode,
-          isLoading,
-          isScanningLocked,
-          isDuplicate: scannedBarcode === barcode,
-          hasActiveAlert: activeAlertRef.current,
-        })
+      // Prevent multiple scans
+      if (isLoading || scannedBarcode === barcode) {
+        console.log("⚠️ Ignoring duplicate scan:", barcode)
         return
       }
 
       console.log("🔍 Starting barcode scan:", barcode)
 
-      // Lock scanning to prevent concurrent operations
-      setIsScanningLocked(true)
-      dismissActiveAlerts()
-
+      // DÉSACTIVER IMMÉDIATEMENT LA CAMÉRA
       setIsScanning(false)
       setScannedBarcode(barcode)
       setIsLoading(true)
@@ -115,12 +64,11 @@ export const useBarcodeScanning = () => {
         if (result.success && result.dish) {
           console.log("✅ Product found:", result.dish.name)
 
-          // Clear timeout and unlock before navigation
+          // Clear timeout before navigation
           if (timeoutRef.current) {
             clearTimeout(timeoutRef.current)
             timeoutRef.current = null
           }
-          setIsScanningLocked(false)
 
           // Navigate to ResultScreen with the dish object directly
           navigation.navigate("Result", {
@@ -131,7 +79,7 @@ export const useBarcodeScanning = () => {
           console.log("❌ Product not found for barcode:", barcode)
           setError("Produit non trouvé dans la base de données")
 
-          showManagedAlert(
+          Alert.alert(
             "Produit non trouvé",
             "Ce produit n'est pas disponible dans notre base de données. Voulez-vous essayer une recherche manuelle ?",
             [
@@ -150,7 +98,7 @@ export const useBarcodeScanning = () => {
         console.error("❌ Error scanning barcode:", error)
         setError("Erreur lors de la recherche du produit")
 
-        showManagedAlert(
+        Alert.alert(
           "Erreur de connexion",
           "Impossible de rechercher le produit. Vérifiez votre connexion internet.",
           [
@@ -171,26 +119,14 @@ export const useBarcodeScanning = () => {
           timeoutRef.current = null
         }
         setIsLoading(false)
-        setIsScanning(false)
-        setIsScanningLocked(false)
+        // Note: isScanning reste false, réactivé seulement par resetScanning()
       }
     },
-    [
-      isLoading,
-      isScanningLocked,
-      scannedBarcode,
-      scanBarcodeUseCase,
-      navigation,
-      dismissActiveAlerts,
-      showManagedAlert,
-    ],
+    [isLoading, scannedBarcode, scanBarcodeUseCase, navigation],
   )
 
   const resetScanning = useCallback(() => {
-    console.log("🔄 Resetting scanning state")
-
-    // First dismiss any active alerts
-    dismissActiveAlerts()
+    console.log("🔄 Resetting scanning state - RÉACTIVER la caméra")
 
     // Clear any existing timeout
     if (timeoutRef.current) {
@@ -202,25 +138,15 @@ export const useBarcodeScanning = () => {
     setScannedBarcode(null)
     setIsLoading(false)
     setError(null)
-    setIsScanningLocked(false)
-    setIsScanning(true)
-  }, [dismissActiveAlerts])
+    setIsScanning(true) // RÉACTIVER le scanning
+  }, [])
 
   const startScanning = useCallback(() => {
     console.log("▶️ Starting scanning")
-
-    // Only start if not locked and no active alerts
-    if (!isScanningLocked && !activeAlertRef.current) {
-      setIsScanning(true)
-      setScannedBarcode(null)
-      setError(null)
-    } else {
-      console.log("⚠️ Cannot start scanning - locked or alert active:", {
-        isScanningLocked,
-        hasActiveAlert: activeAlertRef.current,
-      })
-    }
-  }, [isScanningLocked])
+    setIsScanning(true)
+    setScannedBarcode(null)
+    setError(null)
+  }, [])
 
   const stopScanning = useCallback(() => {
     console.log("⏹️ Stopping scanning")
@@ -234,9 +160,6 @@ export const useBarcodeScanning = () => {
   const dismountCleanup = useCallback(() => {
     console.log("🧹 Performing dismount cleanup")
 
-    // Dismiss alerts first
-    dismissActiveAlerts()
-
     // Clear timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
@@ -248,8 +171,7 @@ export const useBarcodeScanning = () => {
     setIsLoading(false)
     setError(null)
     setScannedBarcode(null)
-    setIsScanningLocked(false)
-  }, [dismissActiveAlerts])
+  }, [])
 
   return {
     // State
@@ -257,7 +179,6 @@ export const useBarcodeScanning = () => {
     isLoading,
     error,
     scannedBarcode,
-    isScanningLocked,
 
     // Actions
     handleBarcodeScanned,
