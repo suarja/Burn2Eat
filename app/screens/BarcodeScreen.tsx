@@ -36,7 +36,15 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
     startScanning,
     resetScanning,
     dismountCleanup,
+    setUnlockCallback,
   } = useBarcodeScanning()
+
+  // Enregistrer la fonction de déblocage du flag
+  React.useEffect(() => {
+    setUnlockCallback(() => {
+      isProcessingRef.current = false
+    })
+  }, [setUnlockCallback])
 
   // Handle camera lifecycle with focus/blur - mount/unmount approach
   useFocusEffect(

@@ -19,6 +19,9 @@ export const useBarcodeScanning = () => {
   const navigation = useNavigation<any>()
   const scanBarcodeUseCase = Dependencies.scanBarcodeUseCase()
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  
+  // Fonction de callback pour débloquer le flag de protection
+  const unlockScanningRef = useRef<(() => void) | null>(null)
 
 
   const handleBarcodeScanned = useCallback(
@@ -85,11 +88,17 @@ export const useBarcodeScanning = () => {
             [
               {
                 text: "Réessayer",
-                onPress: () => resetScanning(),
+                onPress: () => {
+                  unlockScanningRef.current?.() // DÉBLOQUER le flag
+                  resetScanning()
+                },
               },
               {
                 text: "Recherche manuelle",
-                onPress: () => navigation.navigate("MainTabs", { screen: "Home" }),
+                onPress: () => {
+                  unlockScanningRef.current?.() // DÉBLOQUER le flag
+                  navigation.navigate("MainTabs", { screen: "Home" })
+                },
               },
             ],
           )
@@ -104,11 +113,17 @@ export const useBarcodeScanning = () => {
           [
             {
               text: "Réessayer",
-              onPress: () => resetScanning(),
+              onPress: () => {
+                unlockScanningRef.current?.() // DÉBLOQUER le flag
+                resetScanning()
+              },
             },
             {
               text: "Annuler",
-              onPress: () => navigation.goBack(),
+              onPress: () => {
+                unlockScanningRef.current?.() // DÉBLOQUER le flag
+                navigation.goBack()
+              },
             },
           ],
         )
@@ -171,6 +186,16 @@ export const useBarcodeScanning = () => {
     setIsLoading(false)
     setError(null)
     setScannedBarcode(null)
+    
+    // Débloquer le flag de protection
+    unlockScanningRef.current?.()
+  }, [])
+
+  /**
+   * Enregistrer la fonction de déblocage du flag de protection
+   */
+  const setUnlockCallback = useCallback((unlockFn: () => void) => {
+    unlockScanningRef.current = unlockFn
   }, [])
 
   return {
@@ -186,5 +211,6 @@ export const useBarcodeScanning = () => {
     stopScanning,
     resetScanning,
     dismountCleanup,
+    setUnlockCallback,
   }
 }
