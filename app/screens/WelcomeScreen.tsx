@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from "react"
 import { TextStyle, View, ViewStyle } from "react-native"
 
 import { Button } from "@/components/Button"
+import { ChoiceModal } from "@/components/ChoiceModal"
 import { OnboardingModal } from "@/components/OnboardingModal"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
@@ -18,11 +19,12 @@ interface WelcomeScreenProps extends AppStackScreenProps<"Welcome"> {}
 export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(_props) {
   const { themed } = useAppTheme()
   const { navigation } = _props
-  const { loadCurrentProfile } = useUserProfile()
+  const { hasCurrentProfile } = useUserProfile()
   const $bottomContainerInsets = useSafeAreaInsetsStyle(["bottom"])
 
   const [hasExistingProfile, setHasExistingProfile] = useState<boolean | null>(null)
   const [isCheckingProfile, setIsCheckingProfile] = useState(true)
+  const [showGuestWarning, setShowGuestWarning] = useState(false)
 
   // Onboarding modals management
   const {
@@ -42,8 +44,8 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(_pro
   useEffect(() => {
     const checkExistingProfile = async () => {
       try {
-        const result = await loadCurrentProfile()
-        if (result.success && result.userProfile) {
+        const result = await hasCurrentProfile()
+        if (result) {
           setHasExistingProfile(true)
           // If user has a profile, redirect directly to Home
           navigation.replace("MainTabs", { screen: "Home" })
@@ -59,7 +61,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(_pro
     }
 
     checkExistingProfile()
-  }, [loadCurrentProfile, navigation])
+  }, [hasCurrentProfile, navigation])
 
   function handleStartOnboarding() {
     if (!hasSeenOnboarding) {
@@ -70,8 +72,20 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(_pro
   }
 
   function handleGuestMode() {
+    // Show warning modal before proceeding
+    setShowGuestWarning(true)
+  }
+
+  function handleGuestWarningConfirm() {
+    setShowGuestWarning(false)
     // Navigate directly to Home with default profile
     navigation.navigate("MainTabs", { screen: "Home" })
+  }
+
+  function handleGuestWarningCancel() {
+    setShowGuestWarning(false)
+    // User wants to create a profile, trigger onboarding
+    handleStartOnboarding()
   }
 
   function handleModalClose() {
@@ -159,6 +173,21 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = function WelcomeScreen(_pro
           totalSteps={totalSteps}
         />
       )}
+
+      {/* Guest Mode Warning Modal */}
+      <ChoiceModal
+        visible={showGuestWarning}
+        title="Mode invité ⚠️"
+        content="Le mode invité utilise un profil par défaut (70kg, 170cm). Pour des résultats personnalisés, créez votre profil."
+        secondaryContent="Vous pourrez créer votre profil plus tard dans les paramètres."
+        icon="👤"
+        primaryButtonText="Continuer en invité"
+        secondaryButtonText="Créer mon profil"
+        onPrimaryPress={handleGuestWarningConfirm}
+        onSecondaryPress={handleGuestWarningCancel}
+        onDismiss={handleGuestWarningCancel}
+        variant="default"
+      />
     </>
   )
 }

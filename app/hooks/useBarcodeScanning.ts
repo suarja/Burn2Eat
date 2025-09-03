@@ -19,10 +19,9 @@ export const useBarcodeScanning = () => {
   const navigation = useNavigation<any>()
   const scanBarcodeUseCase = Dependencies.scanBarcodeUseCase()
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-  
+
   // Fonction de callback pour débloquer le flag de protection
   const unlockScanningRef = useRef<(() => void) | null>(null)
-
 
   const handleBarcodeScanned = useCallback(
     async (barcode: string) => {
@@ -186,7 +185,7 @@ export const useBarcodeScanning = () => {
     setIsLoading(false)
     setError(null)
     setScannedBarcode(null)
-    
+
     // Débloquer le flag de protection
     unlockScanningRef.current?.()
   }, [])

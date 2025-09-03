@@ -13,6 +13,7 @@ import {
 
 import { CollapsibleCategorySection } from "@/components/CollapsibleCategorySection"
 import { FoodCard } from "@/components/FoodCard"
+import { GuestModeIndicator } from "@/components/GuestModeIndicator"
 import { Icon } from "@/components/Icon"
 import { Screen } from "@/components/Screen"
 import {
@@ -25,6 +26,7 @@ import { Text } from "@/components/Text"
 import { TextField } from "@/components/TextField"
 import { Dish } from "@/domain/nutrition/Dish"
 import { useCategoryData } from "@/hooks/useCategoryData"
+import { useGuestMode } from "@/hooks/useGuestMode"
 import type { MainTabScreenProps } from "@/navigators/MainTabNavigator"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
@@ -45,6 +47,8 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
     isSearching,
     actions,
   } = useCategoryData()
+
+  const { isGuest, loading: guestLoading } = useGuestMode()
 
   const scrollOffset = useRef(0)
   const sectionListRef = useRef<SectionList>(null)
@@ -135,6 +139,8 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
 
   return (
     <Screen preset="scroll" safeAreaEdges={["top"]} style={themed($screenContainer)}>
+
+
       {/* Search Bar */}
       <View style={themed($searchContainer)}>
         <Icon icon="view" size={20} containerStyle={themed($searchIcon)} />
@@ -156,6 +162,8 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
           <Text preset="bold" style={themed($sectionTitle)}>
             Catégories ({categories.length})
           </Text>
+                {/* Guest Mode Indicator
+      {isGuest && !guestLoading && <GuestModeIndicator />} */}
 
           {categories.map((category) => (
             <CollapsibleCategorySection

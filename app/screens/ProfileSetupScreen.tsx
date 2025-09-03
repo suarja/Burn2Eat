@@ -22,7 +22,7 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
   const { navigation } = props
   const { themed } = useAppTheme()
 
-  const { createProfile, loadCurrentProfile, loading, error } = useUserProfile()
+  const { createProfile, loadCurrentProfile, loading, error, hasCurrentProfile } = useUserProfile()
 
   const [weight, setWeight] = useState(75)
   const [height, setHeight] = useState(175)

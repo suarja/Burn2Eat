@@ -23,7 +23,7 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
   const [shouldShowCamera, setShouldShowCamera] = useState(false)
   const cameraRef = useRef<CameraView>(null)
   const { themed } = useAppTheme()
-  
+
   // Flag de protection pour empêcher les appels multiples
   const isProcessingRef = useRef(false)
 
@@ -120,7 +120,7 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
       console.log("🛡️ Scan ignoré - traitement en cours")
       return
     }
-    
+
     if (isScanning && result.data) {
       console.log("📱 Barcode detected:", result.data)
       isProcessingRef.current = true // BLOQUER immédiatement
@@ -187,7 +187,6 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
                 : "⏳ Scanning en cours..."}
         </Text>
       </View>
-
     </View>
   )
 }

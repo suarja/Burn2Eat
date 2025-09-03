@@ -67,14 +67,14 @@ export const useUserProfile = () => {
   )
 
   /**
-   * Load the current user profile
+   * Load the current user profile or get default values for guest mode
    */
   const loadCurrentProfile = useCallback(async (): Promise<GetUserProfileOutput> => {
     setLoading(true)
     setError(null)
 
     try {
-      const result = await getUserUseCase.getCurrent()
+      const result = await getUserUseCase.getCurrentOrDefault()
 
       if (result.success && result.userProfile) {
         setCurrentProfile(result.userProfile)
