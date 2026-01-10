@@ -165,20 +165,71 @@ Apple screenshots: `docs/publish/issues/apple-screenshots/`
 
 ---
 
+#### 2.6 ✅ ActivityPickerButton Component (NEW)
+**Problem:** ActivityWheelPicker was confusing and had poor color contrast (Screenshot showing orange/red on beige background)
+
+**Solution Implemented:**
+- Created new `ActivityPickerButton` component to replace `ActivityWheelPicker`
+- Simple button that displays selected activity
+- Opens modal with clean scrollable list when tapped
+- Better visual hierarchy with proper contrast
+- Uses Unicode symbols (✓, ✕, ▼) instead of icon dependencies
+
+**Design Improvements:**
+- Clean white button with border (neutral100 background, neutral300 border)
+- Selected activity shown with name and MET value
+- Modal slides from bottom with semi-transparent overlay
+- Activity list with clear selection state (primary100 background)
+- Visual checkmark for selected item
+- Better touch targets and spacing
+
+**File Created:**
+- `app/components/ActivityPickerButton.tsx`
+
+**File Modified:**
+- `app/screens/ProfileSetupScreen.tsx` - Replaced ActivityWheelPicker with ActivityPickerButton
+
+✅ **Status:** Working perfectly - Much more intuitive than wheel picker
+
+---
+
+#### 2.7 ✅ ProfileSetupScreen Polish
+**Problem:** Section descriptions missing, button too small, cards had minimal padding
+
+**Solution Implemented:**
+- Added descriptive subtitles to both sections:
+  - "Ajuste ton poids et ta taille" for measurements
+  - "Choisis l'activité que tu pratiques le plus souvent" for activity
+- Increased card content padding (spacing.md → spacing.lg)
+- Enhanced save button style:
+  - Larger padding (spacing.md → spacing.lg)
+  - Minimum height of 56pt (better touch target)
+  - Rounded corners (16pt border radius)
+  - Explicit primary color background
+- Improved subtitle styling with centered text and proper typography
+
+**File Modified:**
+- `app/screens/ProfileSetupScreen.tsx`
+
+✅ **Status:** Working perfectly - Much clearer user guidance
+
+---
+
 ## 📦 Git Commits Created
 
 All changes have been committed to the `dev` branch:
 
 ```bash
+b7767b2 improve: Replace ActivityWheelPicker with simpler ActivityPickerButton
 cfa25ca improve: Enhance ProfileSetupScreen layout with visual cards
 780f9f1 fix: Rename search method to searchByName for clarity
 1d2aacb improve: Increase OnboardingModal spacing for better readability
 cb0cb92 fix: Resolve iPad freeze and crowded UI issues for App Store approval
 ```
 
-**Total files modified:** 10 files
-- 8 files modified
-- 1 file created (useResponsiveSpacing.ts)
+**Total files modified:** 12 files
+- 9 files modified
+- 2 files created (useResponsiveSpacing.ts, ActivityPickerButton.tsx)
 
 ---
 
@@ -195,6 +246,9 @@ cb0cb92 fix: Resolve iPad freeze and crowded UI issues for App Store approval
 2. **Card components** - Visual separation is much clearer in ProfileSetupScreen
 3. **Responsive multipliers** - 1.5x works perfectly for iPad, not too much
 4. **Grid spacing increase** - Cards no longer feel cramped
+5. **ActivityPickerButton** - Modal-based picker is far more intuitive than wheel picker
+6. **Section subtitles** - Clear guidance for users on what to do
+7. **Improved button styling** - Better touch targets and visual hierarchy
 
 ---
 
@@ -295,6 +349,13 @@ cb0cb92 fix: Resolve iPad freeze and crowded UI issues for App Store approval
    - `ContentComponent` prop for custom content
    - Clean visual hierarchy without custom styling
 
+4. **ActivityPickerButton Component**
+   - Replaced confusing wheel picker with modal-based selection
+   - Uses native modal pattern (slides from bottom with overlay)
+   - Unicode symbols for icons (✓, ✕, ▼) to avoid icon dependencies
+   - Better UX: tap button → see all options → select → done
+   - Follows iOS/Android native picker patterns
+
 ### Files Modified Summary
 
 **Performance fixes:**
@@ -306,6 +367,7 @@ cb0cb92 fix: Resolve iPad freeze and crowded UI issues for App Store approval
 
 **UI/UX fixes:**
 - `app/hooks/useResponsiveSpacing.ts` (NEW)
+- `app/components/ActivityPickerButton.tsx` (NEW)
 - `app/screens/ProfileSetupScreen.tsx`
 - `app/screens/ResultScreen.tsx`
 - `app/components/CollapsibleCategorySection.tsx`
