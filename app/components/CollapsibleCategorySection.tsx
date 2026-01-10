@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, memo } from "react"
 import {
   View,
   ViewStyle,
@@ -71,25 +71,26 @@ export interface CollapsibleCategorySectionProps {
   numColumns?: number
 }
 
-export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProps> = ({
-  category,
-  dishes,
-  isExpanded,
-  hasMore,
-  isLoadingMore,
-  onToggle,
-  onDishSelect,
-  onLoadMore,
-  style,
-  numColumns = 2,
-}) => {
+export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProps> = memo(
+  ({
+    category,
+    dishes,
+    isExpanded,
+    hasMore,
+    isLoadingMore,
+    onToggle,
+    onDishSelect,
+    onLoadMore,
+    style,
+    numColumns = 2,
+  }) => {
   const { themed } = useAppTheme()
 
   // Animation for chevron rotation
   const rotateAnim = useSharedValue(0)
 
   React.useEffect(() => {
-    rotateAnim.value = withTiming(isExpanded ? 1 : 0, { duration: 300 })
+    rotateAnim.value = withTiming(isExpanded ? 1 : 0, { duration: 200 })
   }, [isExpanded, rotateAnim])
 
   const animatedChevronStyle = useAnimatedStyle(() => {
@@ -101,7 +102,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
 
   const handleToggle = () => {
     LayoutAnimation.configureNext({
-      duration: 300,
+      duration: 200,
       create: {
         type: LayoutAnimation.Types.easeInEaseOut,
         property: LayoutAnimation.Properties.opacity,
@@ -189,7 +190,8 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
       {isExpanded && <View style={themed($content)}>{renderDishGrid()}</View>}
     </View>
   )
-}
+  },
+)
 
 const $container: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   marginBottom: spacing.md,
@@ -273,12 +275,12 @@ const $dishGrid: ThemedStyle<ViewStyle> = ({}) => ({
 
 const $dishRow: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   flexDirection: "row",
-  marginBottom: spacing.sm,
+  marginBottom: spacing.md,
 })
 
 const $dishContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   flex: 1,
-  paddingHorizontal: spacing.xs,
+  paddingHorizontal: spacing.sm,
 })
 
 const $dishCard: ThemedStyle<ViewStyle> = ({}) => ({

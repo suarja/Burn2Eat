@@ -39,4 +39,16 @@ export class GetFoodCatalogUseCase {
   async getByCategoryPaginated(request: GetFoodCatalogByCategory): Promise<Dish[]> {
     return this.dishRepository.findByCategory?.(request.category, request.limit, request.page) || []
   }
+
+  /**
+   * Search dishes by name with pagination support
+   * @param query - Search query string
+   * @param limit - Maximum number of results (default: 30)
+   */
+  async search(query: string, limit: number = 30): Promise<Dish[]> {
+    if (!query || query.trim().length < 2) {
+      return []
+    }
+    return this.dishRepository.findByName(query.trim(), limit)
+  }
 }

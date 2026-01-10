@@ -116,12 +116,10 @@ export const useCategoryData = (): UseCategoryDataReturn => {
 
     try {
       setIsSearching(true)
-      // Use the existing catalog and filter locally for now
-      const allDishes = await getFoodCatalogUseCase.execute()
-      const filtered = allDishes.filter((dish) =>
-        dish.getName().toLowerCase().includes(searchText.toLowerCase()),
-      )
-      setSearchResults(filtered)
+      // Use paginated search to avoid loading all dishes into memory
+      // This prevents freezing on iPad by limiting results to 30 items
+      const results = await getFoodCatalogUseCase.search(searchText, 30)
+      setSearchResults(results)
     } catch (error) {
       console.error("Search failed:", error)
       setSearchResults([])

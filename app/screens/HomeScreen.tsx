@@ -1,4 +1,4 @@
-import React, { FC, useRef } from "react"
+import React, { FC, useRef, useCallback } from "react"
 import {
   View,
   ViewStyle,
@@ -49,23 +49,29 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
   const scrollOffset = useRef(0)
   const sectionListRef = useRef<SectionList>(null)
 
-  const handleFoodSelect = (food: Dish) => {
-    console.log("Selected food:", food.getName())
-    // @ts-ignore - Navigation types complex with nested navigators
-    navigation.navigate("Result", { foodId: food.getId() })
-  }
+  const handleFoodSelect = useCallback(
+    (food: Dish) => {
+      console.log("Selected food:", food.getName())
+      // @ts-ignore - Navigation types complex with nested navigators
+      navigation.navigate("Result", { foodId: food.getId() })
+    },
+    [navigation],
+  )
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     scrollOffset.current = event.nativeEvent.contentOffset.y
   }
 
-  const handleCategoryToggle = (categoryId: string) => {
-    if (expandedCategory === categoryId) {
-      actions.setExpandedCategory(null)
-    } else {
-      actions.setExpandedCategory(categoryId)
-    }
-  }
+  const handleCategoryToggle = useCallback(
+    (categoryId: string) => {
+      if (expandedCategory === categoryId) {
+        actions.setExpandedCategory(null)
+      } else {
+        actions.setExpandedCategory(categoryId)
+      }
+    },
+    [expandedCategory, actions],
+  )
 
   const renderSearchResults = () => (
     <FlatList<Dish>

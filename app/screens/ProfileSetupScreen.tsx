@@ -11,6 +11,7 @@ import { WeightHeightSelector, WeightHeightWheelSelector } from "@/components/Nu
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import { useUserProfile } from "@/hooks/useUserProfile"
+import { useResponsiveSpacing } from "@/hooks/useResponsiveSpacing"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
@@ -20,7 +21,8 @@ interface ProfileSetupScreenProps extends AppStackScreenProps<"Profile"> {}
 
 export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileSetupScreen(props) {
   const { navigation } = props
-  const { themed } = useAppTheme()
+  const { themed, theme } = useAppTheme()
+  const { multiplier } = useResponsiveSpacing()
 
   const { createProfile, loadCurrentProfile, loading, error } = useUserProfile()
 
@@ -116,7 +118,7 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
         {error && <Text style={themed($errorText)}>❌ {error}</Text>}
 
         {/* Physical Stats Section */}
-        <View style={themed($section)}>
+        <View style={[themed($section), { marginBottom: theme.spacing.md * multiplier }]}>
           <Text style={themed($sectionTitle)}>📏 Tes mesures</Text>
 
           {useWheelPicker ? (
@@ -143,7 +145,7 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
         </View>
 
         {/* Activity Selection Section */}
-        <View style={themed($section)}>
+        <View style={[themed($section), { marginBottom: theme.spacing.md * multiplier }]}>
           {!isInitialLoad ? (
             <ActivityWheelPicker
               selectedActivity={selectedActivity}

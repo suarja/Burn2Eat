@@ -8,6 +8,7 @@ import { Header } from "@/components/Header"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import { useResultEffort } from "@/hooks/useResultEffort"
+import { useResponsiveSpacing } from "@/hooks/useResponsiveSpacing"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
@@ -26,7 +27,8 @@ interface ResultScreenProps extends AppStackScreenProps<"Result"> {}
 
 export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) {
   const { navigation, route } = props
-  const { themed } = useAppTheme()
+  const { themed, theme } = useAppTheme()
+  const { multiplier } = useResponsiveSpacing()
 
   // User choice states
   const [showAteItModal, setShowAteItModal] = useState(false)
@@ -108,7 +110,7 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
     return (
       <Screen preset="fixed" style={themed($screenContainer)}>
         <Header title="Erreur" leftIcon="back" onLeftPress={handleBack} />
-        <View style={themed($contentContainer)}>
+        <View style={[themed($contentContainer), { padding: theme.spacing.lg * multiplier }]}>
           <Text style={themed($loadingText)}>
             {simpleDish
               ? "Erreur lors du traitement du produit scanné..."
@@ -132,7 +134,7 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
     return (
       <Screen preset="fixed" style={themed($screenContainer)}>
         <Header title="Calcul d'Effort" leftIcon="back" onLeftPress={handleBack} />
-        <View style={themed($contentContainer)}>
+        <View style={[themed($contentContainer), { padding: theme.spacing.lg * multiplier }]}>
           {/* Show dish info while calculating */}
           {dish && (
             <View style={themed($loadingDishContainer)}>
@@ -165,7 +167,7 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
       <Screen preset="scroll" style={themed($screenContainer)}>
         <Header title="Calcul d'Effort" leftIcon="back" onLeftPress={handleBack} />
 
-        <View style={themed($contentContainer)}>
+        <View style={[themed($contentContainer), { padding: theme.spacing.lg * multiplier }]}>
           {/* Food Card Display */}
           <View style={themed($foodCardContainer)}>
             <FoodCard
@@ -185,7 +187,12 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
           </View>
 
           {/* Effort Results */}
-          <View style={themed($effortSection)}>
+          <View
+            style={[
+              themed($effortSection),
+              { padding: theme.spacing.lg * multiplier, marginBottom: theme.spacing.lg * multiplier },
+            ]}
+          >
             <Text style={themed($sectionTitle)}>⚡ Effort nécessaire</Text>
 
             <View style={themed($effortContent)}>

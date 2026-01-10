@@ -1,4 +1,4 @@
-import React from "react"
+import React, { memo } from "react"
 import { View, ViewStyle, TextStyle, TouchableOpacity } from "react-native"
 import { Image } from "expo-image"
 
@@ -39,15 +39,16 @@ export interface FoodCardProps {
   quantityText?: string
 }
 
-export const FoodCard: React.FC<FoodCardProps> = ({
-  dish,
-  onPress,
-  style,
-  disabled = false,
-  size = "medium",
-  displayCalories,
-  quantityText,
-}) => {
+export const FoodCard: React.FC<FoodCardProps> = memo(
+  ({
+    dish,
+    onPress,
+    style,
+    disabled = false,
+    size = "medium",
+    displayCalories,
+    quantityText,
+  }) => {
   const { themed, theme } = useAppTheme()
 
   // Use single pastel color for all cards
@@ -150,7 +151,8 @@ export const FoodCard: React.FC<FoodCardProps> = ({
       <View style={[themed($accentBorder), { backgroundColor: strongColor }]} />
     </TouchableOpacity>
   )
-}
+  },
+)
 
 const $container: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   backgroundColor: colors.palette.neutral100,
