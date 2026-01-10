@@ -82,8 +82,8 @@ export const FoodCard: React.FC<FoodCardProps> = memo(
       result: { minHeight: 160, maxHeight: 200, imageSize: 80, padding: theme.spacing.md },
     }
 
-    // Use subtle scaling for card sizes on iPad
-    const sizeMultiplier = multiplier > 1 ? 1.25 : 1
+    // Increase card size VERY significantly on iPad for better prominence
+    const sizeMultiplier = multiplier > 1 ? 2.0 : 1
     const responsiveSizes = {
       minHeight: baseSizes[size].minHeight * sizeMultiplier,
       maxHeight: baseSizes[size].maxHeight * sizeMultiplier,
@@ -142,7 +142,7 @@ export const FoodCard: React.FC<FoodCardProps> = memo(
                 style={[
                   themed($emojiText),
                   {
-                    fontSize: multiplier > 1 ? 28 : 24,
+                    fontSize: multiplier > 1 ? 36 : 24,
                   },
                 ]}
               >
@@ -159,8 +159,8 @@ export const FoodCard: React.FC<FoodCardProps> = memo(
             style={[
               themed($dishName),
               {
-                fontSize: multiplier > 1 ? 16 : 14,
-                lineHeight: multiplier > 1 ? 20 : 18,
+                fontSize: multiplier > 1 ? 20 : 14,
+                lineHeight: multiplier > 1 ? 26 : 18,
               },
             ]}
             numberOfLines={2}

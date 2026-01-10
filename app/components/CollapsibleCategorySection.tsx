@@ -206,8 +206,10 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
           style={[
             themed($header),
             {
-              paddingHorizontal: theme.spacing.md * multiplier,
-              paddingVertical: theme.spacing.sm * multiplier,
+              paddingHorizontal: multiplier > 1 ? theme.spacing.xxl : theme.spacing.md,
+              paddingTop: multiplier > 1 ? theme.spacing.xl : theme.spacing.sm,
+              paddingBottom: multiplier > 1 ? theme.spacing.md : theme.spacing.sm,
+              minHeight: multiplier > 1 ? 100 : undefined,
             },
           ]}
           onPress={handleToggle}
@@ -219,8 +221,9 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                 style={[
                   themed($categoryIcon),
                   {
-                    fontSize: multiplier > 1 ? 28 : 24,
-                    marginRight: theme.spacing.sm,
+                    fontSize: multiplier > 1 ? 36 : 24,
+                    lineHeight: multiplier > 1 ? 48 : 32,
+                    marginRight: theme.spacing.md,
                   },
                 ]}
               >
@@ -232,7 +235,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                   style={[
                     themed($categoryName),
                     {
-                      fontSize: multiplier > 1 ? 20 : 18,
+                      fontSize: multiplier > 1 ? 24 : 18,
                     },
                   ]}
                 >
@@ -242,7 +245,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                   style={[
                     themed($categoryCount),
                     {
-                      fontSize: multiplier > 1 ? 15 : 14,
+                      fontSize: multiplier > 1 ? 18 : 14,
                     },
                   ]}
                 >
@@ -256,7 +259,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                 style={[
                   themed($chevronText),
                   {
-                    fontSize: multiplier > 1 ? 14 : 12,
+                    fontSize: multiplier > 1 ? 18 : 12,
                   },
                 ]}
               >
@@ -270,8 +273,8 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
               style={[
                 themed($categoryDescription),
                 {
-                  fontSize: multiplier > 1 ? 13 : 12,
-                  marginTop: theme.spacing.xs,
+                  fontSize: multiplier > 1 ? 16 : 12,
+                  marginTop: theme.spacing.sm,
                 },
               ]}
               numberOfLines={1}
@@ -287,9 +290,9 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
             style={[
               themed($content),
               {
-                paddingHorizontal: theme.spacing.md * multiplier,
-                paddingTop: theme.spacing.sm * multiplier,
-                paddingBottom: theme.spacing.md * multiplier,
+                paddingHorizontal: multiplier > 1 ? theme.spacing.xxl : theme.spacing.md,
+                paddingTop: multiplier > 1 ? theme.spacing.lg : theme.spacing.sm,
+                paddingBottom: multiplier > 1 ? theme.spacing.xxl : theme.spacing.md,
               },
             ]}
           >

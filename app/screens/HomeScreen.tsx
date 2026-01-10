@@ -208,7 +208,7 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
               style={[
                 themed($categorySection),
                 {
-                  marginBottom: theme.spacing.lg * multiplier,
+                  marginBottom: theme.spacing.md,
                 },
               ]}
             />
