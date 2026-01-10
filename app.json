@@ -7,7 +7,8 @@
   "userInterfaceStyle": "automatic",
   "icon": "./assets/icons/app/ios-dark.png",
   "updates": {
-    "fallbackToCacheTimeout": 0
+    "fallbackToCacheTimeout": 0,
+    "url": "https://u.expo.dev/de25f34f-220d-40c9-98e9-cbc455e55dd8"
   },
   "newArchEnabled": true,
   "jsEngine": "hermes",
@@ -23,7 +24,11 @@
       "monochromeImage": "./assets/icons/app/adaptive-icon.png"
     },
     "allowBackup": false,
-    "edgeToEdgeEnabled": true
+    "edgeToEdgeEnabled": true,
+    "permissions": [
+      "android.permission.CAMERA",
+      "android.permission.RECORD_AUDIO"
+    ]
   },
   "ios": {
     "icon": {
@@ -32,7 +37,26 @@
       "tinted": "./assets/icons/app/ios-tinted.png"
     },
     "supportsTablet": true,
-    "bundleIdentifier": "com.burn2eat.swarecito"
+    "bundleIdentifier": "com.burn2eat.swarecito",
+    "privacyManifests": {
+      "NSPrivacyAccessedAPITypes": [
+        {
+          "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+          "NSPrivacyAccessedAPITypeReasons": [
+            "CA92.1"
+          ]
+        },
+        {
+          "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+          "NSPrivacyAccessedAPITypeReasons": [
+            "CA92.1"
+          ]
+        }
+      ]
+    },
+    "infoPlist": {
+      "ITSAppUsesNonExemptEncryption": false
+    }
   },
   "web": {
     "favicon": "./assets/images/app-icon-web-favicon.png",
@@ -53,7 +77,6 @@
           "image": "./assets/icons/app/splash-icon-light.png",
           "backgroundColor": "#000"
         }
-
       }
     ],
     [
@@ -81,7 +104,10 @@
       "version": "UNKNOWN"
     },
     "eas": {
-        "projectId": "de25f34f-220d-40c9-98e9-cbc455e55dd8"
-      }
+      "projectId": "de25f34f-220d-40c9-98e9-cbc455e55dd8"
+    }
+  },
+  "runtimeVersion": {
+    "policy": "appVersion"
   }
 }
