@@ -19,6 +19,6 @@ function fromCatalogToOption(activities: Activity[]): ActivityOption[] {
   return activities.map((act) => ({
     key: act.getKey(),
     name: act.getLabel(),
-    met: act.getMET() as unknown as number,
+    met: act.getMET().toNumber(),
   }))
 }

@@ -61,7 +61,7 @@ export const ActivityPickerButton: React.FC<ActivityPickerButtonProps> = ({
           </Text>
           <Text style={themed($caretIcon)}>▼</Text>
         </View>
-        {selectedActivityData && (
+        {selectedActivityData && selectedActivityData.met != null && (
           <Text style={themed($metText)}>{selectedActivityData.met.toFixed(1)} MET</Text>
         )}
       </TouchableOpacity>
@@ -97,9 +97,11 @@ export const ActivityPickerButton: React.FC<ActivityPickerButtonProps> = ({
                       <Text style={[themed($activityName), isSelected && themed($selectedText)]}>
                         {item.name}
                       </Text>
-                      <Text style={[themed($activityMet), isSelected && themed($selectedMetText)]}>
-                        {item.met.toFixed(1)} MET
-                      </Text>
+                      {item.met != null && (
+                        <Text style={[themed($activityMet), isSelected && themed($selectedMetText)]}>
+                          {item.met.toFixed(1)} MET
+                        </Text>
+                      )}
                     </View>
                     {isSelected && <Text style={themed($checkIcon)}>✓</Text>}
                   </TouchableOpacity>
