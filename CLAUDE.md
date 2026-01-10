@@ -4,7 +4,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Burn2Eat is a React Native MVP app built with the Ignite boilerplate that helps users understand the energy impact of their food choices by converting calories into exercise time equivalents. The project follows Domain-Driven Development (DDD) and Test-Driven Development (TDD) principles.
+Burn2Eat is a React Native MVP app built with the Ignite boilerplate that helps users understand the energy impact of their food choices by converting calories into exercise time equivalents.
+
+### Current Priority: App Store Publication
+
+**Status**: App rejected by Apple - requires critical fixes before resubmission
+
+**Apple Rejection Issues** (see `docs/publish/issues/issues-2.md`):
+1. **Guideline 2.1 - Performance**: App froze during review on iPad Air (5th gen) with iPadOS 18.6.2
+2. **Guideline 4.0 - Design**: Screens crowded and difficult to complete tasks
+
+**Project Goals**:
+- Fix critical performance/stability issues (app freezing)
+- Improve UI/UX with minimal changes: better spacing, layout adjustments
+- Make app more visually appealing while keeping changes minimal
+- Pass App Store review and publish as quickly as possible
+- Focus on core functionality working correctly
+
+**Out of Scope for Now**:
+- Major feature additions
+- External API integrations (OpenFoodFacts)
+- Social features
+- Authentication systems
 
 ## Commands
 
@@ -19,6 +40,11 @@ Burn2Eat is a React Native MVP app built with the Ignite boilerplate that helps 
 - `yarn build:android:sim` - Build for Android simulator
 - `yarn build:ios:dev` - Build for iOS device (development)
 - `yarn build:android:dev` - Build for Android device (development)
+
+### App Store Testing
+- Test on iPad Air (5th gen) or similar - this is where Apple found the freeze bug
+- Test on iPadOS 18.6.2 or later
+- Focus on stability testing: navigate through all screens, test all interactions
 
 ### Testing & Code Quality
 - `yarn test` - Run Jest tests
@@ -98,21 +124,26 @@ app/
 
 ## Development Guidelines
 
+### Performance & Stability (CRITICAL for App Store)
+- **Test on iPad devices** - App froze on iPad Air (5th gen)
+- Avoid memory leaks in React Navigation screens
+- Use React.memo() for expensive list items
+- Implement proper cleanup in useEffect hooks
+- Test scrolling performance with large lists
+- Monitor console for warnings/errors
+
+### UI/UX Design Principles (Apple Guideline 4.0)
+- **Less is more**: Minimal, focused changes only
+- **Spacing**: Use proper spacing constants from `app/theme/spacing.ts`
+- **Not crowded**: Ensure touch targets are well-spaced (min 44x44 points)
+- **Clear hierarchy**: Use typography system from `app/theme/typography.ts`
+- **iPad support**: Test layouts on iPad - this is where Apple tests
+- **Readable**: Good contrast, legible font sizes
+
 ### Domain Logic
 - Keep domain entities pure (no external dependencies)
 - Use branded types for type safety (Kilocalories, Minutes, etc.)
 - Follow the MET formula for effort calculations: `minutes ≈ calories / (MET * 3.5 * weightKg / 200)`
-
-### Testing Approach
-1. Write failing tests first (TDD)
-2. Focus on domain logic testing
-3. Use descriptive test names that explain behavior
-4. Test both happy paths and edge cases
-
-### Food Data Integration
-- MVP uses static food data (no OpenFoodFacts integration yet)
-- Future: OpenFoodFacts API integration via DishRepository adapter
-- Need static dataset with food images and calorie data for MVP
 
 ### Ignite Component Usage
 - Always use custom components from `app/components/`
@@ -120,13 +151,16 @@ app/
 - Use translation system (`tx` prop) for internationalization
 - Respect import restrictions in ESLint config
 
-## MVP Scope
-- Simple onboarding (height, weight, preferred activity)
-- Food search interface with static dataset
-- Instant calorie-to-exercise conversion
-- Fun animations/confetti for engagement
-- Local storage for history
-- No social features or authentication in MVP<!-- BEGIN BYTEROVER RULES -->
+### Food Data Integration
+- MVP uses static food data (no OpenFoodFacts integration yet)
+- Static dataset with food images and calorie data
+- Categories: Fast Food, Desserts, Boissons, Collations, Fruits, Plats Principaux
+
+## Known Issues to Fix
+See `docs/publish/issues/` for Apple's feedback and screenshots:
+1. App freezing/stability issues on iPad
+2. UI crowding - needs better spacing and layout
+3. Current screenshots show French UI - ensure internationalization works<!-- BEGIN BYTEROVER RULES -->
 
 # Workflow Instruction
 
