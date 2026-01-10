@@ -1,4 +1,5 @@
-import React, { useState, memo } from "react"
+import React from "react"
+import { memo } from "react"
 import {
   View,
   ViewStyle,
@@ -95,7 +96,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
 
   const animatedChevronStyle = useAnimatedStyle(() => {
     const rotation = interpolate(rotateAnim.value, [0, 1], [0, 180])
-    return {
+      return {
       transform: [{ rotate: `${rotation}deg` }],
     }
   })
@@ -189,7 +190,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
       {/* Collapsible Content */}
       {isExpanded && <View style={themed($content)}>{renderDishGrid()}</View>}
     </View>
-  )
+    )
   },
 )
 
