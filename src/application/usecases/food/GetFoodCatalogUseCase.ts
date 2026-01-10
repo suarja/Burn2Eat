@@ -45,7 +45,7 @@ export class GetFoodCatalogUseCase {
    * @param query - Search query string
    * @param limit - Maximum number of results (default: 30)
    */
-  async search(query: string, limit: number = 30): Promise<Dish[]> {
+  async searchByName(query: string, limit: number = 30): Promise<Dish[]> {
     if (!query || query.trim().length < 2) {
       return []
     }

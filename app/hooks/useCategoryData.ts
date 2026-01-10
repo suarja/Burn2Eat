@@ -118,7 +118,7 @@ export const useCategoryData = (): UseCategoryDataReturn => {
       setIsSearching(true)
       // Use paginated search to avoid loading all dishes into memory
       // This prevents freezing on iPad by limiting results to 30 items
-      const results = await getFoodCatalogUseCase.search(searchText, 30)
+      const results = await getFoodCatalogUseCase.searchByName(searchText, 30)
       setSearchResults(results)
     } catch (error) {
       console.error("Search failed:", error)
