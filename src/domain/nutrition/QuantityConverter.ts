@@ -1,6 +1,6 @@
-import { Grams } from "../common/UnitTypes"
-import { ServingSize, InvalidServingSizeError } from "./ServingSize"
 import { PortionUnit, PortionUnitUtils } from "./PortionUnit"
+import { ServingSize, InvalidServingSizeError } from "./ServingSize"
+import { Grams } from "../common/UnitTypes"
 
 /**
  * Display context for UI components
@@ -14,28 +14,27 @@ export interface DisplayContext {
 
 /**
  * QuantityConverter Domain Service
- * 
+ *
  * Following DDD patterns:
  * - Domain service for complex business logic that doesn't belong in entities/value objects
  * - Stateless operations that work with domain objects
  * - Encapsulates conversion rules and business knowledge
- * 
+ *
  * Research-based approach:
  * - Based on FDA serving size guidelines
  * - Informed by food portion estimation studies
  * - Handles edge cases from real-world food data
  */
 export class QuantityConverter {
-  
   /**
    * Parse serving size string with enhanced error handling and validation
    * More robust than the original ResultScreen parsing logic
    */
   parseServingString(input: string): ServingSize {
-    if (!input || typeof input !== 'string') {
+    if (!input || typeof input !== "string") {
       throw new InvalidServingSizeError("Serving string cannot be empty")
     }
-    
+
     try {
       return ServingSize.fromString(input)
     } catch (error) {
@@ -44,7 +43,7 @@ export class QuantityConverter {
       return ServingSize.grams(100)
     }
   }
-  
+
   /**
    * Convert any serving size to grams
    * Handles all the conversion logic that was scattered in ResultScreen
@@ -53,7 +52,7 @@ export class QuantityConverter {
     if (amount <= 0) {
       throw new InvalidServingSizeError("Amount must be positive")
     }
-    
+
     try {
       // Create a temporary serving size to leverage conversion logic
       const tempServing = ServingSize.fromString(`${amount} ${unit}`)
@@ -63,7 +62,7 @@ export class QuantityConverter {
       return this.basicUnitConversion(amount, unit)
     }
   }
-  
+
   /**
    * Basic unit conversion fallback
    * Extracted from original ResultScreen logic
@@ -83,27 +82,27 @@ export class QuantityConverter {
       [PortionUnit.PORTION]: 150,
       [PortionUnit.BOTTLE]: 330,
       [PortionUnit.CAN]: 250,
-      [PortionUnit.PER_100G]: 100
+      [PortionUnit.PER_100G]: 100,
     }
-    
+
     const factor = conversionFactors[unit as keyof typeof conversionFactors] || 100 // Default fallback
     return Math.max(1, amount * factor) as Grams
   }
-  
+
   /**
    * Generate display context for UI components
    * Replaces the complex getDisplayContext logic from ResultScreen
    */
   generateDisplayContext(servingSize: ServingSize, selectedGrams: Grams): DisplayContext {
     const context = servingSize.getDisplayContext(selectedGrams)
-    
+
     return {
       quantityText: context.quantityText,
       isPerProduct: context.isPerProduct,
-      servingDescription: servingSize.toDisplayString()
+      servingDescription: servingSize.toDisplayString(),
     }
   }
-  
+
   /**
    * Extract serving size from food data structure
    * Replaces extractServingSizeFromLocalDish logic from ResultScreen
@@ -112,7 +111,7 @@ export class QuantityConverter {
     portionSize: { amount: number; unit: string }
   }): ServingSize {
     const { amount, unit } = foodData.portionSize
-    
+
     try {
       // Convert portion unit string to standardized format
       const standardizedUnit = this.standardizeUnitString(unit)
@@ -123,32 +122,32 @@ export class QuantityConverter {
       return ServingSize.grams(100)
     }
   }
-  
+
   /**
    * Standardize unit strings from various data sources
    * Handles the unit conversion logic from ResultScreen
    */
   private standardizeUnitString(unit: string): string {
     const normalized = unit.toLowerCase().trim()
-    
+
     // Map various unit representations to standard format
     const unitMappings = {
       "100g": "100g",
-      "g": "g",  // Add explicit mapping for grams
+      "g": "g", // Add explicit mapping for grams
       "kg": "kg", // Add explicit mapping for kilograms
-      "piece": "piece", 
+      "piece": "piece",
       "slice": "slice",
       "cup": "cup",
       "serving": "serving",
       "bottle": "bottle",
       "can": "can",
       "ml": "ml",
-      "l": "l"
+      "l": "l",
     }
-    
+
     return unitMappings[normalized as keyof typeof unitMappings] || unit // Return original if no mapping found
   }
-  
+
   /**
    * Calculate portion ratio for scaling
    * Useful for quantity selector and portion adjustments
@@ -156,48 +155,48 @@ export class QuantityConverter {
   calculatePortionRatio(originalServing: ServingSize, newGrams: Grams): number {
     const originalGrams = originalServing.toGrams()
     if (originalGrams === 0) return 1
-    
+
     return newGrams / originalGrams
   }
-  
+
   /**
    * Validate serving size constraints
    * Business rules for reasonable portion sizes
    */
   validateServingSize(servingSize: ServingSize): boolean {
     const grams = servingSize.toGrams()
-    
+
     // Business rule: portions should be between 1g and 5000g (5kg)
     if (grams < 1 || grams > 5000) {
       return false
     }
-    
+
     // Business rule: check for reasonable unit amounts
     const amount = servingSize.getAmount()
     const unit = servingSize.getUnit()
-    
+
     if (unit === PortionUnit.PIECE && amount > 50) {
       return false // More than 50 pieces seems unreasonable
     }
-    
+
     if (unit === PortionUnit.SLICE && amount > 20) {
       return false // More than 20 slices seems unreasonable
     }
-    
+
     if (unit === PortionUnit.BOTTLE && amount > 10) {
       return false // More than 10 bottles seems unreasonable
     }
-    
+
     return true
   }
-  
+
   /**
    * Get suggested serving sizes for a food item
    * Provides common portion options for UI
    */
   getSuggestedServings(baseServing: ServingSize): ServingSize[] {
     const suggestions: ServingSize[] = [baseServing]
-    
+
     // Add scaled versions
     try {
       suggestions.push(baseServing.scale(0.5)) // Half portion
@@ -207,17 +206,17 @@ export class QuantityConverter {
       // If scaling fails, just return the base serving
       console.warn("Failed to generate scaled servings:", error)
     }
-    
+
     // Add common gram amounts if not already weight-based
     if (!PortionUnitUtils.isWeightBased(baseServing.getUnit())) {
       suggestions.push(ServingSize.grams(50))
       suggestions.push(ServingSize.grams(100))
       suggestions.push(ServingSize.grams(200))
     }
-    
-    return suggestions.filter(serving => this.validateServingSize(serving))
+
+    return suggestions.filter((serving) => this.validateServingSize(serving))
   }
-  
+
   /**
    * Compare two serving sizes
    * Useful for UI selection and validation
@@ -225,10 +224,10 @@ export class QuantityConverter {
   compareServings(serving1: ServingSize, serving2: ServingSize): number {
     const grams1 = serving1.toGrams()
     const grams2 = serving2.toGrams()
-    
+
     return grams1 - grams2
   }
-  
+
   /**
    * Format serving size for logging/debugging
    */

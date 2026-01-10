@@ -85,111 +85,111 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
     style,
     numColumns = 2,
   }) => {
-  const { themed } = useAppTheme()
+    const { themed } = useAppTheme()
 
-  // Animation for chevron rotation
-  const rotateAnim = useSharedValue(0)
+    // Animation for chevron rotation
+    const rotateAnim = useSharedValue(0)
 
-  React.useEffect(() => {
-    rotateAnim.value = withTiming(isExpanded ? 1 : 0, { duration: 200 })
-  }, [isExpanded, rotateAnim])
+    React.useEffect(() => {
+      rotateAnim.value = withTiming(isExpanded ? 1 : 0, { duration: 200 })
+    }, [isExpanded, rotateAnim])
 
-  const animatedChevronStyle = useAnimatedStyle(() => {
-    const rotation = interpolate(rotateAnim.value, [0, 1], [0, 180])
+    const animatedChevronStyle = useAnimatedStyle(() => {
+      const rotation = interpolate(rotateAnim.value, [0, 1], [0, 180])
       return {
-      transform: [{ rotate: `${rotation}deg` }],
-    }
-  })
-
-  const handleToggle = () => {
-    LayoutAnimation.configureNext({
-      duration: 200,
-      create: {
-        type: LayoutAnimation.Types.easeInEaseOut,
-        property: LayoutAnimation.Properties.opacity,
-      },
-      update: {
-        type: LayoutAnimation.Types.easeInEaseOut,
-      },
+        transform: [{ rotate: `${rotation}deg` }],
+      }
     })
-    onToggle()
-  }
 
-  const renderDishGrid = () => {
-    if (!dishes.length) return null
+    const handleToggle = () => {
+      LayoutAnimation.configureNext({
+        duration: 200,
+        create: {
+          type: LayoutAnimation.Types.easeInEaseOut,
+          property: LayoutAnimation.Properties.opacity,
+        },
+        update: {
+          type: LayoutAnimation.Types.easeInEaseOut,
+        },
+      })
+      onToggle()
+    }
 
-    const rows: Dish[][] = []
-    for (let i = 0; i < dishes.length; i += numColumns) {
-      rows.push(dishes.slice(i, i + numColumns))
+    const renderDishGrid = () => {
+      if (!dishes.length) return null
+
+      const rows: Dish[][] = []
+      for (let i = 0; i < dishes.length; i += numColumns) {
+        rows.push(dishes.slice(i, i + numColumns))
+      }
+
+      return (
+        <View style={themed($dishGrid)}>
+          {rows.map((row, rowIndex) => (
+            <View key={rowIndex} style={themed($dishRow)}>
+              {row.map((dish, colIndex) => (
+                <View key={dish.getId().toString()} style={themed($dishContainer)}>
+                  <FoodCard
+                    dish={dish}
+                    onPress={() => onDishSelect(dish)}
+                    size="medium"
+                    style={themed($dishCard)}
+                  />
+                </View>
+              ))}
+              {/* Fill remaining columns with empty space */}
+              {row.length < numColumns &&
+                Array.from({ length: numColumns - row.length }).map((_, emptyIndex) => (
+                  <View key={`empty-${emptyIndex}`} style={themed($dishContainer)} />
+                ))}
+            </View>
+          ))}
+
+          {hasMore && (
+            <View style={themed($loadMoreContainer)}>
+              <LoadMoreButton
+                onPress={onLoadMore}
+                isLoading={isLoadingMore}
+                text={`Voir plus de ${category.name.toLowerCase()}`}
+              />
+            </View>
+          )}
+        </View>
+      )
     }
 
     return (
-      <View style={themed($dishGrid)}>
-        {rows.map((row, rowIndex) => (
-          <View key={rowIndex} style={themed($dishRow)}>
-            {row.map((dish, colIndex) => (
-              <View key={dish.getId().toString()} style={themed($dishContainer)}>
-                <FoodCard
-                  dish={dish}
-                  onPress={() => onDishSelect(dish)}
-                  size="medium"
-                  style={themed($dishCard)}
-                />
+      <View style={[themed($container), style]}>
+        {/* Header */}
+        <TouchableOpacity style={themed($header)} onPress={handleToggle} activeOpacity={0.7}>
+          <View style={themed($headerContent)}>
+            <View style={themed($categoryInfo)}>
+              <Text style={themed($categoryIcon)}>{category.icon}</Text>
+              <View style={themed($categoryText)}>
+                <Text preset="bold" style={themed($categoryName)}>
+                  {category.name}
+                </Text>
+                <Text style={themed($categoryCount)}>
+                  {category.count} plat{category.count > 1 ? "s" : ""}
+                </Text>
               </View>
-            ))}
-            {/* Fill remaining columns with empty space */}
-            {row.length < numColumns &&
-              Array.from({ length: numColumns - row.length }).map((_, emptyIndex) => (
-                <View key={`empty-${emptyIndex}`} style={themed($dishContainer)} />
-              ))}
-          </View>
-        ))}
-
-        {hasMore && (
-          <View style={themed($loadMoreContainer)}>
-            <LoadMoreButton
-              onPress={onLoadMore}
-              isLoading={isLoadingMore}
-              text={`Voir plus de ${category.name.toLowerCase()}`}
-            />
-          </View>
-        )}
-      </View>
-    )
-  }
-
-  return (
-    <View style={[themed($container), style]}>
-      {/* Header */}
-      <TouchableOpacity style={themed($header)} onPress={handleToggle} activeOpacity={0.7}>
-        <View style={themed($headerContent)}>
-          <View style={themed($categoryInfo)}>
-            <Text style={themed($categoryIcon)}>{category.icon}</Text>
-            <View style={themed($categoryText)}>
-              <Text preset="bold" style={themed($categoryName)}>
-                {category.name}
-              </Text>
-              <Text style={themed($categoryCount)}>
-                {category.count} plat{category.count > 1 ? "s" : ""}
-              </Text>
             </View>
+
+            <Animated.View style={[themed($chevron), animatedChevronStyle]}>
+              <Text style={themed($chevronText)}>▼</Text>
+            </Animated.View>
           </View>
 
-          <Animated.View style={[themed($chevron), animatedChevronStyle]}>
-            <Text style={themed($chevronText)}>▼</Text>
-          </Animated.View>
-        </View>
+          {category.description && !isExpanded && (
+            <Text style={themed($categoryDescription)} numberOfLines={1}>
+              {category.description}
+            </Text>
+          )}
+        </TouchableOpacity>
 
-        {category.description && !isExpanded && (
-          <Text style={themed($categoryDescription)} numberOfLines={1}>
-            {category.description}
-          </Text>
-        )}
-      </TouchableOpacity>
-
-      {/* Collapsible Content */}
-      {isExpanded && <View style={themed($content)}>{renderDishGrid()}</View>}
-    </View>
+        {/* Collapsible Content */}
+        {isExpanded && <View style={themed($content)}>{renderDishGrid()}</View>}
+      </View>
     )
   },
 )

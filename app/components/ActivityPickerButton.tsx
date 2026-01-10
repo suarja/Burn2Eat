@@ -1,5 +1,13 @@
 import React, { useState } from "react"
-import { View, ViewStyle, TextStyle, Modal, TouchableOpacity, FlatList, Pressable } from "react-native"
+import {
+  View,
+  ViewStyle,
+  TextStyle,
+  Modal,
+  TouchableOpacity,
+  FlatList,
+  Pressable,
+} from "react-native"
 
 import { useActivityCatalog } from "@/hooks/useActivityCatalog"
 import { useAppTheme } from "@/theme/context"
@@ -98,7 +106,9 @@ export const ActivityPickerButton: React.FC<ActivityPickerButtonProps> = ({
                         {item.name}
                       </Text>
                       {item.met != null && (
-                        <Text style={[themed($activityMet), isSelected && themed($selectedMetText)]}>
+                        <Text
+                          style={[themed($activityMet), isSelected && themed($selectedMetText)]}
+                        >
                           {item.met.toFixed(1)} MET
                         </Text>
                       )}

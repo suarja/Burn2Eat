@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useState } from "react"
 import { View, ViewStyle, TextStyle } from "react-native"
 import { Toast } from "toastify-react-native"
-import {Text as TextIgnite} from '@/components/Text'
 
 import { ActivityPickerButton } from "@/components/ActivityPickerButton"
 import { Button } from "@/components/Button"
@@ -9,13 +8,14 @@ import { Card } from "@/components/Card"
 import { Header } from "@/components/Header"
 import { WeightHeightSelector, WeightHeightWheelSelector } from "@/components/NumberComponents"
 import { Screen } from "@/components/Screen"
+import { Text as TextIgnite } from "@/components/Text"
 import { Text } from "@/components/Text"
-import { useUserProfile } from "@/hooks/useUserProfile"
 import { useResponsiveSpacing } from "@/hooks/useResponsiveSpacing"
+import { useUserProfile } from "@/hooks/useUserProfile"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
+import { colors } from "@/theme/colors"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
-import { colors } from "@/theme/colors"
 
 interface ProfileSetupScreenProps extends AppStackScreenProps<"Profile"> {}
 
@@ -60,13 +60,7 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
           ? "✓ Profil mis à jour avec succès !"
           : "🎉 Profil sauvegardé avec succès !"
 
-        Toast.success(
-          successMessage,
-          "bottom",
-          "checkmark-circle",
-          "Ionicons",
-          false,
-        )
+        Toast.success(successMessage, "bottom", "checkmark-circle", "Ionicons", false)
 
         if (isEditingExistingProfile) {
           // If editing existing profile, just go back to settings
@@ -140,9 +134,7 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
           ContentComponent={
             <View style={themed($cardContent)}>
               <Text style={themed($sectionTitle)}>📏 Tes mesures</Text>
-              <Text style={themed($sectionSubtitle)}>
-                Ajuste ton poids et ta taille
-              </Text>
+              <Text style={themed($sectionSubtitle)}>Ajuste ton poids et ta taille</Text>
 
               {useWheelPicker ? (
                 !isInitialLoad ? (

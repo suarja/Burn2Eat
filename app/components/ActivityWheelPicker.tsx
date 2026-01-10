@@ -1,4 +1,4 @@
-import  { useRef, useEffect } from "react"
+import { useRef, useEffect } from "react"
 import { View, ViewStyle, TextStyle, ScrollView } from "react-native"
 
 import { useActivityCatalog } from "@/hooks/useActivityCatalog"

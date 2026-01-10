@@ -40,117 +40,109 @@ export interface FoodCardProps {
 }
 
 export const FoodCard: React.FC<FoodCardProps> = memo(
-  ({
-    dish,
-    onPress,
-    style,
-    disabled = false,
-    size = "medium",
-    displayCalories,
-    quantityText,
-  }) => {
-  const { themed, theme } = useAppTheme()
+  ({ dish, onPress, style, disabled = false, size = "medium", displayCalories, quantityText }) => {
+    const { themed, theme } = useAppTheme()
 
-  // Use single pastel color for all cards
-  const lightColor = theme.colors.palette.secondary100
-  const strongColor = theme.colors.palette.accent500
+    // Use single pastel color for all cards
+    const lightColor = theme.colors.palette.secondary100
+    const strongColor = theme.colors.palette.accent500
 
-  // Get emoji fallback for food
-  const getFoodEmoji = (dishName: string): string => {
-    const name = dishName.toLowerCase()
-    if (name.includes("burger") || name.includes("sandwich")) return "🍔"
-    if (name.includes("pizza")) return "🍕"
-    if (name.includes("frites") || name.includes("fries")) return "🍟"
-    if (name.includes("soda") || name.includes("coca")) return "🥤"
-    if (name.includes("glace") || name.includes("ice")) return "🍦"
-    if (name.includes("salade") || name.includes("salad")) return "🥗"
-    if (name.includes("pomme") || name.includes("apple")) return "🍎"
-    if (name.includes("banane") || name.includes("banana")) return "🍌"
-    if (name.includes("orange")) return "🍊"
-    if (name.includes("pain") || name.includes("bread")) return "🍞"
-    if (name.includes("pâtes") || name.includes("pasta")) return "🍝"
-    if (name.includes("riz") || name.includes("rice")) return "🍚"
-    if (name.includes("poulet") || name.includes("chicken")) return "🍗"
-    if (name.includes("poisson") || name.includes("fish") || name.includes("saumon")) return "🐟"
-    if (name.includes("œuf") || name.includes("egg")) return "🍳"
-    if (name.includes("chocolat") || name.includes("chocolate")) return "🍫"
-    if (name.includes("gâteau") || name.includes("cake")) return "🍰"
-    if (name.includes("croissant")) return "🥐"
-    if (name.includes("hot") && name.includes("dog")) return "🌭"
-    if (name.includes("donut")) return "🍩"
-    return "🍽️" // Generic food emoji
-  }
+    // Get emoji fallback for food
+    const getFoodEmoji = (dishName: string): string => {
+      const name = dishName.toLowerCase()
+      if (name.includes("burger") || name.includes("sandwich")) return "🍔"
+      if (name.includes("pizza")) return "🍕"
+      if (name.includes("frites") || name.includes("fries")) return "🍟"
+      if (name.includes("soda") || name.includes("coca")) return "🥤"
+      if (name.includes("glace") || name.includes("ice")) return "🍦"
+      if (name.includes("salade") || name.includes("salad")) return "🥗"
+      if (name.includes("pomme") || name.includes("apple")) return "🍎"
+      if (name.includes("banane") || name.includes("banana")) return "🍌"
+      if (name.includes("orange")) return "🍊"
+      if (name.includes("pain") || name.includes("bread")) return "🍞"
+      if (name.includes("pâtes") || name.includes("pasta")) return "🍝"
+      if (name.includes("riz") || name.includes("rice")) return "🍚"
+      if (name.includes("poulet") || name.includes("chicken")) return "🍗"
+      if (name.includes("poisson") || name.includes("fish") || name.includes("saumon")) return "🐟"
+      if (name.includes("œuf") || name.includes("egg")) return "🍳"
+      if (name.includes("chocolat") || name.includes("chocolate")) return "🍫"
+      if (name.includes("gâteau") || name.includes("cake")) return "🍰"
+      if (name.includes("croissant")) return "🥐"
+      if (name.includes("hot") && name.includes("dog")) return "🌭"
+      if (name.includes("donut")) return "🍩"
+      return "🍽️" // Generic food emoji
+    }
 
-  const cardSizeStyle = themed($cardSizes[size])
-  const imageSizeStyle = themed($imageSizes[size])
+    const cardSizeStyle = themed($cardSizes[size])
+    const imageSizeStyle = themed($imageSizes[size])
 
-  return (
-    <TouchableOpacity
-      style={[
-        themed($container),
-        cardSizeStyle,
-        { backgroundColor: lightColor }, // Gradient background simulation
-        disabled && themed($disabledContainer),
-        style,
-      ]}
-      onPress={onPress}
-      disabled={disabled}
-      activeOpacity={0.8}
-    >
-      {/* Image/Emoji Section */}
-      <View style={themed($imageContainer)}>
-        {dish.hasImage() ? (
-          <Image
-            source={{ uri: dish.getImageUrl()! }}
-            style={[themed($image), imageSizeStyle]}
-            contentFit="cover"
-            transition={200}
-            placeholder={getFoodEmoji(dish.getName())}
-            cachePolicy="memory-disk"
-            recyclingKey={dish.getId().toString()}
-            priority="high"
-            allowDownscaling={true}
-          />
-        ) : (
-          <View style={[themed($emojiContainer), imageSizeStyle]}>
-            <Text style={themed($emojiText)}>{getFoodEmoji(dish.getName())}</Text>
-          </View>
-        )}
-      </View>
+    return (
+      <TouchableOpacity
+        style={[
+          themed($container),
+          cardSizeStyle,
+          { backgroundColor: lightColor }, // Gradient background simulation
+          disabled && themed($disabledContainer),
+          style,
+        ]}
+        onPress={onPress}
+        disabled={disabled}
+        activeOpacity={0.8}
+      >
+        {/* Image/Emoji Section */}
+        <View style={themed($imageContainer)}>
+          {dish.hasImage() ? (
+            <Image
+              source={{ uri: dish.getImageUrl()! }}
+              style={[themed($image), imageSizeStyle]}
+              contentFit="cover"
+              transition={200}
+              placeholder={getFoodEmoji(dish.getName())}
+              cachePolicy="memory-disk"
+              recyclingKey={dish.getId().toString()}
+              priority="high"
+              allowDownscaling={true}
+            />
+          ) : (
+            <View style={[themed($emojiContainer), imageSizeStyle]}>
+              <Text style={themed($emojiText)}>{getFoodEmoji(dish.getName())}</Text>
+            </View>
+          )}
+        </View>
 
-      {/* Content Section */}
-      <View style={themed($contentContainer)}>
-        <Text preset="bold" style={themed($dishName)} numberOfLines={2} ellipsizeMode="tail">
-          {dish.getName()}
-        </Text>
+        {/* Content Section */}
+        <View style={themed($contentContainer)}>
+          <Text preset="bold" style={themed($dishName)} numberOfLines={2} ellipsizeMode="tail">
+            {dish.getName()}
+          </Text>
 
-        {/* Show calories only for result variant */}
-        {size === "result" && (
-          <View style={themed($caloriesContainer)}>
-            <Text style={themed($caloriesText)}>
-              {Math.round(displayCalories || dish.getCalories())}
-            </Text>
-            <Text style={themed($caloriesUnit)}>kcal</Text>
-          </View>
-        )}
+          {/* Show calories only for result variant */}
+          {size === "result" && (
+            <View style={themed($caloriesContainer)}>
+              <Text style={themed($caloriesText)}>
+                {Math.round(displayCalories || dish.getCalories())}
+              </Text>
+              <Text style={themed($caloriesUnit)}>kcal</Text>
+            </View>
+          )}
 
-        {/* Show quantity text if provided */}
-        {quantityText && size === "result" && (
-          <Text style={themed($quantityText)}>{quantityText}</Text>
-        )}
+          {/* Show quantity text if provided */}
+          {quantityText && size === "result" && (
+            <Text style={themed($quantityText)}>{quantityText}</Text>
+          )}
 
-        {/* High calorie indicator only for result variant */}
-        {size === "result" && dish.isHighCalorie() && (
-          <View style={themed($highCalorieBadge)}>
-            <Text style={themed($highCalorieText)}>🔥 Intense</Text>
-          </View>
-        )}
-      </View>
+          {/* High calorie indicator only for result variant */}
+          {size === "result" && dish.isHighCalorie() && (
+            <View style={themed($highCalorieBadge)}>
+              <Text style={themed($highCalorieText)}>🔥 Intense</Text>
+            </View>
+          )}
+        </View>
 
-      {/* Accent border */}
-      <View style={[themed($accentBorder), { backgroundColor: strongColor }]} />
-    </TouchableOpacity>
-  )
+        {/* Accent border */}
+        <View style={[themed($accentBorder), { backgroundColor: strongColor }]} />
+      </TouchableOpacity>
+    )
   },
 )
 

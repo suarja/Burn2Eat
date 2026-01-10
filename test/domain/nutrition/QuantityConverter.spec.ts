@@ -1,7 +1,7 @@
 import { Grams } from "@/domain/common/UnitTypes"
+import { PortionUnit } from "@/domain/nutrition/PortionUnit"
 import { QuantityConverter } from "@/domain/nutrition/QuantityConverter"
 import { ServingSize, InvalidServingSizeError } from "@/domain/nutrition/ServingSize"
-import { PortionUnit } from "@/domain/nutrition/PortionUnit"
 
 describe("QuantityConverter Domain Service", () => {
   let converter: QuantityConverter
@@ -76,7 +76,7 @@ describe("QuantityConverter Domain Service", () => {
     it("should generate context for weight-based servings", () => {
       const serving = ServingSize.fromString("100g")
       const context = converter.generateDisplayContext(serving, 150 as Grams)
-      
+
       expect(context.quantityText).toBe("pour 150g")
       expect(context.isPerProduct).toBe(false)
       expect(context.servingDescription).toBe("100 grammes")
@@ -85,7 +85,7 @@ describe("QuantityConverter Domain Service", () => {
     it("should generate context for count-based servings", () => {
       const serving = ServingSize.fromString("1 slice") // 30g per slice
       const context = converter.generateDisplayContext(serving, 60 as Grams) // 2 slices
-      
+
       expect(context.quantityText).toBe("pour 2 tranches")
       expect(context.isPerProduct).toBe(true)
       expect(context.servingDescription).toBe("1 tranche")
@@ -94,7 +94,7 @@ describe("QuantityConverter Domain Service", () => {
     it("should handle single unit contexts", () => {
       const serving = ServingSize.fromString("1 piece") // 20g
       const context = converter.generateDisplayContext(serving, 20 as Grams) // 1 piece
-      
+
       expect(context.quantityText).toBe("pour 1 pièce")
       expect(context.isPerProduct).toBe(true)
     })
@@ -103,9 +103,9 @@ describe("QuantityConverter Domain Service", () => {
   describe("extractServingSizeFromFoodData", () => {
     it("should extract serving from food data structure", () => {
       const foodData = {
-        portionSize: { amount: 100, unit: "g" }
+        portionSize: { amount: 100, unit: "g" },
       }
-      
+
       const serving = converter.extractServingSizeFromFoodData(foodData)
       expect(serving.getAmount()).toBe(100)
       expect(serving.getUnit()).toBe(PortionUnit.GRAMS)
@@ -113,13 +113,13 @@ describe("QuantityConverter Domain Service", () => {
 
     it("should handle different unit formats", () => {
       const foodData1 = {
-        portionSize: { amount: 1, unit: "piece" }
+        portionSize: { amount: 1, unit: "piece" },
       }
       const serving1 = converter.extractServingSizeFromFoodData(foodData1)
       expect(serving1.getUnit()).toBe(PortionUnit.PIECE)
 
       const foodData2 = {
-        portionSize: { amount: 2, unit: "slice" }
+        portionSize: { amount: 2, unit: "slice" },
       }
       const serving2 = converter.extractServingSizeFromFoodData(foodData2)
       expect(serving2.getUnit()).toBe(PortionUnit.SLICE)
@@ -127,9 +127,9 @@ describe("QuantityConverter Domain Service", () => {
 
     it("should fallback to 100g for invalid data", () => {
       const invalidFoodData = {
-        portionSize: { amount: 1, unit: "invalid_unit" }
+        portionSize: { amount: 1, unit: "invalid_unit" },
       }
-      
+
       const serving = converter.extractServingSizeFromFoodData(invalidFoodData)
       expect(serving.toGrams()).toBe(100)
       expect(serving.getUnit()).toBe(PortionUnit.GRAMS)
@@ -139,7 +139,7 @@ describe("QuantityConverter Domain Service", () => {
   describe("calculatePortionRatio", () => {
     it("should calculate correct ratios", () => {
       const serving = ServingSize.fromString("100g")
-      
+
       expect(converter.calculatePortionRatio(serving, 200 as Grams)).toBe(2)
       expect(converter.calculatePortionRatio(serving, 50 as Grams)).toBe(0.5)
       expect(converter.calculatePortionRatio(serving, 100 as Grams)).toBe(1)
@@ -161,18 +161,18 @@ describe("QuantityConverter Domain Service", () => {
     it("should reject extreme serving sizes", () => {
       // Too small (less than 1g)
       expect(converter.validateServingSize(ServingSize.fromString("0.5g"))).toBe(false)
-      
-      // Too large (more than 5kg)  
+
+      // Too large (more than 5kg)
       expect(converter.validateServingSize(ServingSize.fromString("6000g"))).toBe(false)
     })
 
     it("should reject unreasonable unit amounts", () => {
       // Too many pieces
       expect(converter.validateServingSize(ServingSize.pieces(100, 10))).toBe(false)
-      
+
       // Too many slices
       expect(converter.validateServingSize(ServingSize.slices(50, 10))).toBe(false)
-      
+
       // Too many bottles
       expect(converter.validateServingSize(ServingSize.fromString("20 bottles"))).toBe(false)
     })
@@ -188,12 +188,12 @@ describe("QuantityConverter Domain Service", () => {
     it("should generate scaled suggestions", () => {
       const baseServing = ServingSize.fromString("100g")
       const suggestions = converter.getSuggestedServings(baseServing)
-      
+
       expect(suggestions.length).toBeGreaterThan(1)
       expect(suggestions).toContainEqual(baseServing) // Should include original
-      
+
       // Should have scaled versions
-      const gramsValues = suggestions.map(s => s.toGrams())
+      const gramsValues = suggestions.map((s) => s.toGrams())
       expect(gramsValues).toContain(50) // 0.5x
       expect(gramsValues).toContain(150) // 1.5x
       expect(gramsValues).toContain(200) // 2x
@@ -202,8 +202,8 @@ describe("QuantityConverter Domain Service", () => {
     it("should add gram suggestions for non-weight units", () => {
       const baseServing = ServingSize.fromString("1 piece")
       const suggestions = converter.getSuggestedServings(baseServing)
-      
-      const gramsValues = suggestions.map(s => s.toGrams())
+
+      const gramsValues = suggestions.map((s) => s.toGrams())
       expect(gramsValues).toContain(50)
       expect(gramsValues).toContain(100)
       expect(gramsValues).toContain(200)
@@ -212,9 +212,9 @@ describe("QuantityConverter Domain Service", () => {
     it("should filter out invalid suggestions", () => {
       const baseServing = ServingSize.fromString("5000g") // At the limit
       const suggestions = converter.getSuggestedServings(baseServing)
-      
+
       // Should not include scaled versions that exceed limits
-      const hasExcessive = suggestions.some(s => s.toGrams() > 5000)
+      const hasExcessive = suggestions.some((s) => s.toGrams() > 5000)
       expect(hasExcessive).toBe(false)
     })
   })
@@ -224,7 +224,7 @@ describe("QuantityConverter Domain Service", () => {
       const serving1 = ServingSize.fromString("100g")
       const serving2 = ServingSize.fromString("200g")
       const serving3 = ServingSize.fromString("1 piece") // 20g
-      
+
       expect(converter.compareServings(serving1, serving2)).toBeLessThan(0) // 100 < 200
       expect(converter.compareServings(serving2, serving1)).toBeGreaterThan(0) // 200 > 100
       expect(converter.compareServings(serving1, serving1)).toBe(0) // 100 = 100
@@ -236,14 +236,14 @@ describe("QuantityConverter Domain Service", () => {
     it("should format serving for logging", () => {
       const serving = ServingSize.fromString("100g")
       const formatted = converter.formatForLogging(serving)
-      
+
       expect(formatted).toBe("100 g (100g)")
     })
 
     it("should handle different units", () => {
       const serving = ServingSize.fromString("1 piece") // 20g
       const formatted = converter.formatForLogging(serving)
-      
+
       expect(formatted).toBe("1 piece (20g)")
     })
   })
