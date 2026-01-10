@@ -219,7 +219,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                 style={[
                   themed($categoryIcon),
                   {
-                    fontSize: multiplier > 1 ? 32 : 24, // Larger emoji for iPad
+                    fontSize: multiplier > 1 ? 40 : 24, // Much larger emoji for iPad
                     marginRight: theme.spacing.sm * multiplier,
                   },
                 ]}
@@ -232,7 +232,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                   style={[
                     themed($categoryName),
                     {
-                      fontSize: multiplier > 1 ? 22 : 18, // Larger category name for iPad
+                      fontSize: multiplier > 1 ? 26 : 18, // Much larger category name for iPad
                     },
                   ]}
                 >
@@ -242,7 +242,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                   style={[
                     themed($categoryCount),
                     {
-                      fontSize: multiplier > 1 ? 17 : 14, // Larger count for iPad
+                      fontSize: multiplier > 1 ? 19 : 14, // Much larger count for iPad
                     },
                   ]}
                 >
@@ -256,7 +256,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                 style={[
                   themed($chevronText),
                   {
-                    fontSize: multiplier > 1 ? 16 : 12, // Larger chevron for iPad
+                    fontSize: multiplier > 1 ? 18 : 12, // Much larger chevron for iPad
                   },
                 ]}
               >
@@ -270,7 +270,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
               style={[
                 themed($categoryDescription),
                 {
-                  fontSize: multiplier > 1 ? 15 : 12, // Larger description for iPad
+                  fontSize: multiplier > 1 ? 17 : 12, // Much larger description for iPad
                   marginTop: theme.spacing.xs * multiplier,
                 },
               ]}

@@ -16,8 +16,11 @@ export function useResponsiveSpacing() {
 
   // Multiply spacing values on tablets to prevent crowded UI
   // This addresses Apple's Guideline 4.0 feedback about crowded screens
-  // Using 1.2x instead of 1.5x for more subtle spacing increase
-  const multiplier = isTablet ? 1.2 : 1.0
+  // Using 1.4x for noticeable size increase on iPad
+  const multiplier = isTablet ? 1.4 : 1.0
+
+  // Debug log to verify detection
+  console.log("📱 Responsive Spacing - Width:", width, "isTablet:", isTablet, "multiplier:", multiplier)
 
   return { multiplier, isTablet }
 }
