@@ -295,9 +295,11 @@ Apple screenshots: `docs/publish/issues/apple-screenshots/`
 All changes have been committed to the `dev` branch:
 
 ```bash
+e5ff9ba docs: Complete HANDOFF.md with all UI/UX improvements and bug fixes
 837c6da improve: Adapt ProfileSetupScreen UI based on context
 a41bd25 fix: Correct MET value extraction and add defensive null checks
 729ccbc docs: Update HANDOFF.md with ActivityPickerButton improvements
+b8af16c fix: update types and imports (user commit - type cleanup)
 b7767b2 improve: Replace ActivityWheelPicker with simpler ActivityPickerButton
 cfa25ca improve: Enhance ProfileSetupScreen layout with visual cards
 780f9f1 fix: Rename search method to searchByName for clarity
