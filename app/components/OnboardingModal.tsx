@@ -104,7 +104,7 @@ const $overlay: ThemedStyle<ViewStyle> = ({ colors }) => ({
 const $modalContainer: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   backgroundColor: colors.background,
   borderRadius: 16,
-  padding: spacing.lg,
+  padding: spacing.xl,
   width: "100%",
   maxWidth: 400,
   maxHeight: "80%",
@@ -159,13 +159,13 @@ const $contentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 const $emoji: ThemedStyle<TextStyle> = ({ spacing }) => ({
   fontSize: 48,
   textAlign: "center",
-  marginBottom: spacing.md,
+  marginBottom: spacing.lg,
 })
 
 const $title: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
   fontSize: 24,
   textAlign: "center",
-  marginBottom: spacing.md,
+  marginBottom: spacing.lg,
   color: colors.text,
 })
 
@@ -174,7 +174,7 @@ const $content: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
   textAlign: "center",
   lineHeight: 24,
   color: colors.textDim,
-  marginBottom: spacing.lg,
+  marginBottom: spacing.xl,
 })
 
 const $buttonContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
