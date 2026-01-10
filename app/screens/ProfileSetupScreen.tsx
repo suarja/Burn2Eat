@@ -31,6 +31,7 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
   const [useWheelPicker, setUseWheelPicker] = useState(true)
   const [selectedActivity, setSelectedActivity] = useState<string | null>("jogging") // Default activity
   const [isInitialLoad, setIsInitialLoad] = useState(true)
+  const [isEditingExistingProfile, setIsEditingExistingProfile] = useState(false)
 
   const handleWeightChange = (newWeight: number) => {
     setWeight(newWeight)
@@ -55,18 +56,29 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
       })
 
       if (result.success && result.userProfile) {
+        const successMessage = isEditingExistingProfile
+          ? "✓ Profil mis à jour avec succès !"
+          : "🎉 Profil sauvegardé avec succès !"
+
         Toast.success(
-          "🎉 Profil sauvegardé avec succès !",
+          successMessage,
           "bottom",
           "checkmark-circle",
           "Ionicons",
           false,
         )
 
-        // Navigate to home after a delay
-        setTimeout(() => {
-          navigation.navigate("MainTabs", { screen: "Home" })
-        }, 2000)
+        if (isEditingExistingProfile) {
+          // If editing existing profile, just go back to settings
+          setTimeout(() => {
+            navigation.goBack()
+          }, 1000)
+        } else {
+          // If new profile (onboarding), navigate to home after a delay
+          setTimeout(() => {
+            navigation.navigate("MainTabs", { screen: "Home" })
+          }, 2000)
+        }
       } else {
         console.error("❌ ProfileSetupScreen: Failed to save profile via DDD:", result.error)
         Toast.error("❌ Erreur lors de la sauvegarde", "bottom", "close-circle", "Ionicons", false)
@@ -96,9 +108,14 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
           if (primaryActivity) {
             setSelectedActivity(primaryActivity)
           }
+
+          // User has existing profile - they're editing, not creating
+          setIsEditingExistingProfile(true)
         } else {
           console.log("🆕 ProfileSetupScreen: No existing profile via DDD, using defaults")
           Toast.info(`🆕 Créons ton profil !`, "top", "add-circle", "Ionicons", false)
+          // New user - they're in onboarding
+          setIsEditingExistingProfile(false)
         }
       } catch (error) {
         console.warn("❌ ProfileSetupScreen: Failed to load existing profile via DDD:", error)
@@ -183,12 +200,22 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
           disabled={loading || !selectedActivity}
           style={[themed($saveButtonStyle), { marginTop: theme.spacing.lg * multiplier }]}
         >
-          <TextIgnite text={loading ? "💾 Sauvegarde..." : "🚀 Commencer l'aventure !"} />
+          <TextIgnite
+            text={
+              loading
+                ? "💾 Sauvegarde..."
+                : isEditingExistingProfile
+                  ? "✓ Enregistrer les modifications"
+                  : "🚀 Commencer l'aventure !"
+            }
+          />
         </Button>
 
-        <Text style={[themed($footerText), { marginTop: theme.spacing.md * multiplier }]}>
-          Modifiable dans les paramètres
-        </Text>
+        {!isEditingExistingProfile && (
+          <Text style={[themed($footerText), { marginTop: theme.spacing.md * multiplier }]}>
+            Modifiable dans les paramètres
+          </Text>
+        )}
       </View>
     </Screen>
   )
