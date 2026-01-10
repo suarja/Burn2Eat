@@ -118,57 +118,72 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
         {error && <Text style={themed($errorText)}>❌ {error}</Text>}
 
         {/* Physical Stats Section */}
-        <View style={[themed($section), { marginBottom: theme.spacing.md * multiplier }]}>
-          <Text style={themed($sectionTitle)}>📏 Tes mesures</Text>
+        <Card
+          style={[themed($section), { marginBottom: theme.spacing.xl * multiplier }]}
+          ContentComponent={
+            <View style={themed($cardContent)}>
+              <Text style={themed($sectionTitle)}>📏 Tes mesures</Text>
 
-          {useWheelPicker ? (
-            !isInitialLoad ? (
-              <WeightHeightWheelSelector
-                weight={weight}
-                height={height}
-                onWeightChange={handleWeightChange}
-                onHeightChange={handleHeightChange}
-                style={themed($selectorContainer)}
-              />
-            ) : (
-              <Text style={themed($loadingText)}>⏳ Chargement...</Text>
-            )
-          ) : (
-            <WeightHeightSelector
-              weight={weight}
-              height={height}
-              onWeightChange={handleWeightChange}
-              onHeightChange={handleHeightChange}
-              style={themed($selectorContainer)}
-            />
-          )}
-        </View>
+              {useWheelPicker ? (
+                !isInitialLoad ? (
+                  <WeightHeightWheelSelector
+                    weight={weight}
+                    height={height}
+                    onWeightChange={handleWeightChange}
+                    onHeightChange={handleHeightChange}
+                    style={themed($selectorContainer)}
+                  />
+                ) : (
+                  <Text style={themed($loadingText)}>⏳ Chargement...</Text>
+                )
+              ) : (
+                <WeightHeightSelector
+                  weight={weight}
+                  height={height}
+                  onWeightChange={handleWeightChange}
+                  onHeightChange={handleHeightChange}
+                  style={themed($selectorContainer)}
+                />
+              )}
+            </View>
+          }
+        />
 
         {/* Activity Selection Section */}
-        <View style={[themed($section), { marginBottom: theme.spacing.md * multiplier }]}>
-          {!isInitialLoad ? (
-            <ActivityWheelPicker
-              selectedActivity={selectedActivity}
-              onActivitySelect={(activityKey) => {
-                setSelectedActivity(activityKey)
-              }}
-              height={120} // Reduced height from 150
-            />
-          ) : (
-            <Text style={themed($loadingText)}>⏳ Chargement des activités...</Text>
-          )}
-        </View>
+        <Card
+          style={[themed($section), { marginBottom: theme.spacing.xl * multiplier }]}
+          ContentComponent={
+            <View style={themed($cardContent)}>
+              <Text style={themed($sectionTitle)}>🏃 Ton sport préféré</Text>
+
+              {!isInitialLoad ? (
+                <ActivityWheelPicker
+                  selectedActivity={selectedActivity}
+                  onActivitySelect={(activityKey) => {
+                    setSelectedActivity(activityKey)
+                  }}
+                  height={120} // Reduced height from 150
+                />
+              ) : (
+                <Text style={themed($loadingText)}>⏳ Chargement des activités...</Text>
+              )}
+            </View>
+          }
+        />
 
         {/* Save Button */}
         <Button
           preset="filled"
           onPress={handleSave}
           disabled={loading || !selectedActivity}
+          style={[themed($saveButtonStyle), { marginTop: theme.spacing.lg * multiplier }]}
         >
           <TextIgnite text={loading ? "💾 Sauvegarde..." : "🚀 Commencer l'aventure !"} />
         </Button>
 
-        <Text style={themed($footerText)}>Modifiable dans les paramètres</Text>
+        <Text style={[themed($footerText), { marginTop: theme.spacing.md * multiplier }]}>
+          Modifiable dans les paramètres
+        </Text>
       </View>
     </Screen>
   )
@@ -179,11 +194,16 @@ const $screenContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
 })
 
 const $contentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  padding: spacing.lg,
+  padding: spacing.xl,
+  paddingTop: spacing.lg,
 })
 
 const $section: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginBottom: spacing.sm, // Reduced from xl to lg
+  marginBottom: spacing.sm,
+})
+
+const $cardContent: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  padding: spacing.md,
 })
 
 const $mainButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
@@ -192,11 +212,16 @@ const $mainButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   borderRadius: 16,
 })
 
+const $saveButtonStyle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  paddingVertical: spacing.md,
+})
+
 const $sectionTitle: ThemedStyle<TextStyle> = ({ spacing, colors, typography }) => ({
-  fontSize: 18,
+  fontSize: 20,
   fontFamily: typography.primary.bold,
   color: colors.text,
-  marginBottom: spacing.sm,
+  marginBottom: spacing.md,
+  textAlign: "center",
 })
 
 const $sectionSubtitle: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
