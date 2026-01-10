@@ -219,7 +219,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                 style={[
                   themed($categoryIcon),
                   {
-                    fontSize: multiplier > 1 ? 28 : 24, // More moderate increase for iPad
+                    fontSize: multiplier > 1 ? 32 : 24, // Larger emoji for iPad
                     marginRight: theme.spacing.sm * multiplier,
                   },
                 ]}
@@ -232,7 +232,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                   style={[
                     themed($categoryName),
                     {
-                      fontSize: multiplier > 1 ? 20 : 18, // More moderate increase
+                      fontSize: multiplier > 1 ? 22 : 18, // Larger category name for iPad
                     },
                   ]}
                 >
@@ -242,7 +242,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                   style={[
                     themed($categoryCount),
                     {
-                      fontSize: multiplier > 1 ? 16 : 14, // More moderate increase
+                      fontSize: multiplier > 1 ? 17 : 14, // Larger count for iPad
                     },
                   ]}
                 >
@@ -256,7 +256,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                 style={[
                   themed($chevronText),
                   {
-                    fontSize: multiplier > 1 ? 14 : 12, // More moderate increase
+                    fontSize: multiplier > 1 ? 16 : 12, // Larger chevron for iPad
                   },
                 ]}
               >
@@ -270,7 +270,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
               style={[
                 themed($categoryDescription),
                 {
-                  fontSize: multiplier > 1 ? 14 : 12, // More moderate increase
+                  fontSize: multiplier > 1 ? 15 : 12, // Larger description for iPad
                   marginTop: theme.spacing.xs * multiplier,
                 },
               ]}
