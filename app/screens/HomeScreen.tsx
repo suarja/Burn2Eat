@@ -25,6 +25,7 @@ import { Text } from "@/components/Text"
 import { TextField } from "@/components/TextField"
 import { Dish } from "@/domain/nutrition/Dish"
 import { useCategoryData } from "@/hooks/useCategoryData"
+import { useResponsiveSpacing } from "@/hooks/useResponsiveSpacing"
 import type { MainTabScreenProps } from "@/navigators/MainTabNavigator"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
@@ -33,7 +34,8 @@ interface HomeScreenProps extends MainTabScreenProps<"Home"> {}
 
 export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
   const { navigation } = props
-  const { themed } = useAppTheme()
+  const { themed, theme } = useAppTheme()
+  const { multiplier } = useResponsiveSpacing()
 
   const {
     categories,
@@ -102,7 +104,12 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
           </View>
         )
       }
-      contentContainerStyle={themed($searchResultsContainer)}
+      contentContainerStyle={[
+        themed($searchResultsContainer),
+        {
+          paddingHorizontal: theme.spacing.lg * multiplier,
+        },
+      ]}
     />
   )
 
@@ -142,7 +149,15 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
   return (
     <Screen preset="scroll" safeAreaEdges={["top"]} style={themed($screenContainer)}>
       {/* Search Bar */}
-      <View style={themed($searchContainer)}>
+      <View
+        style={[
+          themed($searchContainer),
+          {
+            marginHorizontal: theme.spacing.lg * multiplier,
+            marginVertical: theme.spacing.md * multiplier,
+          },
+        ]}
+      >
         <Icon icon="view" size={20} containerStyle={themed($searchIcon)} />
         <TextField
           value={searchText}
@@ -158,8 +173,24 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
       {isShowingSearch ? (
         renderSearchResults()
       ) : (
-        <View style={themed($categoriesContainer)}>
-          <Text preset="bold" style={themed($sectionTitle)}>
+        <View
+          style={[
+            themed($categoriesContainer),
+            {
+              paddingHorizontal: theme.spacing.lg * multiplier,
+            },
+          ]}
+        >
+          <Text
+            preset="bold"
+            style={[
+              themed($sectionTitle),
+              {
+                marginBottom: theme.spacing.md * multiplier,
+                marginTop: theme.spacing.md * multiplier,
+              },
+            ]}
+          >
             Catégories ({categories.length})
           </Text>
 
@@ -174,7 +205,12 @@ export const HomeScreen: FC<HomeScreenProps> = function HomeScreen(props) {
               onToggle={() => handleCategoryToggle(category.id)}
               onDishSelect={handleFoodSelect}
               onLoadMore={() => actions.loadMoreForCategory(category.id)}
-              style={themed($categorySection)}
+              style={[
+                themed($categorySection),
+                {
+                  marginBottom: theme.spacing.lg * multiplier,
+                },
+              ]}
             />
           ))}
         </View>
@@ -199,7 +235,7 @@ const $sectionListContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 })
 
 const $searchResultsContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  paddingHorizontal: spacing.lg,
+  // paddingHorizontal is applied inline with responsive multiplier
   paddingBottom: spacing.xl,
 })
 
@@ -210,7 +246,7 @@ const $searchResultCard: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 })
 
 const $categorySection: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  marginBottom: spacing.md,
+  // marginBottom is applied inline with responsive multiplier
 })
 
 const $loadingIndicator: ThemedStyle<ViewStyle> = ({ spacing }) => ({
@@ -242,8 +278,7 @@ const $searchContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   alignItems: "center",
   backgroundColor: colors.palette.neutral200,
   borderRadius: 12,
-  marginHorizontal: spacing.lg,
-  marginVertical: spacing.md,
+  // marginHorizontal and marginVertical are applied inline with responsive multiplier
   paddingHorizontal: spacing.md,
   height: 50,
   borderWidth: 1,
@@ -279,12 +314,11 @@ const $listContentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 
 const $sectionTitle: ThemedStyle<any> = ({ spacing, colors }) => ({
   fontSize: 18,
-  marginBottom: spacing.md,
-  marginTop: spacing.md,
+  // marginBottom and marginTop are applied inline with responsive multiplier
   color: colors.text,
 })
 
 const $categoriesContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  paddingHorizontal: spacing.lg,
+  // paddingHorizontal is applied inline with responsive multiplier
   paddingBottom: spacing.xl,
 })

@@ -17,6 +17,7 @@ import Animated, {
 
 import { Dish } from "@/domain/nutrition/Dish"
 import { CategoryInfo } from "@/domain/nutrition/DishRepository"
+import { useResponsiveSpacing } from "@/hooks/useResponsiveSpacing"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 
@@ -65,7 +66,7 @@ export interface CollapsibleCategorySectionProps {
   /**
    * Container style override
    */
-  style?: ViewStyle
+  style?: ViewStyle | ViewStyle[]
   /**
    * Maximum number of columns for dish grid
    */
@@ -85,7 +86,8 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
     style,
     numColumns = 2,
   }) => {
-    const { themed } = useAppTheme()
+    const { themed, theme } = useAppTheme()
+    const { multiplier } = useResponsiveSpacing()
 
     // Animation for chevron rotation
     const rotateAnim = useSharedValue(0)
@@ -126,9 +128,25 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
       return (
         <View style={themed($dishGrid)}>
           {rows.map((row, rowIndex) => (
-            <View key={rowIndex} style={themed($dishRow)}>
+            <View
+              key={rowIndex}
+              style={[
+                themed($dishRow),
+                {
+                  marginBottom: theme.spacing.md * multiplier,
+                },
+              ]}
+            >
               {row.map((dish, colIndex) => (
-                <View key={dish.getId().toString()} style={themed($dishContainer)}>
+                <View
+                  key={dish.getId().toString()}
+                  style={[
+                    themed($dishContainer),
+                    {
+                      paddingHorizontal: theme.spacing.sm * multiplier,
+                    },
+                  ]}
+                >
                   <FoodCard
                     dish={dish}
                     onPress={() => onDishSelect(dish)}
@@ -140,13 +158,28 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
               {/* Fill remaining columns with empty space */}
               {row.length < numColumns &&
                 Array.from({ length: numColumns - row.length }).map((_, emptyIndex) => (
-                  <View key={`empty-${emptyIndex}`} style={themed($dishContainer)} />
+                  <View
+                    key={`empty-${emptyIndex}`}
+                    style={[
+                      themed($dishContainer),
+                      {
+                        paddingHorizontal: theme.spacing.sm * multiplier,
+                      },
+                    ]}
+                  />
                 ))}
             </View>
           ))}
 
           {hasMore && (
-            <View style={themed($loadMoreContainer)}>
+            <View
+              style={[
+                themed($loadMoreContainer),
+                {
+                  marginTop: theme.spacing.md * multiplier,
+                },
+              ]}
+            >
               <LoadMoreButton
                 onPress={onLoadMore}
                 isLoading={isLoadingMore}
@@ -161,34 +194,100 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
     return (
       <View style={[themed($container), style]}>
         {/* Header */}
-        <TouchableOpacity style={themed($header)} onPress={handleToggle} activeOpacity={0.7}>
+        <TouchableOpacity
+          style={[
+            themed($header),
+            {
+              paddingHorizontal: theme.spacing.md * multiplier,
+              paddingVertical: theme.spacing.sm * multiplier,
+            },
+          ]}
+          onPress={handleToggle}
+          activeOpacity={0.7}
+        >
           <View style={themed($headerContent)}>
             <View style={themed($categoryInfo)}>
-              <Text style={themed($categoryIcon)}>{category.icon}</Text>
+              <Text
+                style={[
+                  themed($categoryIcon),
+                  {
+                    fontSize: 24 * multiplier,
+                    marginRight: theme.spacing.sm * multiplier,
+                  },
+                ]}
+              >
+                {category.icon}
+              </Text>
               <View style={themed($categoryText)}>
-                <Text preset="bold" style={themed($categoryName)}>
+                <Text
+                  preset="bold"
+                  style={[
+                    themed($categoryName),
+                    {
+                      fontSize: 18 * multiplier,
+                    },
+                  ]}
+                >
                   {category.name}
                 </Text>
-                <Text style={themed($categoryCount)}>
+                <Text
+                  style={[
+                    themed($categoryCount),
+                    {
+                      fontSize: 14 * multiplier,
+                    },
+                  ]}
+                >
                   {category.count} plat{category.count > 1 ? "s" : ""}
                 </Text>
               </View>
             </View>
 
             <Animated.View style={[themed($chevron), animatedChevronStyle]}>
-              <Text style={themed($chevronText)}>▼</Text>
+              <Text
+                style={[
+                  themed($chevronText),
+                  {
+                    fontSize: 12 * multiplier,
+                  },
+                ]}
+              >
+                ▼
+              </Text>
             </Animated.View>
           </View>
 
           {category.description && !isExpanded && (
-            <Text style={themed($categoryDescription)} numberOfLines={1}>
+            <Text
+              style={[
+                themed($categoryDescription),
+                {
+                  fontSize: 12 * multiplier,
+                  marginTop: theme.spacing.xs * multiplier,
+                },
+              ]}
+              numberOfLines={1}
+            >
               {category.description}
             </Text>
           )}
         </TouchableOpacity>
 
         {/* Collapsible Content */}
-        {isExpanded && <View style={themed($content)}>{renderDishGrid()}</View>}
+        {isExpanded && (
+          <View
+            style={[
+              themed($content),
+              {
+                paddingHorizontal: theme.spacing.md * multiplier,
+                paddingTop: theme.spacing.sm * multiplier,
+                paddingBottom: theme.spacing.md * multiplier,
+              },
+            ]}
+          >
+            {renderDishGrid()}
+          </View>
+        )}
       </View>
     )
   },
@@ -207,8 +306,7 @@ const $container: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
 })
 
 const $header: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  paddingHorizontal: spacing.md,
-  paddingVertical: spacing.sm,
+  // paddingHorizontal and paddingVertical are applied inline with responsive multiplier
   backgroundColor: colors.palette.neutral100,
 })
 
@@ -225,8 +323,7 @@ const $categoryInfo: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 })
 
 const $categoryIcon: ThemedStyle<any> = ({ spacing }) => ({
-  fontSize: 24,
-  marginRight: spacing.sm,
+  // fontSize and marginRight are applied inline with responsive multiplier
 })
 
 const $categoryText: ThemedStyle<ViewStyle> = ({}) => ({
@@ -234,20 +331,19 @@ const $categoryText: ThemedStyle<ViewStyle> = ({}) => ({
 })
 
 const $categoryName: ThemedStyle<any> = ({ colors }) => ({
-  fontSize: 18,
+  // fontSize is applied inline with responsive multiplier
   color: colors.text,
   marginBottom: 2,
 })
 
 const $categoryCount: ThemedStyle<any> = ({ colors }) => ({
-  fontSize: 14,
+  // fontSize is applied inline with responsive multiplier
   color: colors.textDim,
 })
 
 const $categoryDescription: ThemedStyle<any> = ({ colors, spacing }) => ({
-  fontSize: 12,
+  // fontSize and marginTop are applied inline with responsive multiplier
   color: colors.textDim,
-  marginTop: spacing.xs,
   fontStyle: "italic",
 })
 
@@ -259,14 +355,12 @@ const $chevron: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 })
 
 const $chevronText: ThemedStyle<any> = ({ colors }) => ({
-  fontSize: 12,
+  // fontSize is applied inline with responsive multiplier
   color: colors.textDim,
 })
 
 const $content: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  paddingHorizontal: spacing.md,
-  paddingTop: spacing.sm,
-  paddingBottom: spacing.md,
+  // paddingHorizontal, paddingTop, and paddingBottom are applied inline with responsive multiplier
   backgroundColor: colors.background,
 })
 
@@ -276,12 +370,12 @@ const $dishGrid: ThemedStyle<ViewStyle> = ({}) => ({
 
 const $dishRow: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   flexDirection: "row",
-  marginBottom: spacing.md,
+  // marginBottom is applied inline with responsive multiplier
 })
 
 const $dishContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   flex: 1,
-  paddingHorizontal: spacing.sm,
+  // paddingHorizontal is applied inline with responsive multiplier
 })
 
 const $dishCard: ThemedStyle<ViewStyle> = ({}) => ({
@@ -290,5 +384,5 @@ const $dishCard: ThemedStyle<ViewStyle> = ({}) => ({
 
 const $loadMoreContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   alignItems: "center",
-  marginTop: spacing.md,
+  // marginTop is applied inline with responsive multiplier
 })
