@@ -3,7 +3,7 @@ import { View, ViewStyle, TextStyle } from "react-native"
 import { Toast } from "toastify-react-native"
 import {Text as TextIgnite} from '@/components/Text'
 
-import { ActivityWheelPicker } from "@/components/ActivityWheelPicker"
+import { ActivityPickerButton } from "@/components/ActivityPickerButton"
 import { Button } from "@/components/Button"
 import { Card } from "@/components/Card"
 import { Header } from "@/components/Header"
@@ -123,6 +123,9 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
           ContentComponent={
             <View style={themed($cardContent)}>
               <Text style={themed($sectionTitle)}>📏 Tes mesures</Text>
+              <Text style={themed($sectionSubtitle)}>
+                Ajuste ton poids et ta taille
+              </Text>
 
               {useWheelPicker ? (
                 !isInitialLoad ? (
@@ -155,14 +158,16 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
           ContentComponent={
             <View style={themed($cardContent)}>
               <Text style={themed($sectionTitle)}>🏃 Ton sport préféré</Text>
+              <Text style={themed($sectionSubtitle)}>
+                Choisis l'activité que tu pratiques le plus souvent
+              </Text>
 
               {!isInitialLoad ? (
-                <ActivityWheelPicker
+                <ActivityPickerButton
                   selectedActivity={selectedActivity}
                   onActivitySelect={(activityKey) => {
                     setSelectedActivity(activityKey)
                   }}
-                  height={120} // Reduced height from 150
                 />
               ) : (
                 <Text style={themed($loadingText)}>⏳ Chargement des activités...</Text>
@@ -203,7 +208,7 @@ const $section: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 })
 
 const $cardContent: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  padding: spacing.md,
+  padding: spacing.lg,
 })
 
 const $mainButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
@@ -212,8 +217,11 @@ const $mainButton: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   borderRadius: 16,
 })
 
-const $saveButtonStyle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  paddingVertical: spacing.md,
+const $saveButtonStyle: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  paddingVertical: spacing.lg,
+  minHeight: 56,
+  borderRadius: 16,
+  backgroundColor: colors.palette.primary500,
 })
 
 const $sectionTitle: ThemedStyle<TextStyle> = ({ spacing, colors, typography }) => ({
@@ -224,10 +232,12 @@ const $sectionTitle: ThemedStyle<TextStyle> = ({ spacing, colors, typography }) 
   textAlign: "center",
 })
 
-const $sectionSubtitle: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
+const $sectionSubtitle: ThemedStyle<TextStyle> = ({ spacing, colors, typography }) => ({
   fontSize: 14,
+  fontFamily: typography.primary.normal,
   color: colors.textDim,
-  marginBottom: spacing.sm, // Reduced from md to sm
+  marginBottom: spacing.md,
+  textAlign: "center",
 })
 
 const $selectorContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
