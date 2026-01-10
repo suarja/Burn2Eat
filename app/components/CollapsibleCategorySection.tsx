@@ -196,7 +196,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
         style={[
           themed($container),
           {
-            borderRadius: 12 * multiplier,
+            borderRadius: 12,
           },
           style,
         ]}
@@ -206,8 +206,8 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
           style={[
             themed($header),
             {
-              paddingHorizontal: theme.spacing.lg * multiplier,
-              paddingVertical: theme.spacing.md * multiplier,
+              paddingHorizontal: theme.spacing.md * multiplier,
+              paddingVertical: theme.spacing.sm * multiplier,
             },
           ]}
           onPress={handleToggle}
@@ -219,8 +219,8 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                 style={[
                   themed($categoryIcon),
                   {
-                    fontSize: multiplier > 1 ? 40 : 24, // Much larger emoji for iPad
-                    marginRight: theme.spacing.sm * multiplier,
+                    fontSize: multiplier > 1 ? 28 : 24,
+                    marginRight: theme.spacing.sm,
                   },
                 ]}
               >
@@ -232,7 +232,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                   style={[
                     themed($categoryName),
                     {
-                      fontSize: multiplier > 1 ? 26 : 18, // Much larger category name for iPad
+                      fontSize: multiplier > 1 ? 20 : 18,
                     },
                   ]}
                 >
@@ -242,7 +242,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                   style={[
                     themed($categoryCount),
                     {
-                      fontSize: multiplier > 1 ? 19 : 14, // Much larger count for iPad
+                      fontSize: multiplier > 1 ? 15 : 14,
                     },
                   ]}
                 >
@@ -256,7 +256,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                 style={[
                   themed($chevronText),
                   {
-                    fontSize: multiplier > 1 ? 18 : 12, // Much larger chevron for iPad
+                    fontSize: multiplier > 1 ? 14 : 12,
                   },
                 ]}
               >
@@ -270,8 +270,8 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
               style={[
                 themed($categoryDescription),
                 {
-                  fontSize: multiplier > 1 ? 17 : 12, // Much larger description for iPad
-                  marginTop: theme.spacing.xs * multiplier,
+                  fontSize: multiplier > 1 ? 13 : 12,
+                  marginTop: theme.spacing.xs,
                 },
               ]}
               numberOfLines={1}
