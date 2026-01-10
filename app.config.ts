@@ -22,9 +22,9 @@ module.exports = ({ config }: ConfigContext): Partial<ExpoConfig> => {
       icon: {
         light: "./assets/icons/app/ios-light.png",
         dark: "./assets/icons/app/ios-dark.png",
-        tinted: "./assets/icons/app/ios-tinted.png"
+        tinted: "./assets/icons/app/ios-tinted.png",
       },
-      
+
       // This privacyManifests is to get you started.
       // See Expo's guide on apple privacy manifests here:
       // https://docs.expo.dev/guides/apple-privacy/
@@ -43,9 +43,9 @@ module.exports = ({ config }: ConfigContext): Partial<ExpoConfig> => {
     android: {
       adaptiveIcon: {
         backgroundColor: "#ffffff",
-        foregroundImage: "./assets/icons/app/adaptive-icon.png", 
+        foregroundImage: "./assets/icons/app/adaptive-icon.png",
         monochromeImage: "./assets/icons/app/adaptive-icon.png",
-      }
+      },
     },
     plugins: [...existingPlugins, require("./plugins/withSplashScreen").withSplashScreen],
   }
