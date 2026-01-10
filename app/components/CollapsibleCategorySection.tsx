@@ -192,14 +192,22 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
     }
 
     return (
-      <View style={[themed($container), style]}>
+      <View
+        style={[
+          themed($container),
+          {
+            borderRadius: 12 * multiplier,
+          },
+          style,
+        ]}
+      >
         {/* Header */}
         <TouchableOpacity
           style={[
             themed($header),
             {
-              paddingHorizontal: theme.spacing.md * multiplier,
-              paddingVertical: theme.spacing.sm * multiplier,
+              paddingHorizontal: theme.spacing.lg * multiplier,
+              paddingVertical: theme.spacing.md * multiplier,
             },
           ]}
           onPress={handleToggle}
@@ -211,7 +219,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                 style={[
                   themed($categoryIcon),
                   {
-                    fontSize: 24 * multiplier,
+                    fontSize: multiplier > 1 ? 28 : 24, // More moderate increase for iPad
                     marginRight: theme.spacing.sm * multiplier,
                   },
                 ]}
@@ -224,7 +232,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                   style={[
                     themed($categoryName),
                     {
-                      fontSize: 18 * multiplier,
+                      fontSize: multiplier > 1 ? 20 : 18, // More moderate increase
                     },
                   ]}
                 >
@@ -234,7 +242,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                   style={[
                     themed($categoryCount),
                     {
-                      fontSize: 14 * multiplier,
+                      fontSize: multiplier > 1 ? 16 : 14, // More moderate increase
                     },
                   ]}
                 >
@@ -248,7 +256,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
                 style={[
                   themed($chevronText),
                   {
-                    fontSize: 12 * multiplier,
+                    fontSize: multiplier > 1 ? 14 : 12, // More moderate increase
                   },
                 ]}
               >
@@ -262,7 +270,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
               style={[
                 themed($categoryDescription),
                 {
-                  fontSize: 12 * multiplier,
+                  fontSize: multiplier > 1 ? 14 : 12, // More moderate increase
                   marginTop: theme.spacing.xs * multiplier,
                 },
               ]}
@@ -295,7 +303,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
 
 const $container: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   marginBottom: spacing.md,
-  borderRadius: 12,
+  // borderRadius is applied inline with responsive multiplier
   backgroundColor: colors.background,
   overflow: "hidden",
   elevation: 2,
