@@ -21,6 +21,7 @@ export const DailySummaryCard: FC<DailySummaryCardProps> = ({ summary, style }) 
   const { themed, theme } = useAppTheme()
 
   if (!summary) {
+    console.log("📊 DailySummaryCard: No summary provided, rendering null")
     return null
   }
 
@@ -30,66 +31,74 @@ export const DailySummaryCard: FC<DailySummaryCardProps> = ({ summary, style }) 
   const hasSurplus = summary.hasSurplus()
   const targetEffort = summary.getTargetEffort()
 
+  console.log(
+    `📊 DailySummaryCard: Rendering summary - Total: ${totalCalories}, BMR: ${bmr}, Surplus: ${surplus}, HasSurplus: ${hasSurplus}`,
+  )
+
   return (
-    <Card style={[themed($container), style]} preset="default" HeadingComponent={undefined}>
-      <View style={themed($content)}>
-        {/* Header */}
-        <Text preset="subheading" style={themed($title)}>
-          Aujourd'hui
-        </Text>
+    <Card
+      style={[themed($container), style]}
+      preset="default"
+      ContentComponent={
+        <View style={themed($content)}>
+          {/* Header */}
+          <Text preset="subheading" style={themed($title)}>
+            Aujourd'hui
+          </Text>
 
-        {/* Stats */}
-        <View style={themed($statsContainer)}>
-          <View style={themed($statRow)}>
-            <Text style={themed($statLabel)}>Total consommé</Text>
-            <Text preset="bold" style={themed($statValue)}>
-              {Math.round(totalCalories)} kcal
-            </Text>
+          {/* Stats */}
+          <View style={themed($statsContainer)}>
+            <View style={themed($statRow)}>
+              <Text style={themed($statLabel)}>Total consommé</Text>
+              <Text preset="bold" style={themed($statValue)}>
+                {Math.round(totalCalories)} kcal
+              </Text>
+            </View>
+
+            <View style={themed($statRow)}>
+              <Text style={themed($statLabel)}>Métabolisme de base (BMR)</Text>
+              <Text preset="bold" style={themed($statValue)}>
+                {Math.round(bmr)} kcal
+              </Text>
+            </View>
           </View>
 
-          <View style={themed($statRow)}>
-            <Text style={themed($statLabel)}>Métabolisme de base (BMR)</Text>
-            <Text preset="bold" style={themed($statValue)}>
-              {Math.round(bmr)} kcal
-            </Text>
+          {/* Divider */}
+          <View style={themed($divider)} />
+
+          {/* Surplus/Deficit */}
+          <View style={themed($resultContainer)}>
+            {hasSurplus ? (
+              <>
+                <Text style={themed($resultLabel)}>Surplus calorique</Text>
+                <Text preset="bold" style={themed($surplusValue)}>
+                  +{Math.round(surplus)} kcal
+                </Text>
+
+                {targetEffort && (
+                  <View style={themed($effortContainer)}>
+                    <Text style={themed($effortLabel)}>Effort suggéré pour compenser:</Text>
+                    <Text preset="bold" style={themed($effortValue)}>
+                      {targetEffort.minutes} min de {targetEffort.activityLabel.toLowerCase()}
+                    </Text>
+                  </View>
+                )}
+              </>
+            ) : (
+              <>
+                <Text style={themed($resultLabel)}>Déficit calorique</Text>
+                <Text preset="bold" style={themed($deficitValue)}>
+                  {Math.round(surplus)} kcal
+                </Text>
+                <Text size="xs" style={themed($deficitHint)}>
+                  Vous êtes en dessous de votre BMR
+                </Text>
+              </>
+            )}
           </View>
         </View>
-
-        {/* Divider */}
-        <View style={themed($divider)} />
-
-        {/* Surplus/Deficit */}
-        <View style={themed($resultContainer)}>
-          {hasSurplus ? (
-            <>
-              <Text style={themed($resultLabel)}>Surplus calorique</Text>
-              <Text preset="bold" style={themed($surplusValue)}>
-                +{Math.round(surplus)} kcal
-              </Text>
-
-              {targetEffort && (
-                <View style={themed($effortContainer)}>
-                  <Text style={themed($effortLabel)}>Effort suggéré pour compenser:</Text>
-                  <Text preset="bold" style={themed($effortValue)}>
-                    {targetEffort.minutes} min de {targetEffort.activityLabel.toLowerCase()}
-                  </Text>
-                </View>
-              )}
-            </>
-          ) : (
-            <>
-              <Text style={themed($resultLabel)}>Déficit calorique</Text>
-              <Text preset="bold" style={themed($deficitValue)}>
-                {Math.round(surplus)} kcal
-              </Text>
-              <Text size="xs" style={themed($deficitHint)}>
-                Vous êtes en dessous de votre BMR
-              </Text>
-            </>
-          )}
-        </View>
-      </View>
-    </Card>
+      }
+    />
   )
 }
 

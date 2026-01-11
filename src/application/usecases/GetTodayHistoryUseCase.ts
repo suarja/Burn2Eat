@@ -44,9 +44,11 @@ export class GetTodayHistoryUseCase {
 
       // Load today's consumption records
       const records = await this.consumptionHistoryRepository.findByDate(today)
+      console.log(`📊 GetTodayHistoryUseCase: Found ${records.length} records for today`)
 
       // If no records, return empty result
       if (records.length === 0) {
+        console.log("📊 GetTodayHistoryUseCase: No records, returning empty result")
         return {
           success: true,
           records: [],
@@ -56,8 +58,10 @@ export class GetTodayHistoryUseCase {
 
       // Get current user profile
       const userProfile = await this.userHealthInfoRepository.getCurrent()
+      console.log(`📊 GetTodayHistoryUseCase: User profile exists: ${!!userProfile}`)
       if (!userProfile) {
         // No user profile - can't calculate summary
+        console.warn("⚠️ GetTodayHistoryUseCase: No user profile found, cannot calculate summary")
         return {
           success: true,
           records,
@@ -67,14 +71,17 @@ export class GetTodayHistoryUseCase {
 
       // Calculate BMR
       const bmr = this.bmrCalculator.calculateBMR(userProfile)
+      console.log(`📊 GetTodayHistoryUseCase: BMR calculated: ${bmr} kcal`)
 
       // Calculate total calories consumed
       const totalCalories = records.reduce((sum, record) => {
         return (sum + record.getCalories()) as Kilocalories
       }, 0 as Kilocalories)
+      console.log(`📊 GetTodayHistoryUseCase: Total calories: ${totalCalories} kcal`)
 
       // Calculate surplus/deficit
       const surplus = (totalCalories - bmr) as Kilocalories
+      console.log(`📊 GetTodayHistoryUseCase: Surplus: ${surplus} kcal`)
 
       // Calculate target effort if there's a surplus
       let targetEffort: { minutes: Minutes; activityLabel: string } | undefined
@@ -104,6 +111,9 @@ export class GetTodayHistoryUseCase {
 
       // Create daily summary
       const summary = DailySummary.create(today, totalCalories, bmr, records.length, targetEffort)
+      console.log(
+        `✅ GetTodayHistoryUseCase: Summary created - Total: ${totalCalories} kcal, BMR: ${bmr} kcal, Surplus: ${surplus} kcal`,
+      )
 
       return {
         success: true,
