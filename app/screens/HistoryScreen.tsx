@@ -37,6 +37,7 @@ export const HistoryScreen: FC<HistoryScreenProps> = function HistoryScreen() {
   const { multiplier } = useResponsiveSpacing()
 
   // Responsive scaling for iPad
+  const typographyScale = multiplier > 1 ? 1.7 : 1
   const spacingScale = multiplier > 1 ? 1.3 : 1
 
   // State
@@ -96,9 +97,16 @@ export const HistoryScreen: FC<HistoryScreenProps> = function HistoryScreen() {
    */
   const renderRecord = useCallback(
     ({ item }: { item: ConsumptionRecord }) => {
-      return <ConsumptionRecordCard record={item} onDelete={handleDelete} />
+      return (
+        <ConsumptionRecordCard
+          record={item}
+          onDelete={handleDelete}
+          typographyScale={typographyScale}
+          spacingScale={spacingScale}
+        />
+      )
     },
-    [handleDelete],
+    [handleDelete, typographyScale, spacingScale],
   )
 
   /**
@@ -117,13 +125,26 @@ export const HistoryScreen: FC<HistoryScreenProps> = function HistoryScreen() {
 
     return (
       <>
-        <DailySummaryCard summary={summary} />
-        <Text preset="formLabel" style={themed($sectionTitle)}>
+        <DailySummaryCard
+          summary={summary}
+          typographyScale={typographyScale}
+          spacingScale={spacingScale}
+        />
+        <Text
+          preset="formLabel"
+          style={[
+            themed($sectionTitle),
+            {
+              fontSize: 15 * typographyScale,
+              lineHeight: multiplier > 1 ? 24 * typographyScale : undefined,
+            },
+          ]}
+        >
           Plats consommés ({records.length})
         </Text>
       </>
     )
-  }, [summary, records.length, themed])
+  }, [summary, records.length, themed, typographyScale, multiplier, spacingScale])
 
   return (
     <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={themed($screenContent)}>
@@ -152,8 +173,17 @@ export const HistoryScreen: FC<HistoryScreenProps> = function HistoryScreen() {
         />
 
         {error && (
-          <View style={themed($errorContainer)}>
-            <Text style={themed($errorText)}>{error}</Text>
+          <View
+            style={[
+              themed($errorContainer),
+              {
+                padding: theme.spacing.md * spacingScale,
+                borderRadius: theme.spacing.xs * spacingScale,
+                marginTop: theme.spacing.md * spacingScale,
+              },
+            ]}
+          >
+            <Text style={[themed($errorText), { fontSize: 14 * typographyScale }]}>{error}</Text>
           </View>
         )}
       </View>
@@ -189,20 +219,19 @@ const $listContent: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   flexGrow: 1,
 })
 
-const $sectionTitle: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
+const $sectionTitle: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
   color: colors.textDim,
   marginTop: spacing.md,
   marginBottom: spacing.xs,
 })
 
-const $errorContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  padding: spacing.md,
+const $errorContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
   backgroundColor: colors.palette.angry100,
-  borderRadius: spacing.xs,
-  marginTop: spacing.md,
+  // padding, borderRadius, and marginTop are applied inline for responsive scaling
 })
 
 const $errorText: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.palette.angry500,
   textAlign: "center",
+  // fontSize is applied inline for responsive scaling
 })

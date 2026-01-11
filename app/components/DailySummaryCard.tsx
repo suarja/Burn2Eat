@@ -11,13 +11,20 @@ import type { ThemedStyle } from "../theme/types"
 export interface DailySummaryCardProps {
   summary: DailySummary | null
   style?: ViewStyle
+  typographyScale?: number
+  spacingScale?: number
 }
 
 /**
  * Component displaying daily consumption summary with BMR comparison
  * Shows total calories, BMR, surplus/deficit, and target effort
  */
-export const DailySummaryCard: FC<DailySummaryCardProps> = ({ summary, style }) => {
+export const DailySummaryCard: FC<DailySummaryCardProps> = ({
+  summary,
+  style,
+  typographyScale = 1,
+  spacingScale = 1,
+}) => {
   const { themed, theme } = useAppTheme()
 
   if (!summary) {
@@ -37,48 +44,121 @@ export const DailySummaryCard: FC<DailySummaryCardProps> = ({ summary, style }) 
 
   return (
     <Card
-      style={[themed($container), style]}
+      style={[themed($container), style, { marginBottom: theme.spacing.md * spacingScale }]}
       preset="default"
       ContentComponent={
-        <View style={themed($content)}>
+        <View style={[themed($content), { padding: theme.spacing.md * spacingScale }]}>
           {/* Header */}
-          <Text preset="subheading" style={themed($title)}>
+          <Text
+            preset="subheading"
+            style={[
+              themed($title),
+              {
+                marginBottom: theme.spacing.sm * spacingScale,
+                fontSize: 20 * typographyScale,
+                lineHeight: 30 * typographyScale,
+              },
+            ]}
+          >
             Aujourd'hui
           </Text>
 
           {/* Stats */}
-          <View style={themed($statsContainer)}>
+          <View style={[themed($statsContainer), { gap: theme.spacing.xs * spacingScale }]}>
             <View style={themed($statRow)}>
-              <Text style={themed($statLabel)}>Total consommé</Text>
-              <Text preset="bold" style={themed($statValue)}>
+              <Text
+                style={[
+                  themed($statLabel),
+                  { fontSize: 14 * typographyScale, lineHeight: 21 * typographyScale },
+                ]}
+              >
+                Total consommé
+              </Text>
+              <Text
+                preset="bold"
+                style={[
+                  themed($statValue),
+                  { fontSize: 16 * typographyScale, lineHeight: 24 * typographyScale },
+                ]}
+              >
                 {Math.round(totalCalories)} kcal
               </Text>
             </View>
 
             <View style={themed($statRow)}>
-              <Text style={themed($statLabel)}>Métabolisme de base (BMR)</Text>
-              <Text preset="bold" style={themed($statValue)}>
+              <Text
+                style={[
+                  themed($statLabel),
+                  { fontSize: 14 * typographyScale, lineHeight: 21 * typographyScale },
+                ]}
+              >
+                Métabolisme de base (BMR)
+              </Text>
+              <Text
+                preset="bold"
+                style={[
+                  themed($statValue),
+                  { fontSize: 16 * typographyScale, lineHeight: 24 * typographyScale },
+                ]}
+              >
                 {Math.round(bmr)} kcal
               </Text>
             </View>
           </View>
 
           {/* Divider */}
-          <View style={themed($divider)} />
+          <View
+            style={[themed($divider), { marginVertical: theme.spacing.sm * spacingScale }]}
+          />
 
           {/* Surplus/Deficit */}
-          <View style={themed($resultContainer)}>
+          <View style={[themed($resultContainer), { gap: theme.spacing.xs * spacingScale }]}>
             {hasSurplus ? (
               <>
-                <Text style={themed($resultLabel)}>Surplus calorique</Text>
-                <Text preset="bold" style={themed($surplusValue)}>
+                <Text
+                  style={[
+                    themed($resultLabel),
+                    { fontSize: 13 * typographyScale, lineHeight: 19 * typographyScale },
+                  ]}
+                >
+                  Surplus calorique
+                </Text>
+                <Text
+                  preset="bold"
+                  style={[
+                    themed($surplusValue),
+                    { fontSize: 24 * typographyScale, lineHeight: 36 * typographyScale },
+                  ]}
+                >
                   +{Math.round(surplus)} kcal
                 </Text>
 
                 {targetEffort && (
-                  <View style={themed($effortContainer)}>
-                    <Text style={themed($effortLabel)}>Effort suggéré pour compenser:</Text>
-                    <Text preset="bold" style={themed($effortValue)}>
+                  <View
+                    style={[
+                      themed($effortContainer),
+                      {
+                        marginTop: theme.spacing.xs * spacingScale,
+                        paddingTop: theme.spacing.xs * spacingScale,
+                        gap: theme.spacing.xxs * spacingScale,
+                      },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        themed($effortLabel),
+                        { fontSize: 13 * typographyScale, lineHeight: 19 * typographyScale },
+                      ]}
+                    >
+                      Effort suggéré pour compenser:
+                    </Text>
+                    <Text
+                      preset="bold"
+                      style={[
+                        themed($effortValue),
+                        { fontSize: 16 * typographyScale, lineHeight: 24 * typographyScale },
+                      ]}
+                    >
                       {targetEffort.minutes} min de {targetEffort.activityLabel.toLowerCase()}
                     </Text>
                   </View>
@@ -86,11 +166,30 @@ export const DailySummaryCard: FC<DailySummaryCardProps> = ({ summary, style }) 
               </>
             ) : (
               <>
-                <Text style={themed($resultLabel)}>Déficit calorique</Text>
-                <Text preset="bold" style={themed($deficitValue)}>
+                <Text
+                  style={[
+                    themed($resultLabel),
+                    { fontSize: 13 * typographyScale, lineHeight: 19 * typographyScale },
+                  ]}
+                >
+                  Déficit calorique
+                </Text>
+                <Text
+                  preset="bold"
+                  style={[
+                    themed($deficitValue),
+                    { fontSize: 24 * typographyScale, lineHeight: 36 * typographyScale },
+                  ]}
+                >
                   {Math.round(surplus)} kcal
                 </Text>
-                <Text size="xs" style={themed($deficitHint)}>
+                <Text
+                  size="xs"
+                  style={[
+                    themed($deficitHint),
+                    { fontSize: 12 * typographyScale, lineHeight: 18 * typographyScale },
+                  ]}
+                >
                   Vous êtes en dessous de votre BMR
                 </Text>
               </>
@@ -103,21 +202,21 @@ export const DailySummaryCard: FC<DailySummaryCardProps> = ({ summary, style }) 
 }
 
 const $container: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
-  marginBottom: spacing.md,
   backgroundColor: colors.palette.neutral100,
+  // marginBottom is applied inline for scaling
 })
 
 const $content: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  padding: spacing.md,
+  // padding is applied inline for scaling
 })
 
 const $title: ThemedStyle<TextStyle> = ({ colors }) => ({
-  marginBottom: spacing.sm,
   color: colors.text,
+  // marginBottom, fontSize, and lineHeight are applied inline for scaling
 })
 
 const $statsContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  gap: spacing.xs,
+  // gap is applied inline for scaling
 })
 
 const $statRow: ThemedStyle<ViewStyle> = () => ({
@@ -127,60 +226,59 @@ const $statRow: ThemedStyle<ViewStyle> = () => ({
 })
 
 const $statLabel: ThemedStyle<TextStyle> = ({ colors }) => ({
-  fontSize: 14,
   color: colors.textDim,
+  // fontSize and lineHeight are applied inline for scaling
 })
 
 const $statValue: ThemedStyle<TextStyle> = ({ colors }) => ({
-  fontSize: 16,
   color: colors.text,
+  // fontSize and lineHeight are applied inline for scaling
 })
 
 const $divider: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   height: 1,
   backgroundColor: colors.border,
-  marginVertical: spacing.sm,
+  // marginVertical is applied inline for scaling
 })
 
 const $resultContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  gap: spacing.xs,
+  // gap is applied inline for scaling
 })
 
 const $resultLabel: ThemedStyle<TextStyle> = ({ colors }) => ({
-  fontSize: 13,
   color: colors.textDim,
   textTransform: "uppercase",
+  // fontSize and lineHeight are applied inline for scaling
 })
 
 const $surplusValue: ThemedStyle<TextStyle> = ({ colors }) => ({
-  fontSize: 24,
   color: colors.palette.angry500,
+  // fontSize and lineHeight are applied inline for scaling
 })
 
 const $deficitValue: ThemedStyle<TextStyle> = ({ colors }) => ({
-  fontSize: 24,
   color: colors.palette.primary500,
+  // fontSize and lineHeight are applied inline for scaling
 })
 
 const $deficitHint: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.textDim,
   fontStyle: "italic",
+  // fontSize and lineHeight are applied inline for scaling
 })
 
 const $effortContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  marginTop: spacing.xs,
-  paddingTop: spacing.xs,
   borderTopWidth: 1,
   borderTopColor: colors.border,
-  gap: spacing.xxs,
+  // marginTop, paddingTop, and gap are applied inline for scaling
 })
 
 const $effortLabel: ThemedStyle<TextStyle> = ({ colors }) => ({
-  fontSize: 13,
   color: colors.textDim,
+  // fontSize and lineHeight are applied inline for scaling
 })
 
 const $effortValue: ThemedStyle<TextStyle> = ({ colors }) => ({
-  fontSize: 16,
   color: colors.palette.primary500,
+  // fontSize and lineHeight are applied inline for scaling
 })

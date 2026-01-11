@@ -12,6 +12,8 @@ export interface ConsumptionRecordCardProps {
   record: ConsumptionRecord
   onDelete: (id: string) => void
   style?: ViewStyle
+  typographyScale?: number
+  spacingScale?: number
 }
 
 /**
@@ -22,6 +24,8 @@ export const ConsumptionRecordCard: FC<ConsumptionRecordCardProps> = ({
   record,
   onDelete,
   style,
+  typographyScale = 1,
+  spacingScale = 1,
 }) => {
   const { themed, theme } = useAppTheme()
 
@@ -30,29 +34,51 @@ export const ConsumptionRecordCard: FC<ConsumptionRecordCardProps> = ({
   }
 
   return (
-    <View style={[themed($container), style]}>
-      <View style={themed($content)}>
+    <View
+      style={[
+        themed($container),
+        style,
+        {
+          borderRadius: theme.spacing.xs * spacingScale,
+          padding: theme.spacing.sm * spacingScale,
+          marginBottom: theme.spacing.xs * spacingScale,
+        },
+      ]}
+    >
+      <View style={[themed($content), { gap: theme.spacing.xxs * spacingScale }]}>
         {/* Dish name */}
-        <Text preset="bold" style={themed($dishName)}>
+        <Text
+          preset="bold"
+          style={[themed($dishName), { fontSize: 16 * typographyScale, lineHeight: 24 * typographyScale }]}
+        >
           {record.getDishName()}
         </Text>
 
         {/* Time and calories */}
-        <View style={themed($infoRow)}>
-          <Text size="xs" style={themed($timeText)}>
+        <View style={[themed($infoRow), { gap: theme.spacing.xs * spacingScale }]}>
+          <Text
+            size="xs"
+            style={[themed($timeText), { fontSize: 12 * typographyScale, lineHeight: 18 * typographyScale }]}
+          >
             {record.getFormattedTime()}
           </Text>
-          <Text size="xs" style={themed($separator)}>
+          <Text size="xs" style={[themed($separator), { fontSize: 12 * typographyScale }]}>
             •
           </Text>
-          <Text size="xs" style={themed($caloriesText)}>
+          <Text
+            size="xs"
+            style={[themed($caloriesText), { fontSize: 12 * typographyScale, lineHeight: 18 * typographyScale }]}
+          >
             {Math.round(record.getCalories())} kcal
           </Text>
         </View>
 
         {/* Effort */}
         <View style={themed($effortRow)}>
-          <Text size="xs" style={themed($effortText)}>
+          <Text
+            size="xs"
+            style={[themed($effortText), { fontSize: 12 * typographyScale, lineHeight: 18 * typographyScale }]}
+          >
             {record.getPrimaryEffort().minutes} min de{" "}
             {record.getPrimaryEffort().activityLabel.toLowerCase()}
           </Text>
@@ -62,10 +88,10 @@ export const ConsumptionRecordCard: FC<ConsumptionRecordCardProps> = ({
       {/* Delete button */}
       <TouchableOpacity
         onPress={handleDelete}
-        style={themed($deleteButton)}
+        style={[themed($deleteButton), { padding: theme.spacing.xs * spacingScale }]}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
-        <Icon icon="x" size={20} color={theme.colors.textDim} />
+        <Icon icon="x" size={20 * typographyScale} color={theme.colors.textDim} />
       </TouchableOpacity>
     </View>
   )
@@ -75,39 +101,40 @@ const $container: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   flexDirection: "row",
   alignItems: "center",
   backgroundColor: colors.background,
-  borderRadius: spacing.xs,
   borderWidth: 1,
   borderColor: colors.border,
-  padding: spacing.sm,
-  marginBottom: spacing.xs,
+  // Remaining styles applied inline for scaling
 })
 
 const $content: ThemedStyle<ViewStyle> = () => ({
   flex: 1,
-  gap: spacing.xxs,
+  // Remaining styles applied inline for scaling
 })
 
 const $dishName: ThemedStyle<TextStyle> = ({ colors }) => ({
-  fontSize: 16,
   color: colors.text,
+  // Remaining styles applied inline for scaling
 })
 
 const $infoRow: ThemedStyle<ViewStyle> = () => ({
   flexDirection: "row",
   alignItems: "center",
-  gap: spacing.xs,
+  // Remaining styles applied inline for scaling
 })
 
 const $timeText: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.textDim,
+  // Remaining styles applied inline for scaling
 })
 
 const $separator: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.textDim,
+  // Remaining styles applied inline for scaling
 })
 
 const $caloriesText: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.textDim,
+  // Remaining styles applied inline for scaling
 })
 
 const $effortRow: ThemedStyle<ViewStyle> = () => ({
@@ -118,8 +145,9 @@ const $effortRow: ThemedStyle<ViewStyle> = () => ({
 const $effortText: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.palette.primary500,
   fontStyle: "italic",
+  // Remaining styles applied inline for scaling
 })
 
-const $deleteButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  padding: spacing.xs,
+const $deleteButton: ThemedStyle<ViewStyle> = () => ({
+  // Remaining styles applied inline for scaling
 })
