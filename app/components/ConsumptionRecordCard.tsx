@@ -5,7 +5,6 @@ import { Icon } from "./Icon"
 import { Text } from "./Text"
 import type { ConsumptionRecord } from "../../src/domain/history/ConsumptionRecord"
 import { useAppTheme } from "../theme/context"
-import { spacing } from "../theme/spacing"
 import type { ThemedStyle } from "../theme/types"
 
 export interface ConsumptionRecordCardProps {
@@ -49,7 +48,10 @@ export const ConsumptionRecordCard: FC<ConsumptionRecordCardProps> = ({
         {/* Dish name */}
         <Text
           preset="bold"
-          style={[themed($dishName), { fontSize: 16 * typographyScale, lineHeight: 24 * typographyScale }]}
+          style={[
+            themed($dishName),
+            { fontSize: 16 * typographyScale, lineHeight: 24 * typographyScale },
+          ]}
         >
           {record.getDishName()}
         </Text>
@@ -58,7 +60,10 @@ export const ConsumptionRecordCard: FC<ConsumptionRecordCardProps> = ({
         <View style={[themed($infoRow), { gap: theme.spacing.xs * spacingScale }]}>
           <Text
             size="xs"
-            style={[themed($timeText), { fontSize: 12 * typographyScale, lineHeight: 18 * typographyScale }]}
+            style={[
+              themed($timeText),
+              { fontSize: 12 * typographyScale, lineHeight: 18 * typographyScale },
+            ]}
           >
             {record.getFormattedTime()}
           </Text>
@@ -67,7 +72,10 @@ export const ConsumptionRecordCard: FC<ConsumptionRecordCardProps> = ({
           </Text>
           <Text
             size="xs"
-            style={[themed($caloriesText), { fontSize: 12 * typographyScale, lineHeight: 18 * typographyScale }]}
+            style={[
+              themed($caloriesText),
+              { fontSize: 12 * typographyScale, lineHeight: 18 * typographyScale },
+            ]}
           >
             {Math.round(record.getCalories())} kcal
           </Text>
@@ -77,7 +85,10 @@ export const ConsumptionRecordCard: FC<ConsumptionRecordCardProps> = ({
         <View style={themed($effortRow)}>
           <Text
             size="xs"
-            style={[themed($effortText), { fontSize: 12 * typographyScale, lineHeight: 18 * typographyScale }]}
+            style={[
+              themed($effortText),
+              { fontSize: 12 * typographyScale, lineHeight: 18 * typographyScale },
+            ]}
           >
             {record.getPrimaryEffort().minutes} min de{" "}
             {record.getPrimaryEffort().activityLabel.toLowerCase()}
@@ -97,7 +108,7 @@ export const ConsumptionRecordCard: FC<ConsumptionRecordCardProps> = ({
   )
 }
 
-const $container: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
+const $container: ThemedStyle<ViewStyle> = ({ colors }) => ({
   flexDirection: "row",
   alignItems: "center",
   backgroundColor: colors.background,

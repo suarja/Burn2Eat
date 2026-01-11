@@ -14,7 +14,6 @@ import { useResponsiveSpacing } from "@/hooks/useResponsiveSpacing"
 import { useTodayHistory } from "@/hooks/useTodayHistory"
 import type { MainTabScreenProps } from "@/navigators/MainTabNavigator"
 import { useAppTheme } from "@/theme/context"
-import { spacing } from "@/theme/spacing"
 import type { ThemedStyle } from "@/theme/types"
 
 import type { ConsumptionRecord } from "../../src/domain/history/ConsumptionRecord"
