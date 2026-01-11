@@ -9,8 +9,8 @@ const palette = {
   neutral200: "#191015",
   neutral100: "#000000",
 
-  primary600: "#F4E0D9",
-  primary500: "#E8C1B4",
+  primary600: "#b69f97ff",
+  primary500: "#88675cff",
   primary400: "#DDA28E",
   primary300: "#D28468",
   primary200: "#C76542",
@@ -22,7 +22,7 @@ const palette = {
   secondary200: "#626894",
   secondary100: "#41476E",
 
-  accent500: "#FFEED4",
+  accent500: "#4d4334ff",
   accent400: "#FFE1B2",
   accent300: "#FDD495",
   accent200: "#FBC878",
@@ -32,8 +32,8 @@ const palette = {
   angry500: "#C03403",
 
   // Success/celebration colors for MVP (dark theme variants)
-  success100: "#1A4C2A",
-  success500: "#06FFA5", // Keep bright neon for celebrations
+  success100: "#022c0fff",
+  success500: "#029b63ff", // Keep bright neon for celebrations
 
   // Enhanced accent for gamification (dark theme variants)
   gamification100: "#3D2F00",

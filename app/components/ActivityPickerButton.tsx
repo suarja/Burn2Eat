@@ -195,7 +195,7 @@ const $activityItem: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 })
 
 const $selectedItem: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  backgroundColor: colors.palette.primary100,
+  backgroundColor: colors.palette.primary500,
 })
 
 const $activityItemContent: ThemedStyle<ViewStyle> = ({}) => ({
@@ -210,7 +210,7 @@ const $activityName: ThemedStyle<TextStyle> = ({ typography, colors }) => ({
 })
 
 const $selectedText: ThemedStyle<TextStyle> = ({ colors }) => ({
-  color: colors.palette.primary600,
+  color: colors.palette.neutral700,
 })
 
 const $activityMet: ThemedStyle<TextStyle> = ({ typography, colors }) => ({
@@ -220,7 +220,7 @@ const $activityMet: ThemedStyle<TextStyle> = ({ typography, colors }) => ({
 })
 
 const $selectedMetText: ThemedStyle<TextStyle> = ({ colors }) => ({
-  color: colors.palette.primary500,
+  color: colors.palette.neutral200,
 })
 
 const $separator: ThemedStyle<ViewStyle> = ({ colors }) => ({

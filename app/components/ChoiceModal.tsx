@@ -77,8 +77,8 @@ export const ChoiceModal: React.FC<ChoiceModalProps> = ({
         }
       case "challenge":
         return {
-          background: theme.colors.gamificationBackground,
-          accent: theme.colors.gamification,
+          background: theme.colors.tintInactive,
+          accent: theme.colors.palette.secondary200,
         }
       default:
         return {

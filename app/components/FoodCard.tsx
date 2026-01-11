@@ -40,13 +40,14 @@ export interface FoodCardProps {
   quantityText?: string
 }
 
+// eslint-disable-next-line react/display-name
 export const FoodCard: React.FC<FoodCardProps> = memo(
   ({ dish, onPress, style, disabled = false, size = "medium", displayCalories, quantityText }) => {
     const { themed, theme } = useAppTheme()
     const { multiplier } = useResponsiveSpacing()
 
     // Use single pastel color for all cards
-    const lightColor = theme.colors.palette.secondary100
+    const lightColor = theme.colors.palette.primary500
     const strongColor = theme.colors.palette.accent500
 
     // Get emoji fallback for food
@@ -141,6 +142,7 @@ export const FoodCard: React.FC<FoodCardProps> = memo(
               <Text
                 style={[
                   themed($emojiText),
+                  // eslint-disable-next-line react-native/no-inline-styles
                   {
                     fontSize: multiplier > 1 ? 36 : 24,
                   },
@@ -158,6 +160,7 @@ export const FoodCard: React.FC<FoodCardProps> = memo(
             preset="bold"
             style={[
               themed($dishName),
+              // eslint-disable-next-line react-native/no-inline-styles
               {
                 fontSize: multiplier > 1 ? 20 : 14,
                 lineHeight: multiplier > 1 ? 26 : 18,
