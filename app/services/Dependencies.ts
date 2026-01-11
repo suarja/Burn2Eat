@@ -2,15 +2,22 @@ import { GetFoodCatalogUseCase } from "@/application/usecases/food/GetFoodCatalo
 
 import { CalculateEffortUseCase } from "../../src/application/usecases/CalculateEffortUseCase"
 import { CalculatePortionUseCase } from "../../src/application/usecases/CalculatePortionUseCase"
+import { ClearHistoryUseCase } from "../../src/application/usecases/ClearHistoryUseCase"
 import { CreateUserProfileUseCase } from "../../src/application/usecases/CreateUserProfileUseCase"
+import { DeleteConsumptionUseCase } from "../../src/application/usecases/DeleteConsumptionUseCase"
+import { GetTodayHistoryUseCase } from "../../src/application/usecases/GetTodayHistoryUseCase"
 import { GetUserProfileUseCase } from "../../src/application/usecases/GetUserProfileUseCase"
+import { RecordConsumptionUseCase } from "../../src/application/usecases/RecordConsumptionUseCase"
 import { ScanBarcodeUseCase } from "../../src/application/usecases/ScanBarcodeUseCase"
 import { UpdateUserProfileUseCase } from "../../src/application/usecases/UpdateUserProfileUseCase"
 import { StandardMETEffortPolicy } from "../../src/domain/effort/EffortPolicy"
 import type { EffortPolicy } from "../../src/domain/effort/EffortPolicy"
+import type { ConsumptionHistoryRepository } from "../../src/domain/history/ConsumptionHistoryRepository"
 import type { DishRepository } from "../../src/domain/nutrition/DishRepository"
 import type { ActivityCatalog } from "../../src/domain/physiology/ActivityCatalog"
+import { BMRCalculator } from "../../src/domain/physiology/BMRCalculator"
 import type { UserHealthInfoRepository } from "../../src/domain/physiology/UserHealthInfoRepository"
+import { MMKVConsumptionHistoryRepository } from "../../src/infrastructure/adapters/MMKVConsumptionHistoryRepository"
 import { MMKVUserHealthInfoRepository } from "../../src/infrastructure/adapters/MMKVUserHealthInfoRepository"
 import { OpenFoodFactsRepository } from "../../src/infrastructure/adapters/OpenFoodFactsRepository"
 import { StaticActivityCatalog } from "../../src/infrastructure/adapters/StaticActivityCatalog"
@@ -27,6 +34,8 @@ export class Dependencies {
   private static _dishRepository: DishRepository | null = null
   private static _openFoodFactsRepository: DishRepository | null = null
   private static _effortPolicy: EffortPolicy | null = null
+  private static _consumptionHistoryRepository: ConsumptionHistoryRepository | null = null
+  private static _bmrCalculator: BMRCalculator | null = null
 
   // Use Cases (Application Layer)
   private static _createUserUseCase: CreateUserProfileUseCase | null = null
@@ -36,6 +45,10 @@ export class Dependencies {
   private static _calculatePortionUseCase: CalculatePortionUseCase | null = null
   private static _getFoodCatalogUseCase: GetFoodCatalogUseCase | null = null
   private static _scanBarcodeUseCase: ScanBarcodeUseCase | null = null
+  private static _recordConsumptionUseCase: RecordConsumptionUseCase | null = null
+  private static _getTodayHistoryUseCase: GetTodayHistoryUseCase | null = null
+  private static _deleteConsumptionUseCase: DeleteConsumptionUseCase | null = null
+  private static _clearHistoryUseCase: ClearHistoryUseCase | null = null
 
   /**
    * Initialize all dependencies (call once at app startup)
@@ -49,6 +62,8 @@ export class Dependencies {
     this._dishRepository = new StaticDishRepository()
     this._openFoodFactsRepository = new OpenFoodFactsRepository()
     this._effortPolicy = new StandardMETEffortPolicy()
+    this._consumptionHistoryRepository = new MMKVConsumptionHistoryRepository()
+    this._bmrCalculator = new BMRCalculator()
 
     // Application Layer (Inject dependencies)
     this._createUserUseCase = new CreateUserProfileUseCase(this._userRepository)
@@ -62,6 +77,19 @@ export class Dependencies {
     this._calculatePortionUseCase = new CalculatePortionUseCase(this._dishRepository)
     this._getFoodCatalogUseCase = new GetFoodCatalogUseCase(this._dishRepository)
     this._scanBarcodeUseCase = new ScanBarcodeUseCase(this._openFoodFactsRepository)
+    this._recordConsumptionUseCase = new RecordConsumptionUseCase(
+      this._consumptionHistoryRepository,
+    )
+    this._getTodayHistoryUseCase = new GetTodayHistoryUseCase(
+      this._consumptionHistoryRepository,
+      this._userRepository,
+      this._bmrCalculator,
+      this._activityCatalog,
+    )
+    this._deleteConsumptionUseCase = new DeleteConsumptionUseCase(
+      this._consumptionHistoryRepository,
+    )
+    this._clearHistoryUseCase = new ClearHistoryUseCase(this._consumptionHistoryRepository)
 
     console.log("✅ Dependencies: DDD architecture initialized successfully")
   }
@@ -75,6 +103,8 @@ export class Dependencies {
     this._dishRepository = null
     this._openFoodFactsRepository = null
     this._effortPolicy = null
+    this._consumptionHistoryRepository = null
+    this._bmrCalculator = null
     this._createUserUseCase = null
     this._getUserUseCase = null
     this._updateUserUseCase = null
@@ -82,6 +112,10 @@ export class Dependencies {
     this._calculatePortionUseCase = null
     this._getFoodCatalogUseCase = null
     this._scanBarcodeUseCase = null
+    this._recordConsumptionUseCase = null
+    this._getTodayHistoryUseCase = null
+    this._deleteConsumptionUseCase = null
+    this._clearHistoryUseCase = null
   }
 
   // Repository Getters
@@ -168,6 +202,48 @@ export class Dependencies {
       throw new Error("Dependencies not initialized. Call Dependencies.initialize() first.")
     }
     return this._openFoodFactsRepository
+  }
+
+  static consumptionHistoryRepository(): ConsumptionHistoryRepository {
+    if (!this._consumptionHistoryRepository) {
+      throw new Error("Dependencies not initialized. Call Dependencies.initialize() first.")
+    }
+    return this._consumptionHistoryRepository
+  }
+
+  static bmrCalculator(): BMRCalculator {
+    if (!this._bmrCalculator) {
+      throw new Error("Dependencies not initialized. Call Dependencies.initialize() first.")
+    }
+    return this._bmrCalculator
+  }
+
+  static recordConsumptionUseCase(): RecordConsumptionUseCase {
+    if (!this._recordConsumptionUseCase) {
+      throw new Error("Dependencies not initialized. Call Dependencies.initialize() first.")
+    }
+    return this._recordConsumptionUseCase
+  }
+
+  static getTodayHistoryUseCase(): GetTodayHistoryUseCase {
+    if (!this._getTodayHistoryUseCase) {
+      throw new Error("Dependencies not initialized. Call Dependencies.initialize() first.")
+    }
+    return this._getTodayHistoryUseCase
+  }
+
+  static deleteConsumptionUseCase(): DeleteConsumptionUseCase {
+    if (!this._deleteConsumptionUseCase) {
+      throw new Error("Dependencies not initialized. Call Dependencies.initialize() first.")
+    }
+    return this._deleteConsumptionUseCase
+  }
+
+  static clearHistoryUseCase(): ClearHistoryUseCase {
+    if (!this._clearHistoryUseCase) {
+      throw new Error("Dependencies not initialized. Call Dependencies.initialize() first.")
+    }
+    return this._clearHistoryUseCase
   }
 }
 
