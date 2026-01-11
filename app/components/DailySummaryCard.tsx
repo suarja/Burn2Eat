@@ -107,9 +107,7 @@ export const DailySummaryCard: FC<DailySummaryCardProps> = ({
           </View>
 
           {/* Divider */}
-          <View
-            style={[themed($divider), { marginVertical: theme.spacing.sm * spacingScale }]}
-          />
+          <View style={[themed($divider), { marginVertical: theme.spacing.sm * spacingScale }]} />
 
           {/* Surplus/Deficit */}
           <View style={[themed($resultContainer), { gap: theme.spacing.xs * spacingScale }]}>

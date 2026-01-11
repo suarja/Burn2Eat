@@ -19,14 +19,24 @@ export const useBarcodeScanning = () => {
   const navigation = useNavigation<any>()
   const scanBarcodeUseCase = Dependencies.scanBarcodeUseCase()
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const isProcessingRef = useRef(false)
 
   const handleBarcodeScanned = useCallback(
     async (barcode: string) => {
-      // Prevent multiple scans
-      if (isLoading || scannedBarcode === barcode) {
+      // Atomic check and lock to prevent multiple simultaneous scans
+      if (isProcessingRef.current) {
+        console.log("⚠️ Already processing a scan, ignoring:", barcode)
+        return
+      }
+
+      // Additional check for duplicate barcode
+      if (scannedBarcode === barcode) {
         console.log("⚠️ Ignoring duplicate scan:", barcode)
         return
       }
+
+      // Lock scanning atomically
+      isProcessingRef.current = true
 
       console.log("🔍 Starting barcode scan:", barcode)
       setIsScanning(false)
@@ -111,6 +121,9 @@ export const useBarcodeScanning = () => {
         }
         setIsLoading(false)
         setIsScanning(false)
+
+        // Unlock processing
+        isProcessingRef.current = false
       }
     },
     [isLoading, scannedBarcode, scanBarcodeUseCase, navigation],
@@ -129,6 +142,9 @@ export const useBarcodeScanning = () => {
     setIsLoading(false)
     setError(null)
     setIsScanning(true)
+
+    // Clear the processing lock
+    isProcessingRef.current = false
   }, [])
 
   const startScanning = useCallback(() => {

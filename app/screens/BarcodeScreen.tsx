@@ -1,5 +1,6 @@
-import React, { FC, useCallback, useEffect, useRef } from "react"
-import { useState } from "react"
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { FC, useCallback, useRef, useState } from "react"
 import { ViewStyle, TextStyle, ActivityIndicator } from "react-native"
 import { View } from "react-native"
 import { CameraView, CameraType, useCameraPermissions, BarcodeScanningResult } from "expo-camera"
@@ -33,6 +34,15 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
     startScanning,
     resetScanning,
   } = useBarcodeScanning()
+
+  const onBarcodeScanned = useCallback(
+    (result: BarcodeScanningResult) => {
+      if (isScanning && result.data) {
+        handleBarcodeScanned(result.data)
+      }
+    },
+    [isScanning, handleBarcodeScanned],
+  )
 
   // Handle camera lifecycle with focus/blur - mount/unmount approach
   useFocusEffect(
@@ -94,12 +104,6 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
     )
   }
 
-  const onBarcodeScanned = (result: BarcodeScanningResult) => {
-    if (isScanning && result.data) {
-      handleBarcodeScanned(result.data)
-    }
-  }
-
   const handleRetry = () => {
     resetScanning()
   }
@@ -139,6 +143,7 @@ export const BarcodeScreen: FC<BarcodeScreenProps> = ({ navigation }) => {
       {/* Top Safe Area with instruction */}
       <View style={themed($topSafeArea)}>
         <Text
+          // eslint-disable-next-line react-native/no-color-literals
           style={{
             fontSize: 16,
             fontFamily: typography.primary.medium,
