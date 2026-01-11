@@ -1,0 +1,204 @@
+import { FC, useState, useCallback } from "react"
+import { View, ViewStyle, FlatList, RefreshControl } from "react-native"
+
+import { ConsumptionRecordCard } from "@/components/ConsumptionRecordCard"
+import { DailySummaryCard } from "@/components/DailySummaryCard"
+import { EmptyHistoryView } from "@/components/EmptyHistoryView"
+import { Header } from "@/components/Header"
+import { ChoiceModal } from "@/components/ChoiceModal"
+import { Screen } from "@/components/Screen"
+import { Text } from "@/components/Text"
+import { useClearHistory } from "@/hooks/useClearHistory"
+import { useDeleteConsumption } from "@/hooks/useDeleteConsumption"
+import { useTodayHistory } from "@/hooks/useTodayHistory"
+import type { MainTabScreenProps } from "@/navigators/MainTabNavigator"
+import { useAppTheme } from "@/theme/context"
+import type { ThemedStyle } from "@/theme/types"
+import { useResponsiveSpacing } from "@/hooks/useResponsiveSpacing"
+import type { ConsumptionRecord } from "../../src/domain/history/ConsumptionRecord"
+
+interface HistoryScreenProps extends MainTabScreenProps<"History"> {}
+
+/**
+ * History Screen - Display today's consumption history with daily summary
+ *
+ * Features:
+ * - Daily summary card with BMR comparison
+ * - List of consumed dishes with delete option
+ * - Clear all history with confirmation modal
+ * - Empty state when no consumption exists
+ * - Pull-to-refresh
+ * - iPad responsive layout
+ */
+export const HistoryScreen: FC<HistoryScreenProps> = function HistoryScreen() {
+  const { themed, theme } = useAppTheme()
+  const { multiplier } = useResponsiveSpacing()
+
+  // Responsive scaling for iPad
+  const spacingScale = multiplier > 1 ? 1.3 : 1
+
+  // State
+  const [showClearModal, setShowClearModal] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
+
+  // Hooks
+  const { records, summary, loading, error, refresh } = useTodayHistory()
+  const { deleteRecord } = useDeleteConsumption()
+  const { clearHistory } = useClearHistory()
+
+  /**
+   * Handle deleting a single record
+   */
+  const handleDelete = useCallback(
+    async (recordId: string) => {
+      const result = await deleteRecord(recordId)
+      if (result.success) {
+        // Refresh the list to show updated data
+        await refresh()
+      }
+    },
+    [deleteRecord, refresh],
+  )
+
+  /**
+   * Handle clear all history
+   */
+  const handleClearAll = useCallback(() => {
+    setShowClearModal(true)
+  }, [])
+
+  /**
+   * Handle confirm clear all
+   */
+  const handleClearConfirm = useCallback(async () => {
+    const result = await clearHistory()
+    setShowClearModal(false)
+
+    if (result.success) {
+      // Refresh to show empty state
+      await refresh()
+    }
+  }, [clearHistory, refresh])
+
+  /**
+   * Handle pull-to-refresh
+   */
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true)
+    await refresh()
+    setRefreshing(false)
+  }, [refresh])
+
+  /**
+   * Render a consumption record
+   */
+  const renderRecord = useCallback(
+    ({ item }: { item: ConsumptionRecord }) => {
+      return <ConsumptionRecordCard record={item} onDelete={handleDelete} />
+    },
+    [handleDelete],
+  )
+
+  /**
+   * Render empty state
+   */
+  const renderEmpty = useCallback(() => {
+    if (loading) return null
+    return <EmptyHistoryView />
+  }, [loading])
+
+  /**
+   * Render list header (summary card)
+   */
+  const renderListHeader = useCallback(() => {
+    if (!summary || records.length === 0) return null
+
+    return (
+      <>
+        <DailySummaryCard summary={summary} />
+        <Text
+          preset="formLabel"
+          style={themed($sectionTitle, { marginBottom: spacing.xs * spacingScale })}
+        >
+          Plats consommés ({records.length})
+        </Text>
+      </>
+    )
+  }, [summary, records.length, themed, spacingScale])
+
+  return (
+    <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={themed($screenContent)}>
+      <Header
+        title="Historique"
+        rightIcon={records.length > 0 ? "x" : undefined}
+        rightText={records.length > 0 ? "Effacer tout" : undefined}
+        onRightPress={records.length > 0 ? handleClearAll : undefined}
+      />
+
+      <View style={themed($container, { paddingHorizontal: spacing.md * spacingScale })}>
+        <FlatList
+          data={records}
+          renderItem={renderRecord}
+          keyExtractor={(item) => item.getId().toString()}
+          ListHeaderComponent={renderListHeader}
+          ListEmptyComponent={renderEmpty}
+          contentContainerStyle={themed($listContent)}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={theme.colors.tint} />
+          }
+        />
+
+        {error && (
+          <View style={themed($errorContainer)}>
+            <Text style={themed($errorText)}>{error}</Text>
+          </View>
+        )}
+      </View>
+
+      {/* Clear all confirmation modal */}
+      <ChoiceModal
+        visible={showClearModal}
+        variant="challenge"
+        title="Effacer l'historique ?"
+        content="Cette action est irréversible. Tous vos enregistrements de consommation seront supprimés."
+        primaryText="Effacer tout"
+        secondaryText="Annuler"
+        onPrimaryPress={handleClearConfirm}
+        onSecondaryPress={() => setShowClearModal(false)}
+        onClose={() => setShowClearModal(false)}
+      />
+    </Screen>
+  )
+}
+
+const $screenContent: ThemedStyle<ViewStyle> = () => ({
+  flex: 1,
+})
+
+const $container: ThemedStyle<ViewStyle> = () => ({
+  flex: 1,
+})
+
+const $listContent: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  paddingTop: spacing.md,
+  paddingBottom: spacing.xxl,
+  flexGrow: 1,
+})
+
+const $sectionTitle: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
+  color: colors.textDim,
+  marginTop: spacing.md,
+  marginBottom: spacing.xs,
+})
+
+const $errorContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+  padding: spacing.md,
+  backgroundColor: colors.palette.angry100,
+  borderRadius: spacing.xs,
+  marginTop: spacing.md,
+})
+
+const $errorText: ThemedStyle<ViewStyle> = ({ colors }) => ({
+  color: colors.palette.angry500,
+  textAlign: "center",
+})
