@@ -1,8 +1,9 @@
 # 📚 Documentation Audit - Burn2Eat
 
-**Date:** 2026-01-10
+**Date:** 2026-01-11
 **Audité par:** Claude Sonnet 4.5
 **Objectif:** Identifier les fichiers de documentation à jour, obsolètes, ou à archiver
+**Dernière modification:** Ajout de tiktok-link-feature.md
 
 ---
 
@@ -36,9 +37,10 @@
 ---
 
 #### 3. **system-prompt-extraction/HANDOFF.md** ✅ CRITIQUE - À JOUR
-**Statut:** Mis à jour aujourd'hui (2026-01-10)
+**Statut:** Mis à jour aujourd'hui (2026-01-11)
 **Contenu:**
 - État complet de l'implémentation
+- Feature TikTok link (nouvelle)
 - Checklist de tests iPad
 - Guide de troubleshooting
 - Prochaines étapes pour publication App Store
@@ -84,7 +86,20 @@
 
 ### 📝 Fichiers de Spécifications (Valider avant usage)
 
-#### 7. **docs/barcode-scanning-feature.md** ⚠️ ATTENTION - PARTIELLEMENT OBSOLÈTE
+#### 7. **docs/tiktok-link-feature.md** ✅ NOUVEAU - PRÊT À IMPLÉMENTER
+**Statut:** Créé le 2026-01-11
+**Contenu:**
+- Spécification complète pour feature TikTok link
+- Design des deux placements (ProfileSetupScreen + ResultScreen)
+- Guide d'implémentation détaillé avec code examples
+- Checklist de tests
+- Vérification conformité App Store
+
+**Action:** ✅ Garder - Document de référence pour implémentation
+
+---
+
+#### 8. **docs/barcode-scanning-feature.md** ⚠️ ATTENTION - PARTIELLEMENT OBSOLÈTE
 **Statut:** Marqué "Post-MVP Q2 2025" mais scan déjà implémenté
 **Contenu:**
 - Spécifications détaillées du scan de code-barre
@@ -96,7 +111,7 @@
 
 ---
 
-#### 8. **docs/ui-roadmap.md** ⚠️ PARTIELLEMENT OBSOLÈTE
+#### 9. **docs/ui-roadmap.md** ⚠️ PARTIELLEMENT OBSOLÈTE
 **Statut:** Roadmap UI avec wireframes
 **Contenu:**
 - Design system et palette de couleurs
@@ -111,7 +126,7 @@
 
 ---
 
-#### 9. **docs/result-screen-refactoring-summary.md** ✅ RÉFÉRENCE - HISTORIQUE
+#### 10. **docs/result-screen-refactoring-summary.md** ✅ RÉFÉRENCE - HISTORIQUE
 **Statut:** Document de refactoring du ResultScreen
 **Contenu:**
 - Transformation du ResultScreen (652 → 300 lignes)
@@ -122,7 +137,7 @@
 
 ---
 
-#### 10. **docs/result-screen-ddd-refactoring-findings.md** 📁 ARCHIVER?
+#### 11. **docs/result-screen-ddd-refactoring-findings.md** 📁 ARCHIVER?
 **Statut:** Findings détaillés du refactoring
 **Contenu:** Probablement un doublon ou détail supplémentaire de result-screen-refactoring-summary.md
 
@@ -132,7 +147,7 @@
 
 ### 📄 Fichiers de Publication App Store
 
-#### 11-15. **docs/publish/** ✅ GARDER TOUS
+#### 12-16. **docs/publish/** ✅ GARDER TOUS
 **Fichiers:**
 - `app-form.md` - Formulaire de soumission App Store
 - `app-store-copywriting.md` / `app-store-copywriting-fr.md` - Textes marketing
@@ -179,12 +194,12 @@
 
 ## 📊 Statistique de la Documentation
 
-**Total fichiers de documentation:** 15 fichiers
-**À jour:** 4 fichiers (27%)
-**Références valides:** 4 fichiers (27%)
+**Total fichiers de documentation:** 16 fichiers
+**À jour:** 5 fichiers (31%) - Ajout de tiktok-link-feature.md
+**Références valides:** 4 fichiers (25%)
 **À mettre à jour:** 2 fichiers (13%)
-**À archiver/vérifier:** 1 fichier (7%)
-**Publication App Store:** 5 fichiers (33%)
+**À archiver/vérifier:** 1 fichier (6%)
+**Publication App Store:** 5 fichiers (31%)
 
 ---
 
@@ -197,6 +212,7 @@ docs/
 ├── CLAUDE.md (racine)                 # ✅ À JOUR - Guide pour agents
 ├── architecture.md                    # ✅ RÉFÉRENCE - Architecture DDD
 ├── DDD-REFACTORING-SUMMARY.md        # ✅ RÉFÉRENCE - Historique refactoring
+├── tiktok-link-feature.md            # ✅ NOUVEAU - Spec TikTok link
 ├── barcode-scanning-feature.md       # ⚠️ À METTRE À JOUR - Changer statut
 ├── ui-roadmap.md                     # ⚠️ À RÉVISER - Wireframes obsolètes?
 ├── result-screen-refactoring-summary.md  # ✅ RÉFÉRENCE - Exemple refactoring
@@ -218,5 +234,6 @@ docs/
 
 ---
 
-**Dernière mise à jour:** 2026-01-10
+**Dernière mise à jour:** 2026-01-11
+**Dernière modification:** Ajout de tiktok-link-feature.md (spécification nouvelle feature)
 **Prochain audit recommandé:** Après publication App Store

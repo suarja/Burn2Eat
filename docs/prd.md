@@ -49,6 +49,14 @@ Burn2Eat aide les utilisateurs à prendre conscience de l'impact énergétique d
 	•	L'utilisateur peut supprimer des entrées.
 	•	Stockage local (MMKV) — pas de sync cloud pour MVP.
 	•	Pas de leaderboard ni de social pour MVP.
+	5.	Lien vers contenu TikTok 🎯 NOUVEAU
+	•	**Emplacement principal:** Section dans l'écran Profil/Settings avec lien vers compte TikTok.
+	•	**Emplacement secondaire:** Lien discret en bas de ResultScreen (moment d'engagement maximum).
+	•	Contenu motivation/sport/développement personnel.
+	•	Stratégie d'acquisition : créer un écosystème entre l'app et le contenu social.
+	•	Génération de trafic croisé : utilisateurs app → followers TikTok → engagement → monétisation future.
+	•	Simple à implémenter : bouton/texte avec Linking.openURL() vers @votre_compte_tiktok.
+	•	Format discret : "🎥 Besoin de motivation ? Suis-nous sur TikTok" (petit texte cliquable).
 
 ⸻
 
@@ -101,6 +109,7 @@ Sprint 3 — Finitions MVP ⏳ EN COURS
 	•	✅ Choix activité préférée (ActivityPickerButton).
 	•	✅ Profil utilisateur avec contexte (onboarding vs settings).
 	•	✅ Optimisations performance iPad.
+	•	⏳ Lien TikTok dans écran Profil (stratégie d'acquisition).
 	•	⏳ Historique local (à implémenter).
 	•	⏳ Polish UI/UX final.
 	•	⏳ Packaging App Store / Play Store (TestFlight & Beta).
@@ -184,6 +193,7 @@ Les utilisateurs veulent comparer leur activité physique réelle avec ce qu'ils
 	•	Responsive spacing (iPad/mobile)
 
 ### ⏳ À implémenter (MVP)
+	•	Lien TikTok dans écran Profil (acquisition utilisateurs)
 	•	Historique local des plats consultés
 	•	Tests sur iPad Air (5th gen) pour validation App Store
 	•	Screenshots finaux pour App Store
