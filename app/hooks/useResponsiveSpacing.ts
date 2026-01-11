@@ -20,7 +20,14 @@ export function useResponsiveSpacing() {
   const multiplier = isTablet ? 1.15 : 1.0
 
   // Debug log to verify detection
-  console.log("📱 Responsive Spacing - Width:", width, "isTablet:", isTablet, "multiplier:", multiplier)
+  console.log(
+    "📱 Responsive Spacing - Width:",
+    width,
+    "isTablet:",
+    isTablet,
+    "multiplier:",
+    multiplier,
+  )
 
   return { multiplier, isTablet }
 }

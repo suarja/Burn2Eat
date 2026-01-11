@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from "react"
 import { memo } from "react"
 import {
@@ -73,6 +74,7 @@ export interface CollapsibleCategorySectionProps {
   numColumns?: number
 }
 
+// eslint-disable-next-line react/display-name
 export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProps> = memo(
   ({
     category,
@@ -133,11 +135,11 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
               style={[
                 themed($dishRow),
                 {
-                  marginBottom: theme.spacing.md * multiplier,
+                  marginBottom: theme.spacing.sm * multiplier,
                 },
               ]}
             >
-              {row.map((dish, colIndex) => (
+              {row.map((dish) => (
                 <View
                   key={dish.getId().toString()}
                   style={[
@@ -205,10 +207,11 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
         <TouchableOpacity
           style={[
             themed($header),
+            // eslint-disable-next-line react-native/no-inline-styles
             {
               paddingHorizontal: multiplier > 1 ? theme.spacing.xxl : theme.spacing.md,
-              paddingTop: multiplier > 1 ? theme.spacing.xl : theme.spacing.sm,
-              paddingBottom: multiplier > 1 ? theme.spacing.md : theme.spacing.sm,
+              paddingTop: multiplier > 1 ? theme.spacing.xxl : theme.spacing.sm,
+              paddingBottom: multiplier > 1 ? theme.spacing.xl : theme.spacing.sm,
               minHeight: multiplier > 1 ? 100 : undefined,
             },
           ]}
@@ -273,7 +276,7 @@ export const CollapsibleCategorySection: React.FC<CollapsibleCategorySectionProp
               style={[
                 themed($categoryDescription),
                 {
-                  fontSize: multiplier > 1 ? 16 : 12,
+                  fontSize: multiplier > 1 ? 18 : 12,
                   marginTop: theme.spacing.sm,
                 },
               ]}

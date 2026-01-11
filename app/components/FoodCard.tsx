@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-restricted-imports
 import React, { memo } from "react"
 import { View, ViewStyle, TextStyle, TouchableOpacity } from "react-native"
 import { Image } from "expo-image"
@@ -80,17 +81,21 @@ export const FoodCard: React.FC<FoodCardProps> = memo(
       small: { minHeight: 100, maxHeight: 120, imageSize: 40, padding: theme.spacing.xs },
       medium: { minHeight: 120, maxHeight: 150, imageSize: 50, padding: theme.spacing.sm },
       large: { minHeight: 140, maxHeight: 180, imageSize: 60, padding: theme.spacing.md },
-      result: { minHeight: 160, maxHeight: 200, imageSize: 80, padding: theme.spacing.md },
+      result: { minHeight: 200, maxHeight: 850, imageSize: 80, padding: theme.spacing.md },
     }
 
-    // Increase card size VERY significantly on iPad for better prominence
-    const sizeMultiplier = multiplier > 1 ? 2.0 : 1
+    // Increase card size on iPad - ensure enough space for all content
+    const sizeMultiplier = multiplier > 1 ? 1.9 : 1
     const responsiveSizes = {
       minHeight: baseSizes[size].minHeight * sizeMultiplier,
-      maxHeight: baseSizes[size].maxHeight * sizeMultiplier,
+      maxHeight: multiplier > 1 ? 999999 : baseSizes[size].maxHeight * sizeMultiplier, // Remove maxHeight constraint on iPad
       imageSize: baseSizes[size].imageSize * sizeMultiplier,
-      padding: baseSizes[size].padding * multiplier, // Keep full multiplier for padding
+      padding: baseSizes[size].padding * multiplier,
     }
+
+    // Typography scaling for iPad - balanced for visibility without overflow
+    const typographyScale = multiplier > 1 ? 1.8 : 1
+    const verticalSpacingScale = multiplier > 1 ? 1.5 : 1
 
     return (
       <TouchableOpacity
@@ -110,7 +115,15 @@ export const FoodCard: React.FC<FoodCardProps> = memo(
         activeOpacity={0.8}
       >
         {/* Image/Emoji Section */}
-        <View style={themed($imageContainer)}>
+        <View
+          style={[
+            themed($imageContainer),
+            // eslint-disable-next-line react-native/no-inline-styles
+            {
+              marginBottom: 14 * verticalSpacingScale,
+            },
+          ]}
+        >
           {dish.hasImage() ? (
             <Image
               source={{ uri: dish.getImageUrl()! }}
@@ -144,7 +157,7 @@ export const FoodCard: React.FC<FoodCardProps> = memo(
                   themed($emojiText),
                   // eslint-disable-next-line react-native/no-inline-styles
                   {
-                    fontSize: multiplier > 1 ? 36 : 24,
+                    fontSize: 24 * typographyScale,
                   },
                 ]}
               >
@@ -162,11 +175,12 @@ export const FoodCard: React.FC<FoodCardProps> = memo(
               themed($dishName),
               // eslint-disable-next-line react-native/no-inline-styles
               {
-                fontSize: multiplier > 1 ? 20 : 14,
-                lineHeight: multiplier > 1 ? 26 : 18,
+                fontSize: 14 * typographyScale,
+                lineHeight: 18 * typographyScale,
+                marginBottom: theme.spacing.xs * verticalSpacingScale,
               },
             ]}
-            numberOfLines={2}
+            numberOfLines={size === "result" && multiplier > 1 ? 3 : 2}
             ellipsizeMode="tail"
           >
             {dish.getName()}
@@ -174,23 +188,81 @@ export const FoodCard: React.FC<FoodCardProps> = memo(
 
           {/* Show calories only for result variant */}
           {size === "result" && (
-            <View style={themed($caloriesContainer)}>
-              <Text style={themed($caloriesText)}>
+            <View
+              style={[
+                themed($caloriesContainer),
+                // eslint-disable-next-line react-native/no-inline-styles
+                {
+                  paddingBottom: theme.spacing.xs * verticalSpacingScale,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  themed($caloriesText),
+                  // eslint-disable-next-line react-native/no-inline-styles
+                  {
+                    fontSize: 18 * typographyScale,
+                    lineHeight: 24 * typographyScale,
+                  },
+                ]}
+              >
                 {Math.round(displayCalories || dish.getCalories())}
               </Text>
-              <Text style={themed($caloriesUnit)}>kcal</Text>
+              <Text
+                style={[
+                  themed($caloriesUnit),
+                  // eslint-disable-next-line react-native/no-inline-styles
+                  {
+                    fontSize: 12 * typographyScale,
+                  },
+                ]}
+              >
+                kcal
+              </Text>
             </View>
           )}
 
           {/* Show quantity text if provided */}
           {quantityText && size === "result" && (
-            <Text style={themed($quantityText)}>{quantityText}</Text>
+            <Text
+              style={[
+                themed($quantityText),
+                // eslint-disable-next-line react-native/no-inline-styles
+                {
+                  fontSize: 16 * typographyScale,
+                },
+              ]}
+            >
+              {quantityText}
+            </Text>
           )}
 
           {/* High calorie indicator only for result variant */}
           {size === "result" && dish.isHighCalorie() && (
-            <View style={themed($highCalorieBadge)}>
-              <Text style={themed($highCalorieText)}>🔥 Intense</Text>
+            <View
+              style={[
+                themed($highCalorieBadge),
+                // eslint-disable-next-line react-native/no-inline-styles
+                {
+                  paddingHorizontal: theme.spacing.xs * verticalSpacingScale,
+                  paddingVertical: theme.spacing.xxxs * verticalSpacingScale,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  themed($highCalorieText),
+                  // eslint-disable-next-line react-native/no-inline-styles
+                  {
+
+                    lineHeight: 24 * typographyScale,
+                    fontSize: 16 * typographyScale,
+                  },
+                ]}
+              >
+                🔥 Intense
+              </Text>
             </View>
           )}
         </View>
@@ -225,7 +297,7 @@ const $disabledContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
 
 const $imageContainer: ThemedStyle<ViewStyle> = ({}) => ({
   alignItems: "center",
-  marginBottom: 8,
+  // marginBottom is applied inline with responsive multiplier
 })
 
 const $image: ThemedStyle<any> = ({}) => ({
@@ -251,50 +323,47 @@ const $contentContainer: ThemedStyle<ViewStyle> = ({}) => ({
   alignItems: "center",
 })
 
-const $dishName: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
-  // fontSize and lineHeight are applied inline with responsive multiplier
+const $dishName: ThemedStyle<TextStyle> = ({ colors }) => ({
+  // fontSize, lineHeight and marginBottom are applied inline with responsive multiplier
   color: colors.text,
   textAlign: "center",
-  marginBottom: spacing.xs,
 })
 
-const $caloriesContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+const $caloriesContainer: ThemedStyle<ViewStyle> = ({}) => ({
   flexDirection: "row",
   alignItems: "baseline",
-  marginBottom: spacing.xs,
+  // marginBottom is applied inline with responsive multiplier
 })
 
 const $caloriesText: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
-  fontSize: 18,
   fontFamily: typography.primary.bold,
   color: colors.text,
+  // fontSize and lineHeight are applied inline with responsive multiplier
 })
 
 const $caloriesUnit: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
-  fontSize: 12,
   color: colors.textDim,
   marginLeft: spacing.xxxs,
+  // fontSize is applied inline with responsive multiplier
 })
 
-const $highCalorieBadge: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
+const $highCalorieBadge: ThemedStyle<ViewStyle> = ({ colors }) => ({
   backgroundColor: colors.palette.primary500,
   borderRadius: 10,
-  paddingHorizontal: spacing.xs,
-  paddingVertical: spacing.xxxs,
+  // paddingHorizontal and paddingVertical are applied inline with responsive multiplier
 })
 
 const $highCalorieText: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
-  fontSize: 10,
   fontFamily: typography.primary.medium,
   color: colors.palette.neutral100,
+  // fontSize is applied inline with responsive multiplier
 })
 
-const $quantityText: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
-  fontSize: 12,
+const $quantityText: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.textDim,
   textAlign: "center",
-  marginBottom: spacing.xs,
   fontStyle: "italic",
+  // fontSize and marginBottom are applied inline with responsive multiplier
 })
 
 const $accentBorder: ThemedStyle<ViewStyle> = ({}) => ({

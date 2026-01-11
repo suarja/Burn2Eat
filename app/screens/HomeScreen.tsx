@@ -1,26 +1,20 @@
+// eslint-disable-next-line no-restricted-imports
 import React, { FC, useRef, useCallback } from "react"
 import {
   View,
   ViewStyle,
   TextStyle,
   SectionList,
-  ActivityIndicator,
   NativeScrollEvent,
   NativeSyntheticEvent,
   FlatList,
-  TouchableOpacity,
 } from "react-native"
 
 import { CollapsibleCategorySection } from "@/components/CollapsibleCategorySection"
 import { FoodCard } from "@/components/FoodCard"
 import { Icon } from "@/components/Icon"
 import { Screen } from "@/components/Screen"
-import {
-  SkeletonLoader,
-  FoodCardSkeleton,
-  CategorySectionSkeleton,
-} from "@/components/SkeletonLoader"
-import { StickySearchBar } from "@/components/StickySearchBar"
+import { FoodCardSkeleton } from "@/components/SkeletonLoader"
 import { Text } from "@/components/Text"
 import { TextField } from "@/components/TextField"
 import { Dish } from "@/domain/nutrition/Dish"
