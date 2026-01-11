@@ -7,6 +7,7 @@ import { Icon } from "@/components/Icon"
 import { translate } from "@/i18n/translate"
 import { BarcodeScreen } from "@/screens/BarcodeScreen"
 import { DemoDebugScreen } from "@/screens/DemoDebugScreen"
+import { HistoryScreen } from "@/screens/HistoryScreen"
 import { HomeScreen } from "@/screens/HomeScreen"
 import { ProfileSetupScreen } from "@/screens/ProfileSetupScreen"
 import { useAppTheme } from "@/theme/context"
@@ -18,7 +19,7 @@ export type MainTabParamList = {
   Home: undefined
   Profile: undefined
   Barcode: undefined
-  // HistoryTab: undefined // Will add later
+  History: undefined
 }
 
 /**
@@ -97,20 +98,20 @@ export function MainTabNavigator() {
         }}
       />
 
-      {/* <Tab.Screen
-        name="DebugTab"
-        component={DemoDebugScreen}
+      <Tab.Screen
+        name="History"
+        component={HistoryScreen}
         options={{
           tabBarLabel: "Historique",
           tabBarIcon: ({ focused }) => (
             <Icon
-              icon="more"
-              size={24}
+              icon="list"
+              size={30}
               color={focused ? colors.palette.primary500 : colors.textDim}
             />
           ),
         }}
-      /> */}
+      />
     </Tab.Navigator>
   )
 }

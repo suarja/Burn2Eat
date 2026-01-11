@@ -8,6 +8,7 @@ import { Header } from "@/components/Header"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import { SOCIAL_LINKS } from "@/config/social"
+import { useRecordConsumption } from "@/hooks/useRecordConsumption"
 import { useResponsiveSpacing } from "@/hooks/useResponsiveSpacing"
 import { useResultEffort } from "@/hooks/useResultEffort"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
@@ -59,6 +60,9 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
     initializeFromSimpleDish,
   } = useResultEffort()
 
+  // Hook for recording consumption to history
+  const { recordConsumption } = useRecordConsumption()
+
   /**
    * Initialize calculation based on route params
    * This replaces the complex useEffect logic from the original
@@ -95,7 +99,26 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
     }
   }
 
-  const handleAteItConfirm = () => {
+  const handleAteItConfirm = async () => {
+    // Record consumption to history before navigating away
+    try {
+      if (dish && actualCalories !== undefined && primaryEffortMinutes && primaryEffortActivity) {
+        await recordConsumption({
+          dish,
+          calories: actualCalories,
+          primaryEffort: {
+            minutes: primaryEffortMinutes,
+            activityLabel: primaryEffortActivity,
+          },
+          gramsConsumed: selectedGrams,
+        })
+        console.log("✅ Consumption recorded to history")
+      }
+    } catch (error) {
+      console.error("❌ Failed to record consumption:", error)
+      // Non-blocking error - don't interrupt user flow
+    }
+
     setShowAteItModal(false)
     navigation.navigate("MainTabs", { screen: "Home" })
   }
