@@ -83,7 +83,8 @@ export class RecordConsumptionUseCase {
           minutes: input.primaryEffort.minutes as Minutes,
           activityLabel: input.primaryEffort.activityLabel,
         },
-        gramsConsumed: input.gramsConsumed !== undefined ? (input.gramsConsumed as Grams) : undefined,
+        gramsConsumed:
+          input.gramsConsumed !== undefined ? (input.gramsConsumed as Grams) : undefined,
       })
 
       // Save to repository

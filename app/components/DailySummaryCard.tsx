@@ -1,12 +1,12 @@
 import { FC } from "react"
 import { View, ViewStyle, TextStyle } from "react-native"
 
+import { Card } from "./Card"
+import { Text } from "./Text"
 import type { DailySummary } from "../../src/domain/history/DailySummary"
 import { useAppTheme } from "../theme/context"
 import { spacing } from "../theme/spacing"
 import type { ThemedStyle } from "../theme/types"
-import { Card } from "./Card"
-import { Text } from "./Text"
 
 export interface DailySummaryCardProps {
   summary: DailySummary | null
@@ -158,11 +158,11 @@ const $deficitHint: ThemedStyle<TextStyle> = ({ colors }) => ({
   fontStyle: "italic",
 })
 
-const $effortContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+const $effortContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   marginTop: spacing.xs,
   paddingTop: spacing.xs,
   borderTopWidth: 1,
-  borderTopColor: theme.colors.border,
+  borderTopColor: colors.border,
   gap: spacing.xxs,
 })
 

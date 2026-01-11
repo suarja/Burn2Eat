@@ -51,7 +51,14 @@ export class DailySummary {
       throw new Error("Consumption count cannot be negative")
     }
 
-    return new DailySummary(date, totalCalories, bmr, consumptionCount, surplus, targetEffort ?? null)
+    return new DailySummary(
+      date,
+      totalCalories,
+      bmr,
+      consumptionCount,
+      surplus,
+      targetEffort ?? null,
+    )
   }
 
   /**

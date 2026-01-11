@@ -170,7 +170,7 @@ export const ChoiceModal: React.FC<ChoiceModalProps> = ({
           )}
 
           {/* Buttons */}
-          <View style={[themed($buttonContainer)]}>
+          <View style={themed($buttonContainer)}>
             <Button
               preset="filled"
               style={[

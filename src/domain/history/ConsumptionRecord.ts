@@ -1,6 +1,6 @@
+import { ConsumptionRecordId } from "./ConsumptionRecordId"
 import { Grams, Kilocalories, Minutes } from "../common/UnitTypes"
 import { DishId } from "../nutrition/DishId"
-import { ConsumptionRecordId } from "./ConsumptionRecordId"
 
 export interface ConsumptionRecordConfig {
   consumptionId: ConsumptionRecordId

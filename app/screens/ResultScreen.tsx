@@ -102,7 +102,13 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
   const handleAteItConfirm = async () => {
     // Record consumption to history before navigating away
     try {
-      if (dish && actualCalories !== undefined && primaryEffortMinutes && primaryEffortActivity) {
+      if (
+        dish &&
+        actualCalories !== null &&
+        actualCalories !== undefined &&
+        primaryEffortMinutes &&
+        primaryEffortActivity
+      ) {
         await recordConsumption({
           dish,
           calories: actualCalories,
@@ -110,7 +116,7 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
             minutes: primaryEffortMinutes,
             activityLabel: primaryEffortActivity,
           },
-          gramsConsumed: selectedGrams,
+          gramsConsumed: selectedGrams ?? undefined,
         })
         console.log("✅ Consumption recorded to history")
       }

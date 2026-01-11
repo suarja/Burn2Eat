@@ -105,7 +105,7 @@ export function MainTabNavigator() {
           tabBarLabel: "Historique",
           tabBarIcon: ({ focused }) => (
             <Icon
-              icon="list"
+              icon="components"
               size={30}
               color={focused ? colors.palette.primary500 : colors.textDim}
             />

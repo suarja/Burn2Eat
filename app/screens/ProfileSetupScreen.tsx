@@ -230,16 +230,10 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
           style={themed([$communityCard, { marginTop: theme.spacing.xl * multiplier }])}
           ContentComponent={
             <View style={themed($communityCardContent)}>
-              <Text
-                preset="subheading"
-                style={themed($communityTitle)}
-              >
+              <Text preset="subheading" style={themed($communityTitle)}>
                 🌟 Rejoins la communauté
               </Text>
-              <Text
-                size="sm"
-                style={themed($communityDescription)}
-              >
+              <Text size="sm" style={themed($communityDescription)}>
                 Suis-nous sur TikTok pour du contenu motivation, sport et nutrition
               </Text>
               <Button

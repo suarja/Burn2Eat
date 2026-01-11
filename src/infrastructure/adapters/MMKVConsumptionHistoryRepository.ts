@@ -233,7 +233,7 @@ export class MMKVConsumptionHistoryRepository implements ConsumptionHistoryRepos
     try {
       const records = await this.findByDate(date)
       return records.length > 0
-    } catch (error) {
+    } catch {
       return false
     }
   }
@@ -245,7 +245,7 @@ export class MMKVConsumptionHistoryRepository implements ConsumptionHistoryRepos
     try {
       const records = await this.findByDate(date)
       return records.length
-    } catch (error) {
+    } catch {
       return 0
     }
   }

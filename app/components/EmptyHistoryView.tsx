@@ -1,14 +1,14 @@
 import { FC } from "react"
 import { View, ViewStyle, TextStyle } from "react-native"
 import { useNavigation } from "@react-navigation/native"
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
 
+import { Button } from "./Button"
+import { Text } from "./Text"
+import type { AppStackParamList } from "../navigators/AppNavigator"
 import { useAppTheme } from "../theme/context"
 import { spacing } from "../theme/spacing"
 import type { ThemedStyle } from "../theme/types"
-import type { AppNavigatorParamList } from "../navigators/AppNavigator"
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
-import { Button } from "./Button"
-import { Text } from "./Text"
 
 export interface EmptyHistoryViewProps {
   style?: ViewStyle
@@ -20,7 +20,7 @@ export interface EmptyHistoryViewProps {
  */
 export const EmptyHistoryView: FC<EmptyHistoryViewProps> = ({ style }) => {
   const { themed } = useAppTheme()
-  const navigation = useNavigation<NativeStackNavigationProp<AppNavigatorParamList>>()
+  const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>()
 
   const handleGoToScanner = () => {
     navigation.navigate("MainTabs", { screen: "Barcode" })

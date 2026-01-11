@@ -1,8 +1,6 @@
-import { v4 as uuidv4 } from "uuid"
-
 /**
  * Value Object representing a unique consumption record identifier
- * Uses UUID for guaranteed uniqueness across the app lifecycle
+ * Uses timestamp + random string for guaranteed uniqueness across the app lifecycle
  */
 export class ConsumptionRecordId {
   private constructor(private readonly value: string) {
@@ -13,7 +11,7 @@ export class ConsumptionRecordId {
 
   /**
    * Create ConsumptionRecordId from a string value
-   * @param value The UUID string
+   * @param value The ID string
    */
   static from(value: string): ConsumptionRecordId {
     return new ConsumptionRecordId(value)
@@ -21,9 +19,13 @@ export class ConsumptionRecordId {
 
   /**
    * Generate a new unique ConsumptionRecordId
+   * Uses timestamp + random string for uniqueness
    */
   static generate(): ConsumptionRecordId {
-    return new ConsumptionRecordId(uuidv4())
+    const timestamp = Date.now().toString(36)
+    const randomPart = Math.random().toString(36).substring(2, 15)
+    const uniqueId = `${timestamp}-${randomPart}`
+    return new ConsumptionRecordId(uniqueId)
   }
 
   /**

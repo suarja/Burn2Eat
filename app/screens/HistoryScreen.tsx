@@ -1,20 +1,22 @@
 import { FC, useState, useCallback } from "react"
-import { View, ViewStyle, FlatList, RefreshControl } from "react-native"
+import { View, ViewStyle, TextStyle, FlatList, RefreshControl } from "react-native"
 
+import { ChoiceModal } from "@/components/ChoiceModal"
 import { ConsumptionRecordCard } from "@/components/ConsumptionRecordCard"
 import { DailySummaryCard } from "@/components/DailySummaryCard"
 import { EmptyHistoryView } from "@/components/EmptyHistoryView"
 import { Header } from "@/components/Header"
-import { ChoiceModal } from "@/components/ChoiceModal"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
 import { useClearHistory } from "@/hooks/useClearHistory"
 import { useDeleteConsumption } from "@/hooks/useDeleteConsumption"
+import { useResponsiveSpacing } from "@/hooks/useResponsiveSpacing"
 import { useTodayHistory } from "@/hooks/useTodayHistory"
 import type { MainTabScreenProps } from "@/navigators/MainTabNavigator"
 import { useAppTheme } from "@/theme/context"
+import { spacing } from "@/theme/spacing"
 import type { ThemedStyle } from "@/theme/types"
-import { useResponsiveSpacing } from "@/hooks/useResponsiveSpacing"
+
 import type { ConsumptionRecord } from "../../src/domain/history/ConsumptionRecord"
 
 interface HistoryScreenProps extends MainTabScreenProps<"History"> {}
@@ -116,15 +118,12 @@ export const HistoryScreen: FC<HistoryScreenProps> = function HistoryScreen() {
     return (
       <>
         <DailySummaryCard summary={summary} />
-        <Text
-          preset="formLabel"
-          style={themed($sectionTitle, { marginBottom: spacing.xs * spacingScale })}
-        >
+        <Text preset="formLabel" style={themed($sectionTitle)}>
           Plats consommés ({records.length})
         </Text>
       </>
     )
-  }, [summary, records.length, themed, spacingScale])
+  }, [summary, records.length, themed])
 
   return (
     <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={themed($screenContent)}>
@@ -135,7 +134,7 @@ export const HistoryScreen: FC<HistoryScreenProps> = function HistoryScreen() {
         onRightPress={records.length > 0 ? handleClearAll : undefined}
       />
 
-      <View style={themed($container, { paddingHorizontal: spacing.md * spacingScale })}>
+      <View style={themed($container)}>
         <FlatList
           data={records}
           renderItem={renderRecord}
@@ -144,7 +143,11 @@ export const HistoryScreen: FC<HistoryScreenProps> = function HistoryScreen() {
           ListEmptyComponent={renderEmpty}
           contentContainerStyle={themed($listContent)}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={theme.colors.tint} />
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor={theme.colors.tint}
+            />
           }
         />
 
@@ -161,11 +164,11 @@ export const HistoryScreen: FC<HistoryScreenProps> = function HistoryScreen() {
         variant="challenge"
         title="Effacer l'historique ?"
         content="Cette action est irréversible. Tous vos enregistrements de consommation seront supprimés."
-        primaryText="Effacer tout"
-        secondaryText="Annuler"
+        primaryButtonText="Effacer"
+        secondaryButtonText="Annuler"
         onPrimaryPress={handleClearConfirm}
         onSecondaryPress={() => setShowClearModal(false)}
-        onClose={() => setShowClearModal(false)}
+        onDismiss={() => setShowClearModal(false)}
       />
     </Screen>
   )
@@ -175,8 +178,9 @@ const $screenContent: ThemedStyle<ViewStyle> = () => ({
   flex: 1,
 })
 
-const $container: ThemedStyle<ViewStyle> = () => ({
+const $container: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   flex: 1,
+  paddingHorizontal: spacing.md,
 })
 
 const $listContent: ThemedStyle<ViewStyle> = ({ spacing }) => ({
@@ -198,7 +202,7 @@ const $errorContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   marginTop: spacing.md,
 })
 
-const $errorText: ThemedStyle<ViewStyle> = ({ colors }) => ({
+const $errorText: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.palette.angry500,
   textAlign: "center",
 })

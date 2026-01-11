@@ -1,9 +1,6 @@
 import { useCallback, useState } from "react"
 
-import type {
-  DeleteConsumptionInput,
-  DeleteConsumptionOutput,
-} from "../../src/application/usecases/DeleteConsumptionUseCase"
+import type { DeleteConsumptionOutput } from "../../src/application/usecases/DeleteConsumptionUseCase"
 import { Dependencies } from "../services/Dependencies"
 
 /**

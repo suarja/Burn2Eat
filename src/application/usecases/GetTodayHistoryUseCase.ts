@@ -2,8 +2,8 @@ import { Kilocalories, Minutes } from "../../domain/common/UnitTypes"
 import { ConsumptionHistoryRepository } from "../../domain/history/ConsumptionHistoryRepository"
 import { ConsumptionRecord } from "../../domain/history/ConsumptionRecord"
 import { DailySummary } from "../../domain/history/DailySummary"
-import { BMRCalculator } from "../../domain/physiology/BMRCalculator"
 import { ActivityCatalog } from "../../domain/physiology/ActivityCatalog"
+import { BMRCalculator } from "../../domain/physiology/BMRCalculator"
 import { UserHealthInfoRepository } from "../../domain/physiology/UserHealthInfoRepository"
 
 /**
@@ -103,13 +103,7 @@ export class GetTodayHistoryUseCase {
       }
 
       // Create daily summary
-      const summary = DailySummary.create(
-        today,
-        totalCalories,
-        bmr,
-        records.length,
-        targetEffort,
-      )
+      const summary = DailySummary.create(today, totalCalories, bmr, records.length, targetEffort)
 
       return {
         success: true,
