@@ -78,16 +78,41 @@ export const FoodCard: React.FC<FoodCardProps> = memo(
     }
 
     const baseSizes = {
-      small: { minHeight: 100, maxHeight: 120, imageSize: 40, padding: theme.spacing.xs },
-      medium: { minHeight: 120, maxHeight: 150, imageSize: 50, padding: theme.spacing.sm },
-      large: { minHeight: 140, maxHeight: 180, imageSize: 60, padding: theme.spacing.md },
-      result: { minHeight: 200, maxHeight: 850, imageSize: 80, padding: theme.spacing.md },
+      small: {
+        minHeight: 100,
+        maxHeight: 120,
+        imageSize: 40,
+        padding: theme.spacing.xs,
+        minWidth: 80,
+      },
+      medium: {
+        minHeight: 120,
+        maxHeight: 150,
+        imageSize: 50,
+        padding: theme.spacing.sm,
+        minWidth: 80,
+      },
+      large: {
+        minHeight: 140,
+        maxHeight: 180,
+        imageSize: 60,
+        padding: theme.spacing.md,
+        minWidth: 100,
+      },
+      result: {
+        minHeight: 200,
+        maxHeight: 850,
+        imageSize: 80,
+        padding: theme.spacing.md,
+        minWidth: 200,
+      },
     }
 
     // Increase card size on iPad - ensure enough space for all content
     const sizeMultiplier = multiplier > 1 ? 1.9 : 1
     const responsiveSizes = {
       minHeight: baseSizes[size].minHeight * sizeMultiplier,
+      minWidth: baseSizes[size].minWidth * sizeMultiplier,
       maxHeight: multiplier > 1 ? 999999 : baseSizes[size].maxHeight * sizeMultiplier, // Remove maxHeight constraint on iPad
       imageSize: baseSizes[size].imageSize * sizeMultiplier,
       padding: baseSizes[size].padding * multiplier,
@@ -102,6 +127,7 @@ export const FoodCard: React.FC<FoodCardProps> = memo(
         style={[
           themed($container),
           {
+            minWidth: responsiveSizes.minWidth,
             minHeight: responsiveSizes.minHeight,
             maxHeight: responsiveSizes.maxHeight,
             padding: responsiveSizes.padding,
@@ -255,7 +281,6 @@ export const FoodCard: React.FC<FoodCardProps> = memo(
                   themed($highCalorieText),
                   // eslint-disable-next-line react-native/no-inline-styles
                   {
-
                     lineHeight: 24 * typographyScale,
                     fontSize: 16 * typographyScale,
                   },
