@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react"
-import { View, ViewStyle, TextStyle } from "react-native"
+import { View, ViewStyle, TextStyle, Linking } from "react-native"
 
 import { Button } from "@/components/Button"
 import { ChoiceModal } from "@/components/ChoiceModal"
@@ -7,6 +7,7 @@ import { FoodCard } from "@/components/FoodCard"
 import { Header } from "@/components/Header"
 import { Screen } from "@/components/Screen"
 import { Text } from "@/components/Text"
+import { SOCIAL_LINKS } from "@/config/social"
 import { useResponsiveSpacing } from "@/hooks/useResponsiveSpacing"
 import { useResultEffort } from "@/hooks/useResultEffort"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
@@ -102,6 +103,21 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
   const handleDidntEatConfirm = () => {
     setShowDidntEatModal(false)
     navigation.navigate("MainTabs", { screen: "Home" })
+  }
+
+  const handleOpenTikTok = async () => {
+    try {
+      const url = SOCIAL_LINKS.tiktok
+      const canOpen = await Linking.canOpenURL(url)
+
+      if (canOpen) {
+        await Linking.openURL(url)
+      } else {
+        console.warn("Cannot open TikTok URL:", url)
+      }
+    } catch (error) {
+      console.error("Error opening TikTok:", error)
+    }
   }
 
   // Error state
@@ -317,7 +333,8 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
                   {
                     fontSize: 24 * typographyScale,
                     lineHeight: multiplier > 1 ? 36 * typographyScale : undefined,
-                    marginBottom: multiplier > 1 ? theme.spacing.xs * spacingScale : theme.spacing.xs,
+                    marginBottom:
+                      multiplier > 1 ? theme.spacing.xs * spacingScale : theme.spacing.xs,
                   },
                 ]}
               >
@@ -330,7 +347,8 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
                   {
                     fontSize: 18 * typographyScale,
                     lineHeight: multiplier > 1 ? 32 * typographyScale : undefined,
-                    marginBottom: multiplier > 1 ? theme.spacing.sm * spacingScale : theme.spacing.sm,
+                    marginBottom:
+                      multiplier > 1 ? theme.spacing.sm * spacingScale : theme.spacing.sm,
                   },
                 ]}
                 numberOfLines={multiplier > 1 ? 2 : 1}
@@ -344,7 +362,8 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
                     themed($alternativesList),
                     // eslint-disable-next-line react-native/no-inline-styles
                     {
-                      marginTop: multiplier > 1 ? theme.spacing.sm * spacingScale : theme.spacing.sm,
+                      marginTop:
+                        multiplier > 1 ? theme.spacing.sm * spacingScale : theme.spacing.sm,
                     },
                   ]}
                 >
@@ -355,7 +374,8 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
                       {
                         fontSize: 14 * typographyScale,
                         lineHeight: multiplier > 1 ? 26 * typographyScale : undefined,
-                        marginBottom: multiplier > 1 ? theme.spacing.xs * spacingScale : theme.spacing.xs,
+                        marginBottom:
+                          multiplier > 1 ? theme.spacing.xs * spacingScale : theme.spacing.xs,
                       },
                     ]}
                   >
@@ -370,7 +390,8 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
                         {
                           fontSize: 14 * typographyScale,
                           lineHeight: multiplier > 1 ? 26 * typographyScale : undefined,
-                          marginBottom: multiplier > 1 ? theme.spacing.xxs * spacingScale : theme.spacing.xxs,
+                          marginBottom:
+                            multiplier > 1 ? theme.spacing.xxs * spacingScale : theme.spacing.xxs,
                         },
                       ]}
                     >
@@ -422,7 +443,8 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
                   // eslint-disable-next-line react-native/no-inline-styles
                   {
                     minHeight: multiplier > 1 ? 70 : 44,
-                    paddingVertical: multiplier > 1 ? theme.spacing.md * multiplier : theme.spacing.sm,
+                    paddingVertical:
+                      multiplier > 1 ? theme.spacing.md * multiplier : theme.spacing.sm,
                     paddingHorizontal: multiplier > 1 ? theme.spacing.md : theme.spacing.md,
                   },
                 ]}
@@ -445,7 +467,8 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
                   // eslint-disable-next-line react-native/no-inline-styles
                   {
                     minHeight: multiplier > 1 ? 70 : 44,
-                    paddingVertical: multiplier > 1 ? theme.spacing.md * multiplier : theme.spacing.sm,
+                    paddingVertical:
+                      multiplier > 1 ? theme.spacing.md * multiplier : theme.spacing.sm,
                     paddingHorizontal: multiplier > 1 ? theme.spacing.md : theme.spacing.md,
                     marginBottom: multiplier > 1 ? theme.spacing.sm * spacingScale : 0,
                   },
@@ -461,6 +484,12 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
               >
                 💪 Non, je passe
               </Button>
+          {/* Discrete TikTok link */}
+          <Text size="xs" style={themed($tiktokLink)} onPress={handleOpenTikTok}>
+            🎥 Besoin de motivation ? Suis-nous sur TikTok
+          </Text>
+
+
             </View>
           </View>
 
@@ -536,7 +565,7 @@ const $effortSection: ThemedStyle<ViewStyle> = ({ colors }) => ({
   // padding and marginBottom are applied inline with responsive scaling
 })
 
-const $sectionTitle: ThemedStyle<ViewStyle> = ({ colors, typography }) => ({
+const $sectionTitle: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
   fontFamily: typography.primary.bold,
   color: colors.text,
   textAlign: "center",
@@ -547,14 +576,14 @@ const $effortContent: ThemedStyle<ViewStyle> = ({}) => ({
   alignItems: "center",
 })
 
-const $primaryEffort: ThemedStyle<ViewStyle> = ({ colors, typography }) => ({
+const $primaryEffort: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
   fontFamily: typography.primary.bold,
   color: colors.tint,
   textAlign: "center",
   // fontSize and marginBottom are applied inline with responsive scaling
 })
 
-const $primaryActivity: ThemedStyle<ViewStyle> = ({ colors, typography }) => ({
+const $primaryActivity: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
   fontFamily: typography.primary.medium,
   color: colors.text,
   textAlign: "center",
@@ -566,13 +595,13 @@ const $alternativesList: ThemedStyle<ViewStyle> = ({}) => ({
   // marginTop is applied inline with responsive scaling
 })
 
-const $alternativesTitle: ThemedStyle<ViewStyle> = ({ colors, typography }) => ({
+const $alternativesTitle: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
   fontFamily: typography.primary.medium,
   color: colors.textDim,
   // fontSize and marginBottom are applied inline with responsive scaling
 })
 
-const $alternativeItem: ThemedStyle<ViewStyle> = ({ colors }) => ({
+const $alternativeItem: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.textDim,
   textAlign: "center",
   // fontSize and marginBottom are applied inline with responsive scaling
@@ -582,7 +611,7 @@ const $decisionSection: ThemedStyle<ViewStyle> = ({}) => ({
   // marginTop is applied inline with responsive scaling
 })
 
-const $questionText: ThemedStyle<ViewStyle> = ({ colors, typography }) => ({
+const $questionText: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
   fontFamily: typography.primary.medium,
   color: colors.text,
   textAlign: "center",
@@ -604,7 +633,7 @@ const $skipButton: ThemedStyle<ViewStyle> = ({ colors }) => ({
   // marginBottom is applied inline with responsive scaling
 })
 
-const $loadingText: ThemedStyle<ViewStyle> = ({ colors, typography }) => ({
+const $loadingText: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
   fontFamily: typography.primary.medium,
   color: colors.textDim,
   textAlign: "center",
@@ -640,14 +669,14 @@ const $loadingContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
   // padding is applied inline with responsive scaling
 })
 
-const $loadingTitle: ThemedStyle<ViewStyle> = ({ colors, typography }) => ({
+const $loadingTitle: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
   fontFamily: typography.primary.bold,
   color: colors.text,
   textAlign: "center",
   // fontSize and marginBottom are applied inline with responsive scaling
 })
 
-const $loadingSubtitle: ThemedStyle<ViewStyle> = ({ colors, typography }) => ({
+const $loadingSubtitle: ThemedStyle<TextStyle> = ({ colors, typography }) => ({
   fontFamily: typography.primary.medium,
   color: colors.textDim,
   textAlign: "center",
@@ -659,4 +688,12 @@ const $cancelButton: ThemedStyle<ViewStyle> = ({ colors }) => ({
   borderColor: colors.tint,
   borderWidth: 1,
   minWidth: 120,
+})
+
+const $tiktokLink: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
+  color: colors.textDim,
+  textAlign: "center",
+  marginTop: spacing.lg,
+  marginBottom: spacing.sm,
+  fontSize: 12,
 })

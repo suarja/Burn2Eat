@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from "react"
-import { View, ViewStyle, TextStyle } from "react-native"
+import { View, ViewStyle, TextStyle, Linking } from "react-native"
 import { Toast } from "toastify-react-native"
 
 import { ActivityPickerButton } from "@/components/ActivityPickerButton"
@@ -10,6 +10,7 @@ import { WeightHeightSelector, WeightHeightWheelSelector } from "@/components/Nu
 import { Screen } from "@/components/Screen"
 import { Text as TextIgnite } from "@/components/Text"
 import { Text } from "@/components/Text"
+import { SOCIAL_LINKS } from "@/config/social"
 import { useResponsiveSpacing } from "@/hooks/useResponsiveSpacing"
 import { useUserProfile } from "@/hooks/useUserProfile"
 import type { AppStackScreenProps } from "@/navigators/AppNavigator"
@@ -85,6 +86,21 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
 
   const handleBack = () => {
     navigation.goBack()
+  }
+
+  const handleOpenTikTok = async () => {
+    try {
+      const url = SOCIAL_LINKS.tiktok
+      const canOpen = await Linking.canOpenURL(url)
+
+      if (canOpen) {
+        await Linking.openURL(url)
+      } else {
+        console.warn("Cannot open TikTok URL:", url)
+      }
+    } catch (error) {
+      console.error("Error opening TikTok:", error)
+    }
   }
 
   useEffect(() => {
@@ -208,6 +224,33 @@ export const ProfileSetupScreen: FC<ProfileSetupScreenProps> = function ProfileS
             Modifiable dans les paramètres
           </Text>
         )}
+
+        {/* TikTok Community Card */}
+        <Card
+          style={themed([$communityCard, { marginTop: theme.spacing.xl * multiplier }])}
+          ContentComponent={
+            <View style={themed($communityCardContent)}>
+              <Text
+                preset="subheading"
+                style={themed($communityTitle)}
+              >
+                🌟 Rejoins la communauté
+              </Text>
+              <Text
+                size="sm"
+                style={themed($communityDescription)}
+              >
+                Suis-nous sur TikTok pour du contenu motivation, sport et nutrition
+              </Text>
+              <Button
+                text="📱 Voir notre TikTok"
+                onPress={handleOpenTikTok}
+                style={themed($tiktokButton)}
+                preset="default"
+              />
+            </View>
+          }
+        />
       </View>
     </Screen>
   )
@@ -289,4 +332,32 @@ const $footerText: ThemedStyle<TextStyle> = ({ spacing, colors }) => ({
   fontStyle: "italic",
   marginTop: spacing.xs, // Reduced from sm
   marginBottom: spacing.sm, // Reduced from lg
+})
+
+const $communityCard: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  marginBottom: spacing.xl,
+})
+
+const $communityCardContent: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  padding: spacing.md,
+  alignItems: "center",
+})
+
+const $communityTitle: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
+  color: colors.text,
+  textAlign: "center",
+  marginBottom: spacing.xs,
+  fontWeight: "600",
+})
+
+const $communityDescription: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
+  color: colors.textDim,
+  textAlign: "center",
+  marginBottom: spacing.md,
+  lineHeight: 20,
+})
+
+const $tiktokButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  minWidth: 200,
+  marginTop: spacing.xs,
 })
