@@ -484,12 +484,10 @@ export const ResultScreen: FC<ResultScreenProps> = function ResultScreen(props) 
               >
                 💪 Non, je passe
               </Button>
-          {/* Discrete TikTok link */}
-          <Text size="xs" style={themed($tiktokLink)} onPress={handleOpenTikTok}>
-            🎥 Besoin de motivation ? Suis-nous sur TikTok
-          </Text>
-
-
+              {/* Discrete TikTok link */}
+              <Text size="xs" style={themed($tiktokLink)} onPress={handleOpenTikTok}>
+                🎥 Besoin de motivation ? Suis-nous sur TikTok
+              </Text>
             </View>
           </View>
 
