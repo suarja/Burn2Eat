@@ -1,5 +1,7 @@
+/* eslint-disable react-native/no-inline-styles */
 import { View, ViewStyle, TextStyle, Modal, Pressable } from "react-native"
 
+import { useResponsiveSpacing } from "@/hooks/useResponsiveSpacing"
 import { useAppTheme } from "@/theme/context"
 import type { ThemedStyle } from "@/theme/types"
 
@@ -68,6 +70,8 @@ export const ChoiceModal: React.FC<ChoiceModalProps> = ({
 }) => {
   const { themed, theme } = useAppTheme()
 
+  const { multiplier } = useResponsiveSpacing()
+
   const getVariantColors = () => {
     switch (variant) {
       case "success":
@@ -88,45 +92,132 @@ export const ChoiceModal: React.FC<ChoiceModalProps> = ({
     }
   }
 
+  const typographyScale = multiplier > 1 ? 1.7 : 1
   const variantColors = getVariantColors()
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onDismiss}>
       <Pressable style={themed($backdrop)} onPress={onDismiss}>
         <Pressable
-          style={[themed($modalContainer), { backgroundColor: variantColors.background }]}
+          style={[
+            themed($modalContainer),
+            // eslint-disable-next-line react-native/no-inline-styles
+            {
+              backgroundColor: variantColors.background,
+              maxWidth: multiplier > 1 ? 700 : 340,
+              minHeight: multiplier > 1 ? 320 : 280,
+            },
+          ]}
           onPress={(e) => e.stopPropagation()}
         >
           {/* Icon */}
           {icon && (
             <View style={themed($iconContainer)}>
-              <Text style={themed($iconText)}>{icon}</Text>
+              <Text
+                style={[
+                  themed($iconText),
+                  {
+                    fontSize: multiplier > 1 ? 64 : 42,
+                    lineHeight: multiplier > 1 ? 72 : 48,
+                  },
+                ]}
+              >
+                {icon}
+              </Text>
             </View>
           )}
 
           {/* Title */}
-          <Text preset="bold" style={themed($title)}>
+          <Text
+            preset="bold"
+            style={[
+              themed($title),
+              {
+                fontSize: multiplier > 1 ? 48 : 22,
+                lineHeight: multiplier > 1 ? 48 : 28,
+              },
+            ]}
+          >
             {title}
           </Text>
 
           {/* Main content */}
-          <Text style={themed($content)}>{content}</Text>
+          <Text
+            style={[
+              themed($content),
+              {
+                fontSize: multiplier > 1 ? 28 : 16,
+                lineHeight: multiplier > 1 ? 48 : 20,
+              },
+            ]}
+          >
+            {content}
+          </Text>
 
           {/* Secondary content */}
-          {secondaryContent && <Text style={themed($secondaryContent)}>{secondaryContent}</Text>}
+          {secondaryContent && (
+            <Text
+              style={[
+                themed($secondaryContent),
+                {
+                  fontSize: multiplier > 1 ? 24 : 16,
+                  lineHeight: multiplier > 1 ? 28 : 20,
+                },
+              ]}
+            >
+              {secondaryContent}
+            </Text>
+          )}
 
           {/* Buttons */}
-          <View style={themed($buttonContainer)}>
+          <View style={[themed($buttonContainer)]}>
             <Button
               preset="filled"
-              style={[themed($primaryButton), { backgroundColor: variantColors.accent }]}
+              style={[
+                themed($primaryButton),
+                {
+                  backgroundColor: variantColors.accent,
+                  minHeight: multiplier > 1 ? 70 : 44,
+                  paddingVertical:
+                    multiplier > 1 ? theme.spacing.md * multiplier : theme.spacing.sm,
+                  paddingHorizontal: multiplier > 1 ? theme.spacing.md : theme.spacing.md,
+                },
+              ]}
+              textStyle={
+                // eslint-disable-next-line react-native/no-inline-styles
+                {
+                  fontSize: 16 * typographyScale,
+                  lineHeight: multiplier > 1 ? 32 * typographyScale : undefined,
+                }
+              }
               onPress={onPrimaryPress}
             >
               {primaryButtonText}
             </Button>
 
             {secondaryButtonText && onSecondaryPress && (
-              <Button preset="default" style={themed($secondaryButton)} onPress={onSecondaryPress}>
+              <Button
+                preset="default"
+                style={[
+                  themed($secondaryButton),
+                  {
+                    backgroundColor: variantColors.accent,
+                    minHeight: multiplier > 1 ? 70 : 44,
+
+                    paddingVertical:
+                      multiplier > 1 ? theme.spacing.md * multiplier : theme.spacing.sm,
+                    paddingHorizontal: multiplier > 1 ? theme.spacing.md : theme.spacing.md,
+                  },
+                ]}
+                textStyle={
+                  // eslint-disable-next-line react-native/no-inline-styles
+                  {
+                    fontSize: 16 * typographyScale,
+                    lineHeight: multiplier > 1 ? 32 * typographyScale : undefined,
+                  }
+                }
+                onPress={onSecondaryPress}
+              >
                 {secondaryButtonText}
               </Button>
             )}
